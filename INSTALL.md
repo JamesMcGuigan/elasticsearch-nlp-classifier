@@ -47,7 +47,7 @@ export PATH=${M2_HOME}/bin:${PATH}
 ```
 mvn archetype:generate \
 -DgroupId=com.jamesmcguigan.kdt \
--DartifactId=kaggle-disaster-tweets-nlp-java \
+-DartifactId=kaggle-nlp-disaster-tweets-java \
 -DarchetypeArtifactId=maven-archetype-quickstart \
 -DarchetypeVersion=1.4 \
 -DinteractiveMode=false \
@@ -60,5 +60,5 @@ mvn archetype:generate \
 mvn compile exec:java --quiet
 mvn compile exec:java -Dexec.mainClass="com.jamesmcguigan.kdt.App" -q
 java -cp target/classes/ com.jamesmcguigan.kdt.App
-mvn package; java -jar target/kaggle-disaster-tweets-nlp-java-1.0-SNAPSHOT.jar
+mvn package; java -jar target/kaggle-nlp-disaster-tweets-java-1.0-SNAPSHOT.jar
 ```

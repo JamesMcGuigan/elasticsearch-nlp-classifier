@@ -5,11 +5,11 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>com.jamesmcguigan.kdt</groupId>
-  <artifactId>kaggle-disaster-tweets-nlp-java</artifactId>
+  <artifactId>kaggle-nlp-disaster-tweets-java</artifactId>
   <version>1.0-SNAPSHOT</version>
 
-  <name>kaggle-disaster-tweets-nlp-java</name>
-  <url>https://github.com/JamesMcGuigan/kaggle-disaster-tweets-nlp-java</url>
+  <name>kaggle-nlp-disaster-tweets-java</name>
+  <url>https://github.com/JamesMcGuigan/kaggle-nlp-disaster-tweets-java</url>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
