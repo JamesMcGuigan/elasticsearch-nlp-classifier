@@ -62,3 +62,22 @@ mvn compile exec:java -Dexec.mainClass="com.jamesmcguigan.kdt.App" -q
 java -cp target/classes/ com.jamesmcguigan.kdt.App
 mvn package; java -jar target/kaggle-nlp-disaster-tweets-java-1.0-SNAPSHOT.jar
 ```
+
+
+## Apace Zeppelin
+- https://quicknotepadtutorial.blogspot.com/2019/12/how-to-install-apache-zeppelin-on.html
+
+```
+lsb_release -cd ; hostname ; hostname -I ; whoami ; getconf LONG_BIT ; java -version ; echo $JAVA_HOME
+apt install -y build-essential software-properties-common curl gdebi net-tools wget sqlite3 dirmngr nano lsb-release apt-transport-https -y
+
+wget -c https://apache.mirror.wearetriple.com/zeppelin/zeppelin-0.9.0-preview2/zeppelin-0.9.0-preview2-bin-all.tgz
+sudo tar -vxf zeppelin-*-bin-all.tgz -C /opt
+sudo mv  /opt/zeppelin-*-bin-all /opt/zeppelin
+sudo chown -Rv jamie:jamie /opt/zeppelin/
+
+/opt/zeppelin/bin/zeppelin-daemon.sh start
+/opt/zeppelin/bin/zeppelin-daemon.sh stop
+/opt/zeppelin/bin/zeppelin-daemon.sh reload
+http://127.0.0.1:8080/
+```
