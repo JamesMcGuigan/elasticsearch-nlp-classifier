@@ -1,5 +1,12 @@
 package com.jamesmcguigan.kdt.data;
 
+import org.apache.commons.lang3.StringUtils;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 public class Entry {
 
     public final int id;
@@ -26,5 +33,18 @@ public class Entry {
                 this.text,
                 this.target
         );
+    }
+
+    public List<String> tokenized() {
+        return Stream.of(
+                this.keyword,
+                this.location,
+                this.text
+            )
+            .map(StringUtils::splitPreserveAllTokens)
+            .map(Arrays::asList)
+            .flatMap(List<String>::stream)
+            .collect(Collectors.toList())
+        ;
     }
 }
