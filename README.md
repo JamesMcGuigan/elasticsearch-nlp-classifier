@@ -1,3 +1,16 @@
-# Kaggle Disaster Tweets showcasing NLP in Java
+# ElasticSearch NLP Classifier
 
-Kaggle Competition: https://www.kaggle.com/c/nlp-getting-started
+This repository attempts to implement NLP classification techniques
+in Java using data sourced from ElasticSearch.
+
+Inspiration is taken from the following python Kaggle Notebooks:
+- https://www.kaggle.com/jamesmcguigan/nlp-naive-bayes
+- https://www.kaggle.com/jamesmcguigan/nlp-tf-idf-classifier
+- https://www.kaggle.com/jamesmcguigan/nlp-logistic-regression
+- https://www.kaggle.com/jamesmcguigan/nlp-laser-embeddings-keras
+
+Initialization of the ElasticSearch database is handled in this repository:  
+- https://github.com/JamesMcGuigan/elasticsearch-tweets
+
+For local installation instructions see:
+- [INSTALL.md](INSTALL.md)
