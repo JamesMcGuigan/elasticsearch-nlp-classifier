@@ -58,9 +58,9 @@ mvn archetype:generate \
 ### Run
 ```
 mvn compile exec:java --quiet
-mvn compile exec:java -Dexec.mainClass="com.jamesmcguigan.kdt.App" -q
-java -cp target/classes/ com.jamesmcguigan.kdt.App
-mvn package; java -jar target/kaggle-nlp-disaster-tweets-java-1.0-SNAPSHOT.jar
+mvn compile exec:java -Dexec.mainClass="com.jamesmcguigan.nlp.App" -q
+java -cp target/classes/ com.jamesmcguigan.nlp.App
+mvn package; java -jar target/elasticsearch-nlp-classifier-1.0-SNAPSHOT.jar
 ```
 
 

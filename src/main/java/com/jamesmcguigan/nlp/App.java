@@ -1,4 +1,4 @@
-package com.jamesmcguigan.kdt;
+package com.jamesmcguigan.nlp;
 
 /**
  * Hello world!

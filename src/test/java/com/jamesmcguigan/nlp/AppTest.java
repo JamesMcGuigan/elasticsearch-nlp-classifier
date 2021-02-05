@@ -1,8 +1,8 @@
-package com.jamesmcguigan.kdt;
-
-import static org.junit.Assert.assertTrue;
+package com.jamesmcguigan.nlp;
 
 import org.junit.Test;
+
+import static org.junit.Assert.assertTrue;
 
 /**
  * Unit test for simple App.

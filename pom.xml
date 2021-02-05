@@ -5,17 +5,17 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>com.jamesmcguigan.kdt</groupId>
-  <artifactId>kaggle-nlp-disaster-tweets-java</artifactId>
+  <artifactId>elasticsearch-nlp-classifier</artifactId>
   <version>1.0-SNAPSHOT</version>
 
   <name>kaggle-nlp-disaster-tweets-java</name>
-  <url>https://github.com/JamesMcGuigan/kaggle-nlp-disaster-tweets-java</url>
+  <url>https://github.com/JamesMcGuigan/elasticsearch-nlp-classifier</url>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.source>15</maven.compiler.source>
     <maven.compiler.target>15</maven.compiler.target>
-    <exec.mainClass>com.jamesmcguigan.kdt.App</exec.mainClass>
+    <exec.mainClass>com.jamesmcguigan.nlp.App</exec.mainClass>
   </properties>
 
   <dependencies>
@@ -115,7 +115,7 @@
             <manifest>
               <addClasspath>true</addClasspath>
               <classpathPrefix>lib/</classpathPrefix>
-              <mainClass>com.jamesmcguigan.kdt.App</mainClass>
+              <mainClass>com.jamesmcguigan.nlp.App</mainClass>
             </manifest>
           </archive>
         </configuration>

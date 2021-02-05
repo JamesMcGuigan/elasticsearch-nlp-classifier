@@ -1,4 +1,4 @@
-package com.jamesmcguigan.kdt.data;
+package com.jamesmcguigan.nlp.csv;
 
 
 import org.junit.jupiter.api.Assertions;

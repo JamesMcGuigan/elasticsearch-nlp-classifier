@@ -1,4 +1,4 @@
-package com.jamesmcguigan.kdt.data;
+package com.jamesmcguigan.nlp.csv;
 
 import org.apache.commons.lang3.StringUtils;
 
