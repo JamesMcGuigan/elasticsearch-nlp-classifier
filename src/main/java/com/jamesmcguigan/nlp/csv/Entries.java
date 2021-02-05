@@ -6,7 +6,6 @@ import org.apache.commons.csv.CSVRecord;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -14,11 +13,13 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 public class Entries {
-    static List<Entry> fromCSV(String filename ) {
+    static List<Entry> fromCSV(String filename) {
         Path csvFile        = Paths.get(filename);
         List<Entry> entries = new ArrayList<>();
-        try (BufferedReader reader = Files.newBufferedReader(csvFile, StandardCharsets.UTF_8)) {
+        try (BufferedReader reader = Files.newBufferedReader(csvFile, UTF_8)) {
             CSVFormat csv = CSVFormat.RFC4180.withHeader();
             try( CSVParser parser = csv.parse(reader) ) {
                 Iterator<CSVRecord> it = parser.iterator();

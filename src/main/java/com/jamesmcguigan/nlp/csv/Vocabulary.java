@@ -11,7 +11,8 @@ class Vocabulary extends TreeSet<String> {
         this.addAll(words);
     }
 
-    public static Vocabulary fromFile(String filename)       { return Vocabulary.fromFiles(Collections.singletonList(filename));  }
+
+    public static Vocabulary fromFile(String filename)       { return Vocabulary.fromFiles(Collections.singletonList(filename)); }
     public static Vocabulary fromFiles(String ...filenames)  { return Vocabulary.fromFiles(Arrays.asList(filenames)); }
     public static Vocabulary fromFiles(List<String> filenames) {
         var entries = filenames.parallelStream()
@@ -22,7 +23,8 @@ class Vocabulary extends TreeSet<String> {
         return Vocabulary.fromEntries(entries);
     }
 
-    public static Vocabulary fromEntry(Entry entry)        { return Vocabulary.fromEntries(Collections.singletonList(entry));   }
+
+    public static Vocabulary fromEntry(Entry entry)        { return Vocabulary.fromEntries(Collections.singletonList(entry)); }
     public static Vocabulary fromEntries(Entry ...entries) { return Vocabulary.fromEntries(Arrays.asList(entries)); }
     public static Vocabulary fromEntries( List<Entry> entries ) {
         var words = entries.stream()
