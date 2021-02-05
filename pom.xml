@@ -8,7 +8,7 @@
   <artifactId>elasticsearch-nlp-classifier</artifactId>
   <version>1.0-SNAPSHOT</version>
 
-  <name>kaggle-nlp-disaster-tweets-java</name>
+  <name>elasticsearch-nlp-classifier</name>
   <url>https://github.com/JamesMcGuigan/elasticsearch-nlp-classifier</url>
 
   <properties>
