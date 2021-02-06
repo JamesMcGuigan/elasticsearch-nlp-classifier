@@ -28,7 +28,7 @@ class Vocabulary extends TreeSet<String> {
     public static Vocabulary fromEntries(Entry ...entries) { return Vocabulary.fromEntries(Arrays.asList(entries)); }
     public static Vocabulary fromEntries( List<Entry> entries ) {
         var words = entries.stream()
-                .map(Entry::tokenized)
+                .map(Entry::tokenize)
                 .flatMap(List::stream)
                 .distinct()
                 .collect(Collectors.toList())

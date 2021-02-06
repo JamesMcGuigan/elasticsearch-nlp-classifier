@@ -1,8 +1,7 @@
 package com.jamesmcguigan.nlp.csv;
 
-import org.apache.commons.lang3.StringUtils;
+import com.jamesmcguigan.nlp.tokenize.EntryTokenizer;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -15,6 +14,12 @@ public class Entry {
     public final String text;
     public final Boolean target;
 
+    private final EntryTokenizer tokenizer = new EntryTokenizer()
+        .setCleanTwitter(true)
+        .setLowercase(true)
+        .setStopwords(true)
+        .setStemming(true)
+    ;
 
     public Entry(int id, String keyword, String location, String text, Boolean target) {
         this.id       = id;
@@ -35,14 +40,13 @@ public class Entry {
         );
     }
 
-    public List<String> tokenized() {
+    public List<String> tokenize() {
         return Stream.of(
-                this.keyword,
-                this.location,
+                // this.keyword,
+                // this.location,
                 this.text
             )
-            .map(StringUtils::splitPreserveAllTokens)
-            .map(Arrays::asList)
+            .map(this.tokenizer::tokenize)
             .flatMap(List<String>::stream)
             .collect(Collectors.toList())
         ;
