@@ -46,8 +46,8 @@ export PATH=${M2_HOME}/bin:${PATH}
 ### Initialize
 ```
 mvn archetype:generate \
--DgroupId=com.jamesmcguigan.kdt \
--DartifactId=kaggle-nlp-disaster-tweets-java \
+-DgroupId=com.jamesmcguigan.nlp \
+-DartifactId=elasticsearch-nlp-classifier \
 -DarchetypeArtifactId=maven-archetype-quickstart \
 -DarchetypeVersion=1.4 \
 -DinteractiveMode=false \
