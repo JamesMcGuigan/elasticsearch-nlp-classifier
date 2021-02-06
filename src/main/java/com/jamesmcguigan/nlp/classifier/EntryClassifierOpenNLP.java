@@ -37,12 +37,17 @@ public class EntryClassifierOpenNLP {
 
     public EntryClassifierOpenNLP() {
         this.params = new TrainingParameters();
+
+        // Settings for: MAXENT_VALUE
         params.put(TrainingParameters.ITERATIONS_PARAM, "1000");       // accuracy = 0.750
         // params.put(TrainingParameters.ITERATIONS_PARAM, "2500");    // accuracy = 0.750
         // params.put(TrainingParameters.ITERATIONS_PARAM, "10000");   // accuracy = 0.742
         // params.put(TrainingParameters.ITERATIONS_PARAM, "20000");   // accuracy = 0.734
         // params.put(TrainingParameters.ITERATIONS_PARAM, "100000");  // accuracy = 0.727
         params.put(TrainingParameters.CUTOFF_PARAM, "0");
+
+        // TrainerFactory.BUILTIN_TRAINERS = [MAXENT_QN, MAXENT, PERCEPTRON, NAIVEBAYES, PERCEPTRON_SEQUENCE]
+        params.put(TrainingParameters.ALGORITHM_PARAM, "NAIVEBAYES");  // Kaggle Score = 0.78026
     }
     public EntryClassifierOpenNLP(Path filename) throws IOException {
         this();
