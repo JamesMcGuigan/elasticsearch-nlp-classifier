@@ -26,12 +26,17 @@
       <version>4.13</version>
       <scope>test</scope>
     </dependency>
-
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter-params</artifactId>
       <version>5.7.0</version>
       <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.junit.platform</groupId>
+      <artifactId>junit-platform-commons</artifactId>
+      <version>1.7.0</version>
+      <scope>compile</scope>
     </dependency>
 
     <dependency>
@@ -39,12 +44,6 @@
       <artifactId>commons-csv</artifactId>
       <version>1.4</version>
     </dependency>
-      <dependency>
-          <groupId>org.junit.platform</groupId>
-          <artifactId>junit-platform-commons</artifactId>
-          <version>1.7.0</version>
-          <scope>compile</scope>
-      </dependency>
     <dependency>
       <groupId>commons-collections</groupId>
       <artifactId>commons-collections</artifactId>
@@ -55,6 +54,13 @@
       <artifactId>commons-lang3</artifactId>
       <version>3.8.1</version>
     </dependency>
+
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+      <version>30.1-jre</version>
+    </dependency>
+
     <dependency>
       <groupId>org.apache.opennlp</groupId>
       <artifactId>opennlp-tools</artifactId>
@@ -65,6 +71,7 @@
       <artifactId>opennlp-uima</artifactId>
       <version>1.9.3</version>
     </dependency>
+
   </dependencies>
 
 

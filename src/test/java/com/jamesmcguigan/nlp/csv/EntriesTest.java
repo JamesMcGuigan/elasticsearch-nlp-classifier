@@ -32,7 +32,7 @@ class EntriesTest {
         String[] lines = Files.readString(path).split("(?=\n\\d+,)");
 
         // Read as CSV
-        List<Entry> entries = Entries.fromCSV(filename);
+        List<Entry> entries = Entries.fromCSV(path);
 
         Assertions.assertEquals(ids.size(), entries.size());
         Assertions.assertEquals(lines.length - 1, entries.size());

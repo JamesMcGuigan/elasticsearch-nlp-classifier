@@ -1,6 +1,7 @@
 package com.jamesmcguigan.nlp.csv;
 
 import com.jamesmcguigan.nlp.tokenize.EntryTokenizer;
+import opennlp.tools.doccat.DocumentSample;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -12,16 +13,18 @@ public class Entry {
     public final String keyword;
     public final String location;
     public final String text;
-    public final Boolean target;
+    public final String target;
 
     private final EntryTokenizer tokenizer = new EntryTokenizer()
-        .setCleanTwitter(true)
+        // .setCleanTwitter(true)  // Kaggle score = 0.76248
+        // .setTwitter(false)      // Kaggle score = 0.76831
+        .setTwitter(true)          // Kaggle score = 0.77229
         .setLowercase(true)
         .setStopwords(true)
         .setStemming(true)
     ;
 
-    public Entry(int id, String keyword, String location, String text, Boolean target) {
+    public Entry(int id, String keyword, String location, String text, String target) {
         this.id       = id;
         this.keyword  = keyword;
         this.location = location;
@@ -50,5 +53,14 @@ public class Entry {
             .flatMap(List<String>::stream)
             .collect(Collectors.toList())
         ;
+    }
+
+    public DocumentSample toDocumentSampleKeyword() {
+        var tokens = this.tokenizer.tokenize(this.text).toArray(new String[0]);
+        return new DocumentSample(this.keyword, tokens);
+    }
+    public DocumentSample toDocumentSampleTarget() {
+        var tokens = this.tokenizer.tokenize(this.text).toArray(new String[0]);
+        return new DocumentSample(this.target, tokens);
     }
 }

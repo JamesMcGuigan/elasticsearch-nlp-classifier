@@ -1,5 +1,6 @@
 package com.jamesmcguigan.nlp.csv;
 
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -16,6 +17,7 @@ class Vocabulary extends TreeSet<String> {
     public static Vocabulary fromFiles(String ...filenames)  { return Vocabulary.fromFiles(Arrays.asList(filenames)); }
     public static Vocabulary fromFiles(List<String> filenames) {
         var entries = filenames.parallelStream()
+                .map(Paths::get)
                 .map(Entries::fromCSV)
                 .flatMap(List::stream)
                 .collect(Collectors.toList())

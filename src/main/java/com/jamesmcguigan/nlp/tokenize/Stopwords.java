@@ -20,13 +20,14 @@ public class Stopwords {
             )
         ))
         .lines()
+        .map(String::toLowerCase)
         .filter(token -> !Stopwords.regexComment.matcher(token).matches())
         .collect(Collectors.toUnmodifiableSet())
     ;
 
     public static List<String> removeStopwords(List<String> tokens) {
         tokens = tokens.stream()
-            .filter(token -> !Stopwords.stopwords.contains(token))
+            .filter(token -> !Stopwords.stopwords.contains(token.toLowerCase()))
             .filter(token -> !Stopwords.regexPunctuation.matcher(token).matches())
             .filter(token -> !token.isEmpty())
             .collect(Collectors.toList())
