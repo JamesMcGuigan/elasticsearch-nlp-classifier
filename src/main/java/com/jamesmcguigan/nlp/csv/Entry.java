@@ -1,6 +1,6 @@
 package com.jamesmcguigan.nlp.csv;
 
-import com.jamesmcguigan.nlp.tokenize.EntryTokenizer;
+import com.jamesmcguigan.nlp.tokenize.NLPTokenizer;
 import opennlp.tools.doccat.DocumentSample;
 
 import java.util.List;
@@ -15,7 +15,7 @@ public class Entry {
     public final String text;
     public final String target;
 
-    private final EntryTokenizer tokenizer = new EntryTokenizer()
+    private final NLPTokenizer tokenizer = new NLPTokenizer()
         // .setCleanTwitter(true)  // Kaggle score = 0.76248
         // .setTwitter(false)      // Kaggle score = 0.76831
         .setTwitter(true)          // Kaggle score = 0.77229

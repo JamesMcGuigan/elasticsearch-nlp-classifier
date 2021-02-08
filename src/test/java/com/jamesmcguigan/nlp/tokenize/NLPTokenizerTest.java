@@ -10,13 +10,13 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
-class EntryTokenizerTest {
+class NLPTokenizerTest {
 
     @DisplayName("Should calculate the correct sum")
     @ParameterizedTest(name = "{index} => {0}")
     @MethodSource("datasetForCanTokenize")
     void canTokenize(String sentence, List<String> expectedTokens) {
-        EntryTokenizer tokenizer = new EntryTokenizer()
+        NLPTokenizer tokenizer = new NLPTokenizer()
             .setCleanTwitter(true)
             .setLowercase(true)
             .setStopwords(true)

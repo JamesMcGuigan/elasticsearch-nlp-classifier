@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 
 import static opennlp.tools.stemmer.snowball.SnowballStemmer.ALGORITHM.ENGLISH;
 
-public class EntryTokenizer {
+public class NLPTokenizer {
 
     //***** Default Settings *****//
     private boolean useStopwords = false;
@@ -32,24 +32,24 @@ public class EntryTokenizer {
 
     //***** Constructor *****//
 
-    public EntryTokenizer setStopwords(boolean useStopwords) {
+    public NLPTokenizer setStopwords(boolean useStopwords) {
         this.useStopwords = useStopwords;
         return this;
     }
-    public EntryTokenizer setLowercase(boolean useLowercase) {
+    public NLPTokenizer setLowercase(boolean useLowercase) {
         this.useLowercase = useLowercase;
         return this;
     }
-    public EntryTokenizer setTwitter(boolean useTwitter) {
+    public NLPTokenizer setTwitter(boolean useTwitter) {
         this.useTwitter = useTwitter;
         return this;
     }
-    public EntryTokenizer setCleanTwitter(boolean useCleanTwitter) {
+    public NLPTokenizer setCleanTwitter(boolean useCleanTwitter) {
         this.useTwitter      = useCleanTwitter;
         this.useCleanTwitter = useCleanTwitter;
         return this;
     }
-    public EntryTokenizer setStemming(boolean useStemming) {
+    public NLPTokenizer setStemming(boolean useStemming) {
         this.useStemming = useStemming;
         return this;
     }
