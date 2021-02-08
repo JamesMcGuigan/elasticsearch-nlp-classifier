@@ -18,6 +18,12 @@ import java.util.Properties;
 
 public class ESClient {
 
+    public static RestHighLevelClient client;
+    static { try { client = connect(); } catch( IOException e ) { e.printStackTrace(); } }
+
+    public ESClient() {
+    }
+
     public static RestHighLevelClient connect() throws IOException {
         Properties properties = new Properties();
         properties.load(
@@ -83,5 +89,6 @@ public class ESClient {
 
         return client;
     }
+
 
 }
