@@ -40,6 +40,7 @@ public class EntryDocumentStream implements ObjectStream<DocumentSample> {
 
     @Override
     public void close() {
+        this.entries.clear();
         this.closed = true;
     }
 
