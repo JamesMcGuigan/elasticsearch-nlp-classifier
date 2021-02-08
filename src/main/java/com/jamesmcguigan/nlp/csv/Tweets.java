@@ -17,9 +17,9 @@ import java.util.List;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
-public class Entries {
-    public static List<Entry> fromCSV(Path csvFile) {
-        List<Entry> entries = new ArrayList<>();
+public class Tweets {
+    public static List<Tweet> fromCSV(Path csvFile) {
+        List<Tweet> tweets = new ArrayList<>();
         try (BufferedReader reader = Files.newBufferedReader(csvFile, UTF_8)) {
             CSVFormat csv = CSVFormat.RFC4180.withHeader();
             try( CSVParser parser = csv.parse(reader) ) {
@@ -32,28 +32,28 @@ public class Entries {
                     String target   = row.isMapped("target")
                             ? row.get("target")
                             : null;
-                    Entry entry     = new Entry(id, keyword, location, text, target);
-                    entries.add(entry);
+                    Tweet tweet = new Tweet(id, keyword, location, text, target);
+                    tweets.add(tweet);
                 });
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return entries;
+        return tweets;
     }
 
-    public static void toSubmissionCSV(Path csvFile, List<Entry> entries, List<String> predictions) {
-        if( entries.size() != predictions.size() ) {
+    public static void toSubmissionCSV(Path csvFile, List<Tweet> tweets, List<String> predictions) {
+        if( tweets.size() != predictions.size() ) {
             throw new IllegalArgumentException(String.format(
-                "entries(%d) must be same size as predictions(%d)",
-                entries.size(), predictions.size()
+                "tweets(%d) must be same size as predictions(%d)",
+                tweets.size(), predictions.size()
             ));
         }
 
         try ( var printer = new CSVPrinter(new FileWriter(csvFile.toFile()), CSVFormat.EXCEL) ) {
             printer.printRecord("id", "target");
-            for( int i = 0; i < entries.size(); i++ ) {
-                printer.printRecord(entries.get(i).id, predictions.get(i));
+            for( int i = 0; i < tweets.size(); i++ ) {
+                printer.printRecord(tweets.get(i).id, predictions.get(i));
             }
 
             System.out.printf("wrote: %s = %d Kb%n", csvFile.toString(), Files.size(csvFile)/1024);
@@ -64,9 +64,9 @@ public class Entries {
 
     public static void main( String[] args )
     {
-        List<Entry> entries = Entries.fromCSV(Paths.get("input/test.csv"));
-        for (Entry entry : entries) {
-            System.out.println( entry );
+        List<Tweet> tweets = Tweets.fromCSV(Paths.get("input/test.csv"));
+        for ( Tweet tweet : tweets) {
+            System.out.println(tweet);
         }
     }
 }

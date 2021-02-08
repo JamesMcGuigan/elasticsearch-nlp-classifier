@@ -16,21 +16,21 @@ class Vocabulary extends TreeSet<String> {
     public static Vocabulary fromFile(String filename)       { return Vocabulary.fromFiles(Collections.singletonList(filename)); }
     public static Vocabulary fromFiles(String ...filenames)  { return Vocabulary.fromFiles(Arrays.asList(filenames)); }
     public static Vocabulary fromFiles(List<String> filenames) {
-        var entries = filenames.parallelStream()
+        var tweets = filenames.parallelStream()
                 .map(Paths::get)
-                .map(Entries::fromCSV)
+                .map(Tweets::fromCSV)
                 .flatMap(List::stream)
                 .collect(Collectors.toList())
         ;
-        return Vocabulary.fromEntries(entries);
+        return Vocabulary.fromTweets(tweets);
     }
 
 
-    public static Vocabulary fromEntry(Entry entry)        { return Vocabulary.fromEntries(Collections.singletonList(entry)); }
-    public static Vocabulary fromEntries(Entry ...entries) { return Vocabulary.fromEntries(Arrays.asList(entries)); }
-    public static Vocabulary fromEntries( List<Entry> entries ) {
-        var words = entries.stream()
-                .map(Entry::tokenize)
+    public static Vocabulary fromTweet(Tweet tweet)     { return Vocabulary.fromTweets(Collections.singletonList(tweet)); }
+    public static Vocabulary fromTweets(Tweet...tweets) { return Vocabulary.fromTweets(Arrays.asList(tweets)); }
+    public static Vocabulary fromTweets(List<Tweet> tweets ) {
+        var words = tweets.stream()
+                .map(Tweet::tokenize)
                 .flatMap(List::stream)
                 .distinct()
                 .collect(Collectors.toList())

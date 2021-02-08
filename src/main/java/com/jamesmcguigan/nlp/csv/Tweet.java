@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class Entry {
+public class Tweet {
 
     public final int id;
     public final String keyword;
@@ -24,7 +24,7 @@ public class Entry {
         .setStemming(true)
     ;
 
-    public Entry(int id, String keyword, String location, String text, String target) {
+    public Tweet(int id, String keyword, String location, String text, String target) {
         this.id       = id;
         this.keyword  = keyword;
         this.location = location;

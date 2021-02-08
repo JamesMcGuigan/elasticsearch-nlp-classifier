@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-class EntriesTest {
+class TweetsTest {
     @ParameterizedTest
     @ValueSource(strings = { "input/train.csv", "input/test.csv" })
     void canReadCSV(String filename) throws IOException {
@@ -32,9 +32,9 @@ class EntriesTest {
         String[] lines = Files.readString(path).split("(?=\n\\d+,)");
 
         // Read as CSV
-        List<Entry> entries = Entries.fromCSV(path);
+        List<Tweet> tweets = Tweets.fromCSV(path);
 
-        Assertions.assertEquals(ids.size(), entries.size());
-        Assertions.assertEquals(lines.length - 1, entries.size());
+        Assertions.assertEquals(ids.size(), tweets.size());
+        Assertions.assertEquals(lines.length - 1, tweets.size());
     }
 }
