@@ -5,12 +5,6 @@ import com.google.common.collect.Lists;
 import com.jamesmcguigan.nlp.csv.Tweet;
 import com.jamesmcguigan.nlp.csv.Tweets;
 import com.jamesmcguigan.nlp.streams.TweetDocumentStream;
-import opennlp.tools.doccat.DoccatFactory;
-import opennlp.tools.doccat.DoccatModel;
-import opennlp.tools.doccat.DocumentCategorizerME;
-import opennlp.tools.doccat.DocumentSample;
-import opennlp.tools.util.ObjectStream;
-import opennlp.tools.util.TrainingParameters;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -25,56 +19,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 
-public class OpenNLPClassifierTweet {
-
-    private final TrainingParameters params;
-    private DoccatModel model;
-    private DocumentCategorizerME doccat;
-
-
-
-    //***** Constructor *****//
-
-    public OpenNLPClassifierTweet() {
-        this.params = new TrainingParameters();
-
-        // Settings for: MAXENT_VALUE
-        params.put(TrainingParameters.ITERATIONS_PARAM, "1000");       // accuracy = 0.750
-        // params.put(TrainingParameters.ITERATIONS_PARAM, "2500");    // accuracy = 0.750
-        // params.put(TrainingParameters.ITERATIONS_PARAM, "10000");   // accuracy = 0.742
-        // params.put(TrainingParameters.ITERATIONS_PARAM, "20000");   // accuracy = 0.734
-        // params.put(TrainingParameters.ITERATIONS_PARAM, "100000");  // accuracy = 0.727
-        params.put(TrainingParameters.CUTOFF_PARAM, "0");
-
-        // TrainerFactory.BUILTIN_TRAINERS = [MAXENT_QN, MAXENT, PERCEPTRON, NAIVEBAYES, PERCEPTRON_SEQUENCE]
-        params.put(TrainingParameters.ALGORITHM_PARAM, "NAIVEBAYES");  // Kaggle Score = 0.78026
-    }
-    public OpenNLPClassifierTweet(Path filename) throws IOException {
-        this();
-        this.model  = new DoccatModel(filename);
-        this.doccat = new DocumentCategorizerME(this.model);
-    }
-
-    public void save(Path file) throws IOException {
-        this.model.serialize(file);
-    }
-
-
+public class OpenNLPClassifierTweet extends OpenNLPClassifier {
 
     //***** Training and Prediction *****//
 
     public void train(List<Tweet> tweets) throws IOException {
         var objectStream = new TweetDocumentStream(tweets);
         this.train(objectStream);
-    }
-    public void train(ObjectStream<DocumentSample> objectStream) throws IOException {
-        this.model = DocumentCategorizerME.train(
-            "en",
-            objectStream,
-            this.params,
-            new DoccatFactory()
-        );
-        this.doccat = new DocumentCategorizerME(model);
     }
 
 
