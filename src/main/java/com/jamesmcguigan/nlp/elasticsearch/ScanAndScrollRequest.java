@@ -1,5 +1,6 @@
 package com.jamesmcguigan.nlp.elasticsearch;
 
+import com.google.gson.Gson;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchScrollRequest;
@@ -10,6 +11,7 @@ import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -17,37 +19,72 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.NoSuchElementException;
 
-public class ScanAndScrollRequest implements Iterator<SearchHit> {
+/**
+ * ElasticSearch ScanAndScrollRequest implemented as an Iterator
+ *
+ * Caches `bufferSize` entries then makes a synchronous API call to refresh the buffer when empty.
+ * .next() return type is cast to type T.
+ *
+ * @param <T> return type of .next()
+ */
+public class ScanAndScrollRequest<T> implements Iterator<T> {
     private final String index;
     private final QueryBuilder query;
     private final RestHighLevelClient client;
-    private final LinkedList<SearchHit> buffer;
-    private String scrollId;
-    private int bufferSize = 1000;
-    private long ttl = 60;
-    private Long totalHits = null;
+    private final Class<? extends T> type;
 
-    public ScanAndScrollRequest(String index, QueryBuilder query) {
+    private int bufferSize = 1000;  // Number of items to keep in buffer
+    private long ttl       = 360;   // API timeout in seconds
+
+    private String scrollId;        // ScrollId of current request
+    private Long totalHits;         // Total number of results from query
+    private Long pos = 0L;          // Position in the stream
+    private final LinkedList<SearchHit> buffer;
+
+
+    public ScanAndScrollRequest(String index, QueryBuilder query, Class<? extends T> type) {
         this.index    = index;
         this.query    = query;
         this.scrollId = null;
         this.client   = ESClient.client;
+        this.type     = type;
         this.buffer   = new LinkedList<>();
     }
+    public void reset() {
+        this.totalHits = null;
+        this.scrollId  = null;
+        this.pos       = 0L;
+        this.buffer.clear();
+    }
+
+
+    //***** Getters / Setters *****//
+
     public int  getBufferSize()               { return this.bufferSize; }
     public long getTTL()                      { return this.ttl;  }
     public void setBufferSize(int bufferSize) { this.bufferSize = bufferSize; }
     public void setTTL(long ttl)              { this.ttl  = ttl;  }
-    // @Override
-    // protected void finalize() { this.close(); }
 
     public Long size() {
+        return this.getTotalHits() - this.pos;
+    }
+    public Long getTotalHits() {
         if( this.totalHits == null ) {
-            this.updateBuffer();
+            this.populateBuffer();
         }
         return this.totalHits;
     }
 
+
+    //***** ElasticSearch functions *****//
+
+    protected void populateBuffer() {
+        // TODO: Asynchronous loading of buffer
+        try {
+            SearchHits hits = this.scanAndScroll();
+            this.buffer.addAll( Arrays.asList(hits.getHits()) );
+        } catch( IOException ignored ) { /* Ignore */ }
+    }
     protected SearchRequest getScanAndScrollRequest() {
         // DOCS: https://www.elastic.co/guide/en/elasticsearch/client/java-rest/current/java-rest-high-search-scroll.html
         SearchRequest searchRequest = new SearchRequest(this.index);
@@ -59,7 +96,6 @@ public class ScanAndScrollRequest implements Iterator<SearchHit> {
         searchRequest.scroll(TimeValue.timeValueSeconds(this.ttl));
         return searchRequest;
     }
-
     protected SearchHits scanAndScroll() throws IOException {
         SearchResponse searchResponse;
         if( this.scrollId == null ) {
@@ -76,13 +112,8 @@ public class ScanAndScrollRequest implements Iterator<SearchHit> {
         return hits;
     }
 
-    protected void updateBuffer() {
-        // TODO: Asynchronous loading of buffer
-        try {
-            SearchHits hits = this.scanAndScroll();
-            this.buffer.addAll( Arrays.asList(hits.getHits()) );
-        } catch( IOException ignored ) {}
-    }
+
+    //***** Iterator interface *****//
 
     /**
      * Returns {@code true} if the iteration has more elements.
@@ -94,7 +125,7 @@ public class ScanAndScrollRequest implements Iterator<SearchHit> {
     @Override
     public boolean hasNext() {
         if( this.buffer.isEmpty() ) {
-            this.updateBuffer();
+            this.populateBuffer();
         }
         return !this.buffer.isEmpty();
     }
@@ -106,11 +137,38 @@ public class ScanAndScrollRequest implements Iterator<SearchHit> {
      * @throws NoSuchElementException if the iteration has no more elements
      */
     @Override
-    public SearchHit next() {
+    public T next() {
         if( this.hasNext() ) {
-            return this.buffer.pop();
+            SearchHit hit = this.buffer.pop();
+            T item        = this.cast(hit);
+            this.pos++;
+            return item;
         } else {
             throw new NoSuchElementException();
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    public T cast(SearchHit hit) {
+        T item;
+
+        // NOTE: Object.class.isAssignableFrom(String.class) == true
+        // NOTE: String.class.isAssignableFrom(Object.class) == false
+        if( this.type.isAssignableFrom( hit.getClass() ) ) {
+            item = (T) hit;
+        }
+        else {
+            String json = hit.getSourceAsString();
+            if( this.type.isAssignableFrom( String.class ) ) {
+                item = (T) json;
+            }
+            else if( this.type.isAssignableFrom( JSONObject.class ) ) {
+                item = (T) new JSONObject(json);
+            }
+            else {
+                item = new Gson().fromJson(json, this.type);
+            }
+        }
+        return item;
     }
 }
