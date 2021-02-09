@@ -30,13 +30,8 @@ public class OpenNLPClassifierTweet extends OpenNLPClassifier {
 
 
     public String predict(Tweet tweet) {
-        if( this.model == null ) {
-            throw new UnsupportedOperationException("model not trained yet");
-        }
         var tokens = tweet.tokenize().toArray(new String[0]);
-        double[] probabilities = this.doccat.categorize(tokens);
-        var category = doccat.getBestCategory(probabilities);
-        return category;
+        return this.predict(tokens);
     }
     public List<String> predict(List<Tweet> tweets) {
         return tweets.parallelStream()
