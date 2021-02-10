@@ -42,6 +42,8 @@ public class ESJsonPath {
             String text = jsonPath.read(path, String.class);
             return text;
         } catch ( com.jayway.jsonpath.PathNotFoundException exception ) {
+            // System.out.printf("%s not found in %s%n", path, jsonPath.toString());
+            // exception.printStackTrace();
             return defaultValue;
         }
     }

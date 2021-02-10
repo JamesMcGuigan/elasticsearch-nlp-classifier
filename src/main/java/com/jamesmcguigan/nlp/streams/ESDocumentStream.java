@@ -36,6 +36,7 @@ public class ESDocumentStream implements ObjectStream<DocumentSample> {
     public Long size()                 { return this.iterator.size(); }
     public Long getTotalHits()         { return this.iterator.getTotalHits(); }
     public NLPTokenizer getTokenizer() { return this.tokenizer; }
+    @SuppressWarnings("unchecked")
     public <T extends ESDocumentStream> T setTokenizer(NLPTokenizer tokenizer) { this.tokenizer = tokenizer; return (T) this; }
 
     /**

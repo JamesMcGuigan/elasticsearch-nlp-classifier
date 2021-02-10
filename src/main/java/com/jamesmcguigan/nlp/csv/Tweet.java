@@ -3,6 +3,7 @@ package com.jamesmcguigan.nlp.csv;
 import com.jamesmcguigan.nlp.tokenize.NLPTokenizer;
 import opennlp.tools.doccat.DocumentSample;
 
+import javax.annotation.Nullable;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -24,12 +25,12 @@ public class Tweet {
         .setStemming(true)
     ;
 
-    public Tweet(int id, String keyword, String location, String text, String target) {
+    public Tweet(int id, String keyword, String location, String text, @Nullable String target) {
         this.id       = id;
         this.keyword  = keyword;
         this.location = location;
         this.text     = text;
-        this.target   = target;
+        this.target   = (target == null) ? "" : target;
     }
 
     public String toString() {
@@ -60,7 +61,7 @@ public class Tweet {
         return new DocumentSample(this.keyword, tokens);
     }
     public DocumentSample toDocumentSampleTarget() {
-        var tokens = this.tokenizer.tokenize(this.text).toArray(new String[0]);
+        String[] tokens = this.tokenizer.tokenize(this.text).toArray(new String[0]);
         return new DocumentSample(this.target, tokens);
     }
 }
