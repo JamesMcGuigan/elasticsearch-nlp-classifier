@@ -1,5 +1,6 @@
 package com.jamesmcguigan.nlp.classifier;
 
+import com.jamesmcguigan.nlp.csv.ESJsonPath;
 import com.jamesmcguigan.nlp.tokenize.NLPTokenizer;
 import opennlp.tools.doccat.DoccatFactory;
 import opennlp.tools.doccat.DoccatModel;
@@ -11,20 +12,13 @@ import opennlp.tools.util.TrainingParameters;
 import java.io.IOException;
 import java.nio.file.Path;
 
+@SuppressWarnings("unchecked")
 public class OpenNLPClassifier {
 
     protected final TrainingParameters params;
     protected DoccatModel model;
     protected DocumentCategorizerME doccat;
-
-    public final NLPTokenizer tokenizer = new NLPTokenizer()
-        // .setCleanTwitter(true)  // Kaggle score = 0.76248
-        // .setTwitter(false)      // Kaggle score = 0.76831
-        .setTwitter(true)          // Kaggle score = 0.77229
-        .setLowercase(true)
-        .setStopwords(true)
-        .setStemming(true)
-    ;
+    public final NLPTokenizer tokenizer = ESJsonPath.getDefaultTokenizer();
 
 
     //***** Constructor *****//
@@ -45,16 +39,19 @@ public class OpenNLPClassifier {
         params.put(TrainingParameters.ITERATIONS_PARAM, "100");
         params.put(TrainingParameters.CUTOFF_PARAM, "0");
     }
-    public OpenNLPClassifier(Path filename) throws IOException {
-        this();
-        this.model  = new DoccatModel(filename);
-        this.doccat = new DocumentCategorizerME(this.model);
+    public <T extends OpenNLPClassifier> T load(Path filepath) throws IOException {
+        if( filepath != null ) {
+            this.model  = new DoccatModel(filepath);
+            this.doccat = new DocumentCategorizerME(this.model);
+        }
+        return (T) this;
     }
-
-    public void save(Path file) throws IOException {
-        this.model.serialize(file);
+    public <T extends OpenNLPClassifier> T save(Path filepath) throws IOException {
+        if( filepath != null ) {
+            this.model.serialize(filepath);
+        }
+        return (T) this;
     }
-
 
 
     //***** Training and Prediction *****//
