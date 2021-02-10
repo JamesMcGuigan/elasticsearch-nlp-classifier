@@ -8,6 +8,7 @@ import opennlp.tools.doccat.DocumentSample;
 import opennlp.tools.util.ObjectStream;
 import org.elasticsearch.index.query.QueryBuilder;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -32,10 +33,10 @@ public class ESDocumentStream implements ObjectStream<DocumentSample> {
 
 
 
-    public ESDocumentStream(String index, String field, String target, QueryBuilder query) {
+    public ESDocumentStream(String index, String field, String target, QueryBuilder query) throws IOException {
         this(index, Collections.singletonList(field), target, query);
     }
-    public ESDocumentStream(String index, List<String> fields, String target, QueryBuilder query) {
+    public ESDocumentStream(String index, List<String> fields, String target, QueryBuilder query) throws IOException {
         this.index    = index;
         this.fields   = fields;
         this.target   = target;

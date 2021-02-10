@@ -42,11 +42,11 @@ public class ScanAndScrollRequest<T> implements Iterator<T> {
     private final LinkedList<SearchHit> buffer;
 
 
-    public ScanAndScrollRequest(String index, QueryBuilder query, Class<? extends T> type) {
+    public ScanAndScrollRequest(String index, QueryBuilder query, Class<? extends T> type) throws IOException {
         this.index    = index;
         this.query    = query;
         this.scrollId = null;
-        this.client   = ESClient.client;
+        this.client   = ESClient.getInstance();
         this.type     = type;
         this.buffer   = new LinkedList<>();
     }
@@ -82,8 +82,10 @@ public class ScanAndScrollRequest<T> implements Iterator<T> {
         // TODO: Asynchronous loading of buffer
         try {
             SearchHits hits = this.scanAndScroll();
-            this.buffer.addAll( Arrays.asList(hits.getHits()) );
-        } catch( IOException ignored ) { /* Ignore */ }
+            this.buffer.addAll(Arrays.asList(hits.getHits()));
+        } catch( IOException e ) {
+            e.printStackTrace();
+        }
     }
     protected SearchRequest getScanAndScrollRequest() {
         // DOCS: https://www.elastic.co/guide/en/elasticsearch/client/java-rest/current/java-rest-high-search-scroll.html

@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
 public class ESTest {
 
     public static void main( String[] args ) throws IOException {
-        var client = new ESClient().client;
+        var client = ESClient.getInstance();
 
         //***** Search *****//
 

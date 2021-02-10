@@ -6,6 +6,7 @@ import org.elasticsearch.search.SearchHit;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
 import java.util.TreeMap;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -13,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class ScanAndScrollRequestTest {
     @Test
-    void testIterator() {
+    void testIterator() throws IOException {
         var request = new ScanAndScrollRequest<>("twitter", null, SearchHit.class);
         var size = request.getTotalHits();
         assertTrue( size > 1000 );
@@ -29,7 +30,7 @@ class ScanAndScrollRequestTest {
     }
 
     @Test
-    void testIteratorQuery() {
+    void testIteratorQuery() throws IOException {
         String term = "disaster".toLowerCase();
         var query   = new TermQueryBuilder("text", term);
         var request = new ScanAndScrollRequest<>("twitter", query, SearchHit.class);
@@ -52,7 +53,7 @@ class ScanAndScrollRequestTest {
     }
 
     @Test
-    void testIteratorTypedTweet() {
+    void testIteratorTypedTweet() throws IOException {
         String term = "disaster".toLowerCase();
         var query   = new TermQueryBuilder("text", term);
         var request = new ScanAndScrollRequest<>("twitter", query, Tweet.class);
@@ -69,7 +70,7 @@ class ScanAndScrollRequestTest {
     }
 
     @Test
-    void testIteratorTypedString() {
+    void testIteratorTypedString() throws IOException {
         String term = "disaster".toLowerCase();
         var query   = new TermQueryBuilder("text", term);
         var request = new ScanAndScrollRequest<>("twitter", query, String.class);
@@ -87,7 +88,7 @@ class ScanAndScrollRequestTest {
     }
 
     @Test
-    void testIteratorMap() {
+    void testIteratorMap() throws IOException {
         String term = "disaster".toLowerCase();
         var query   = new TermQueryBuilder("text", term);
         var request = new ScanAndScrollRequest<>("twitter", query, TreeMap.class);
@@ -109,7 +110,7 @@ class ScanAndScrollRequestTest {
 
 
     @Test
-    void testIteratorJSONObject() {
+    void testIteratorJSONObject() throws IOException {
         String term = "disaster".toLowerCase();
         var query   = new TermQueryBuilder("text", term);
         var request = new ScanAndScrollRequest<>("twitter", query, JSONObject.class);
@@ -130,7 +131,7 @@ class ScanAndScrollRequestTest {
 
 
     @Test
-    void testIteratorReset() {
+    void testIteratorReset() throws IOException {
         String term = "disaster".toLowerCase();
         var query   = new TermQueryBuilder("text", term);
         var request = new ScanAndScrollRequest<>("twitter", query, SearchHit.class);
