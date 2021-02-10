@@ -2,6 +2,9 @@
 target/
 out/
 
+# UML Files
+*.puml
+
 # Compiled class file
 *.class
 
