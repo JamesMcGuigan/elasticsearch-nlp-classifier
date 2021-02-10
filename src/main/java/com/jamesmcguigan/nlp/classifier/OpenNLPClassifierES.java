@@ -1,5 +1,6 @@
 package com.jamesmcguigan.nlp.classifier;
 
+import com.jamesmcguigan.nlp.elasticsearch.ESClient;
 import com.jamesmcguigan.nlp.streams.ESDocumentStream;
 import org.elasticsearch.script.Script;
 
@@ -43,6 +44,8 @@ public class OpenNLPClassifierES extends OpenNLPClassifier {
                 "%s() accuracy on %d/%d test-train-split is %.3f%n",
                 className, testStream.getTotalHits(), trainStream.getTotalHits(), accuracy
             );
+        } finally {
+            ESClient.getInstance().close();
         }
     }
 }
