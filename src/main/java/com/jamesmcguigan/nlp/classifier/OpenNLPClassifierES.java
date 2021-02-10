@@ -10,10 +10,10 @@ import java.util.List;
 
 import static org.elasticsearch.index.query.QueryBuilders.*;
 
-public class OpenNLPClassiferES extends OpenNLPClassifier {
+public class OpenNLPClassifierES extends OpenNLPClassifier {
 
     public static void main(String[] args) throws IOException {
-        var classifier = new OpenNLPClassiferES();
+        var classifier = new OpenNLPClassifierES();
         long split     = Math.round(1 / 0.2);
         String index   = "twitter";
         String target  = "target";
