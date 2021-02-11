@@ -17,7 +17,10 @@ import javax.annotation.Nullable;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 import static org.elasticsearch.index.query.QueryBuilders.existsQuery;
 
@@ -33,7 +36,7 @@ public class OpenNLPEnricher {
     private final String       index;
     private final List<String> fields;
     private final String       target;
-    private final String       prefix;
+    private String             prefix = "_opennlp";
 
     private final int minRequestsInFlight = 5;
     private int maxRequestsInFlight = 25;
@@ -48,11 +51,15 @@ public class OpenNLPEnricher {
         this.index  = index;
         this.fields = fields;
         this.target = target;
-        this.prefix = (prefix != null) ? prefix : getClass().getSimpleName();
+        this.prefix = (prefix != null) ? prefix : this.prefix;
     }
+
     public <T extends OpenNLPEnricher> T load(Path filepath) throws IOException { this.classifier.load(filepath); return (T) this; }
     public <T extends OpenNLPEnricher> T save(Path filepath) throws IOException { this.classifier.save(filepath); return (T) this; }
-    public double getAccuracy() { return this.accuracy; }
+
+    public double getAccuracy()               { return this.accuracy; }
+    public String getUpdateKey(String target) { return this.prefix.isEmpty() ? target : this.prefix+'.'+target; }
+
 
 
     public <T extends OpenNLPEnricher> T train() throws IOException { return train(null); }
@@ -72,6 +79,7 @@ public class OpenNLPEnricher {
     }
 
 
+
     public <T extends OpenNLPEnricher> T enrich() throws IOException { return enrich(null); }
     public <T extends OpenNLPEnricher> T enrich(@Nullable QueryBuilder query) throws IOException {
         ScanAndScrollRequest<String> request = new ScanAndScrollRequest<>(index, query, String.class);
@@ -85,9 +93,10 @@ public class OpenNLPEnricher {
             String category   = jsonPath.get(this.target);
             String[] tokens   = jsonPath.tokenize(this.fields).toArray(new String[0]);
             String prediction = this.classifier.predict(tokens);
+            String updateKey  = this.getUpdateKey(this.target);
 
-            if( this.isUpdateRequired(jsonPath, target, prediction) ) {
-                this.asyncUpdate(id, this.target, prediction);
+            if( this.isUpdateRequired(jsonPath, updateKey, prediction) ) {
+                this.asyncUpdate(id, updateKey, prediction);
             }
 
             if( !category.isEmpty() ) {
@@ -98,14 +107,11 @@ public class OpenNLPEnricher {
         this.accuracy = (count > 0) ? (double) correct / count : 0.0;
         return (T) this;
     }
-    private String getPredictionPath(String target) {
-        return this.prefix.isEmpty() ? target : this.prefix+'.'+target;
-    }
-    private boolean isUpdateRequired(ESJsonPath jsonPath, String target, String prediction) {
-        String path     = this.getPredictionPath(target);
-        String existing = jsonPath.get(path);
+    private boolean isUpdateRequired(ESJsonPath jsonPath, String updateKey, String prediction) {
+        String existing = jsonPath.get(updateKey);
         return !prediction.equals(existing);
     }
+
 
 
     @SuppressWarnings("BusyWait")
@@ -118,23 +124,14 @@ public class OpenNLPEnricher {
             }
         }
     }
-    private UpdateRequest getUpdateRequest(String id, String target, String value) {
-        Map<String, Object> jsonMap   = new HashMap<>();
-        Map<String, Object> targetMap = new HashMap<>();
-        jsonMap.put(this.prefix, targetMap);
-        targetMap.put(target, value);
-        if( this.prefix.isEmpty() ) {
-            jsonMap = targetMap;
-        }
-        UpdateRequest request = new UpdateRequest(this.index, id).doc(jsonMap);
-        return request;
-    }
-    private void asyncUpdate(String id, String target, String value) throws IOException {
+    private void asyncUpdate(String id, String updateKey, String value) throws IOException {
         // TODO: implement bulk update
         this.waitForQueue();
 
         this.requestsInFlight += 1;
-        UpdateRequest request = this.getUpdateRequest(id, target, value);
+        UpdateRequest request = new UpdateRequest(this.index, id).doc(
+            Map.of(updateKey,value)
+        );
         ESClient.getInstance().updateAsync(
             request,
             RequestOptions.DEFAULT,
@@ -144,8 +141,8 @@ public class OpenNLPEnricher {
                     OpenNLPEnricher.this.requestsInFlight -= 1;
 
                     var result = updateResponse.getResult();
-                    System.out.printf("%s %s(%s) | %s.%s = %s%n",
-                        result.toString(), index, id, OpenNLPEnricher.this.prefix, target, value
+                    System.out.printf("%s %s(%s) | %s = %s%n",
+                        result.toString(), index, id, updateKey, value
                     );
                 }
                 @Override
@@ -170,7 +167,7 @@ public class OpenNLPEnricher {
                     System.out.printf("%s %s(%s) | %s%n", status, index, id, message);
                     if( retry ) {
                         try {
-                            OpenNLPEnricher.this.asyncUpdate(id, target, value);
+                            OpenNLPEnricher.this.asyncUpdate(id, updateKey, value);
                         } catch( IOException ioException ) {
                             ioException.printStackTrace();
                         }
