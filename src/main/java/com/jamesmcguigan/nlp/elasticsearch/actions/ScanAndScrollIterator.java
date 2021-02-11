@@ -28,7 +28,7 @@ import java.util.NoSuchElementException;
  *
  * @param <T> return type of .next()
  */
-public class ScanAndScrollRequest<T> implements Iterator<T> {
+public class ScanAndScrollIterator<T> implements Iterator<T> {
     private final String index;
     private final QueryBuilder query;
     private final RestHighLevelClient client;
@@ -43,7 +43,7 @@ public class ScanAndScrollRequest<T> implements Iterator<T> {
     private final LinkedList<SearchHit> buffer;
 
 
-    public ScanAndScrollRequest(String index, QueryBuilder query, Class<? extends T> type) throws IOException {
+    public ScanAndScrollIterator(String index, QueryBuilder query, Class<? extends T> type) throws IOException {
         this.index    = index;
         this.query    = query;
         this.scrollId = null;

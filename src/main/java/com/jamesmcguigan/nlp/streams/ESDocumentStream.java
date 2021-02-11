@@ -1,7 +1,7 @@
 package com.jamesmcguigan.nlp.streams;
 
 import com.jamesmcguigan.nlp.data.ESJsonPath;
-import com.jamesmcguigan.nlp.elasticsearch.actions.ScanAndScrollRequest;
+import com.jamesmcguigan.nlp.elasticsearch.actions.ScanAndScrollIterator;
 import com.jamesmcguigan.nlp.tokenize.NLPTokenizer;
 import opennlp.tools.doccat.DocumentSample;
 import opennlp.tools.util.ObjectStream;
@@ -17,7 +17,7 @@ public class ESDocumentStream implements ObjectStream<DocumentSample> {
     private final String target;
     private final List<String> fields;
     private final QueryBuilder query;
-    private final ScanAndScrollRequest<String> iterator;
+    private final ScanAndScrollIterator<String> iterator;
     private NLPTokenizer tokenizer = ESJsonPath.getDefaultTokenizer();
 
 
@@ -29,7 +29,7 @@ public class ESDocumentStream implements ObjectStream<DocumentSample> {
         this.fields   = fields;
         this.target   = target;
         this.query    = query;   // matchQuery("title", "Elasticsearch")
-        this.iterator = new ScanAndScrollRequest<>(this.index, this.query, String.class);
+        this.iterator = new ScanAndScrollIterator<>(this.index, this.query, String.class);
     }
     @Override
     public void reset()                { this.iterator.reset(); }

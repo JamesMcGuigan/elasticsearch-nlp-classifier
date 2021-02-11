@@ -1,7 +1,7 @@
 package com.jamesmcguigan.nlp.elasticsearch;
 
 import com.jamesmcguigan.nlp.data.Tweet;
-import com.jamesmcguigan.nlp.elasticsearch.actions.ScanAndScrollRequest;
+import com.jamesmcguigan.nlp.elasticsearch.actions.ScanAndScrollIterator;
 import org.elasticsearch.index.query.TermQueryBuilder;
 import org.elasticsearch.search.SearchHit;
 import org.json.JSONObject;
@@ -13,10 +13,10 @@ import java.util.TreeMap;
 import static org.junit.jupiter.api.Assertions.*;
 
 
-class ScanAndScrollRequestTest {
+class ScanAndScrollIteratorTest {
     @Test
     void testIterator() throws IOException {
-        var request = new ScanAndScrollRequest<>("twitter", null, SearchHit.class);
+        var request = new ScanAndScrollIterator<>("twitter", null, SearchHit.class);
         var size = request.getTotalHits();
         assertTrue( size > 1000 );
 
@@ -34,7 +34,7 @@ class ScanAndScrollRequestTest {
     void testIteratorQuery() throws IOException {
         String term = "disaster".toLowerCase();
         var query   = new TermQueryBuilder("text", term);
-        var request = new ScanAndScrollRequest<>("twitter", query, SearchHit.class);
+        var request = new ScanAndScrollIterator<>("twitter", query, SearchHit.class);
         var size = request.getTotalHits();
         assertTrue( size > 0 );
         assertTrue( size < 1000 );
@@ -57,7 +57,7 @@ class ScanAndScrollRequestTest {
     void testIteratorTypedTweet() throws IOException {
         String term = "disaster".toLowerCase();
         var query   = new TermQueryBuilder("text", term);
-        var request = new ScanAndScrollRequest<>("twitter", query, Tweet.class);
+        var request = new ScanAndScrollIterator<>("twitter", query, Tweet.class);
         var size = request.getTotalHits();
         assertTrue( size > 0 );
 
@@ -74,7 +74,7 @@ class ScanAndScrollRequestTest {
     void testIteratorTypedString() throws IOException {
         String term = "disaster".toLowerCase();
         var query   = new TermQueryBuilder("text", term);
-        var request = new ScanAndScrollRequest<>("twitter", query, String.class);
+        var request = new ScanAndScrollIterator<>("twitter", query, String.class);
         var size = request.getTotalHits();
         assertTrue( size > 0 );
 
@@ -92,7 +92,7 @@ class ScanAndScrollRequestTest {
     void testIteratorMap() throws IOException {
         String term = "disaster".toLowerCase();
         var query   = new TermQueryBuilder("text", term);
-        var request = new ScanAndScrollRequest<>("twitter", query, TreeMap.class);
+        var request = new ScanAndScrollIterator<>("twitter", query, TreeMap.class);
         var size = request.getTotalHits();
         assertTrue( size > 0 );
 
@@ -114,7 +114,7 @@ class ScanAndScrollRequestTest {
     void testIteratorJSONObject() throws IOException {
         String term = "disaster".toLowerCase();
         var query   = new TermQueryBuilder("text", term);
-        var request = new ScanAndScrollRequest<>("twitter", query, JSONObject.class);
+        var request = new ScanAndScrollIterator<>("twitter", query, JSONObject.class);
         var size = request.getTotalHits();
         assertTrue( size > 0 );
 
@@ -135,7 +135,7 @@ class ScanAndScrollRequestTest {
     void testIteratorReset() throws IOException {
         String term = "disaster".toLowerCase();
         var query   = new TermQueryBuilder("text", term);
-        var request = new ScanAndScrollRequest<>("twitter", query, SearchHit.class);
+        var request = new ScanAndScrollIterator<>("twitter", query, SearchHit.class);
         for( int i = 0; i <= 2; i++ ) {
             request.reset();  // This lets us reread the ScanAndScroll request from the beginning
 

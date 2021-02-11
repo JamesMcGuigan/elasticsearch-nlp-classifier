@@ -4,7 +4,7 @@ import com.jamesmcguigan.nlp.classifier.OpenNLPClassifierES;
 import com.jamesmcguigan.nlp.data.ESJsonPath;
 import com.jamesmcguigan.nlp.elasticsearch.ESClient;
 import com.jamesmcguigan.nlp.elasticsearch.actions.AsyncUpdateQueue;
-import com.jamesmcguigan.nlp.elasticsearch.actions.ScanAndScrollRequest;
+import com.jamesmcguigan.nlp.elasticsearch.actions.ScanAndScrollIterator;
 import com.jamesmcguigan.nlp.streams.ESDocumentStream;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
@@ -73,7 +73,7 @@ public class OpenNLPEnricher {
 
     public <T extends OpenNLPEnricher> T enrich() throws IOException { return enrich(null); }
     public <T extends OpenNLPEnricher> T enrich(@Nullable QueryBuilder query) throws IOException {
-        var request     = new ScanAndScrollRequest<>(index, query, String.class);
+        var request     = new ScanAndScrollIterator<>(index, query, String.class);
         var updateQueue = new AsyncUpdateQueue(this.index);
 
         int correct = 0;
