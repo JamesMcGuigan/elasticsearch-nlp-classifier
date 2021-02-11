@@ -3,13 +3,9 @@ package com.jamesmcguigan.nlp.enricher;
 import com.jamesmcguigan.nlp.classifier.OpenNLPClassifierES;
 import com.jamesmcguigan.nlp.data.ESJsonPath;
 import com.jamesmcguigan.nlp.elasticsearch.ESClient;
+import com.jamesmcguigan.nlp.elasticsearch.actions.AsyncUpdateQueue;
 import com.jamesmcguigan.nlp.elasticsearch.actions.ScanAndScrollRequest;
 import com.jamesmcguigan.nlp.streams.ESDocumentStream;
-import org.elasticsearch.ElasticsearchStatusException;
-import org.elasticsearch.action.ActionListener;
-import org.elasticsearch.action.update.UpdateRequest;
-import org.elasticsearch.action.update.UpdateResponse;
-import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 
@@ -19,7 +15,6 @@ import java.lang.invoke.MethodHandles;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.TreeMap;
 
 import static org.elasticsearch.index.query.QueryBuilders.existsQuery;
@@ -37,10 +32,6 @@ public class OpenNLPEnricher {
     private final List<String> fields;
     private final String       target;
     private String             prefix = "_opennlp";
-
-    private final int minRequestsInFlight = 5;
-    private int maxRequestsInFlight = 25;
-    private int requestsInFlight    = 0;
 
     private double accuracy = 0.0;
     private final OpenNLPClassifierES classifier = new OpenNLPClassifierES();
@@ -82,7 +73,8 @@ public class OpenNLPEnricher {
 
     public <T extends OpenNLPEnricher> T enrich() throws IOException { return enrich(null); }
     public <T extends OpenNLPEnricher> T enrich(@Nullable QueryBuilder query) throws IOException {
-        ScanAndScrollRequest<String> request = new ScanAndScrollRequest<>(index, query, String.class);
+        var request     = new ScanAndScrollRequest<>(index, query, String.class);
+        var updateQueue = new AsyncUpdateQueue(this.index);
 
         int correct = 0;
         int count   = 0;
@@ -96,7 +88,7 @@ public class OpenNLPEnricher {
             String updateKey  = this.getUpdateKey(this.target);
 
             if( this.isUpdateRequired(jsonPath, updateKey, prediction) ) {
-                this.asyncUpdate(id, updateKey, prediction);
+                updateQueue.add(id, updateKey, prediction);
             }
 
             if( !category.isEmpty() ) {
@@ -113,69 +105,6 @@ public class OpenNLPEnricher {
     }
 
 
-
-    @SuppressWarnings("BusyWait")
-    private void waitForQueue() {
-        while( this.requestsInFlight > Math.max(this.maxRequestsInFlight, this.minRequestsInFlight) ) {
-            try {
-                Thread.sleep(10);
-            } catch( InterruptedException e ) {
-                Thread.currentThread().interrupt();
-            }
-        }
-    }
-    private void asyncUpdate(String id, String updateKey, String value) throws IOException {
-        // TODO: implement bulk update
-        this.waitForQueue();
-
-        this.requestsInFlight += 1;
-        UpdateRequest request = new UpdateRequest(this.index, id).doc(
-            Map.of(updateKey,value)
-        );
-        ESClient.getInstance().updateAsync(
-            request,
-            RequestOptions.DEFAULT,
-            new ActionListener<>() {
-                @Override
-                public void onResponse(UpdateResponse updateResponse) {
-                    OpenNLPEnricher.this.requestsInFlight -= 1;
-
-                    var result = updateResponse.getResult();
-                    System.out.printf("%s %s(%s) | %s = %s%n",
-                        result.toString(), index, id, updateKey, value
-                    );
-                }
-                @Override
-                public void onFailure(Exception e) {
-                    OpenNLPEnricher.this.requestsInFlight -= 1;
-                    boolean retry  = false;
-                    String status  = "ERROR";
-                    String message = e.toString();
-
-                    // ERROR: Concurrent request limit exceeded. Please consider batching your requests
-                    // WORKAROUND: Retry and reduce maxRequestsInFlight
-                    if( e instanceof ElasticsearchStatusException ) {
-                        var exception = (ElasticsearchStatusException) e;
-                        if( exception.status().toString().equals("TOO_MANY_REQUESTS") ) {
-                            OpenNLPEnricher.this.maxRequestsInFlight *= 0.9;  // race condition is desirable here
-                            retry   = true;
-                            status  = exception.status().toString();
-                            message = "reducing maxRequestsInFlight = " + OpenNLPEnricher.this.maxRequestsInFlight;
-                        }
-                    }
-
-                    System.out.printf("%s %s(%s) | %s%n", status, index, id, message);
-                    if( retry ) {
-                        try {
-                            OpenNLPEnricher.this.asyncUpdate(id, updateKey, value);
-                        } catch( IOException ioException ) {
-                            ioException.printStackTrace();
-                        }
-                    }
-                }
-            }
-        );
-    }
 
 
     public static void main(String[] args) throws IOException {
