@@ -11,18 +11,29 @@ import java.io.IOException;
 import java.util.Map;
 
 public class AsyncUpdateQueue implements UpdateQueue {
-    private final String index;
+
     private int requestsInFlight    = 0;
     private int minRequestsInFlight = 5;
     private int maxRequestsInFlight = 25;
 
+    private final String index;
+
+
     public AsyncUpdateQueue(String index) {
         this.index = index;
     }
+
     @SuppressWarnings("unchecked")
-    public <T extends AsyncUpdateQueue> T setMinRequestsInFlight(int minRequestsInFlight) { this.minRequestsInFlight = minRequestsInFlight; return (T) this; }
+    public <T extends AsyncUpdateQueue> T setMinRequestsInFlight(int minRequestsInFlight) {
+        this.minRequestsInFlight = minRequestsInFlight;
+        return (T) this;
+    }
     @SuppressWarnings("unchecked")
-    public <T extends AsyncUpdateQueue> T setMaxRequestsInFlight(int maxRequestsInFlight) { this.maxRequestsInFlight = maxRequestsInFlight; return (T) this; }
+    public <T extends AsyncUpdateQueue> T setMaxRequestsInFlight(int maxRequestsInFlight) {
+        this.maxRequestsInFlight = maxRequestsInFlight;
+        return (T) this;
+    }
+
 
 
     @Override
