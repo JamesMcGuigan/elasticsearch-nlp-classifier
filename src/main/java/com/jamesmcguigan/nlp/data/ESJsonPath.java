@@ -5,6 +5,7 @@ import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -33,19 +34,33 @@ public class ESJsonPath {
     public <T extends ESJsonPath> T setTokenizer(NLPTokenizer tokenizer) { this.tokenizer = tokenizer;return (T) this; }
 
 
+    /**
+     * JsonPath by default interprets '.' to mean nested object lookup
+     * This breaks functionality in cases where a dot is uses as a string literal in a "top.level.key"
+     * @param path  desired lookup path
+     * @return      list of possible literal/nested path strings for JsonPath.read()
+     */
+    protected static List<String> getPossiblePaths(String path) {
+        return path.contains(".")
+            ? Arrays.asList(getLiteralPath(path), path)
+            : Collections.singletonList(path)
+        ;
+    }
+    protected static String getLiteralPath(String path) {
+        return "$['" + path.replace("'", "\\'") + "']";
+    }
+
+
     public String get(String path) { return get(path, ""); }
     public String get(String path, String defaultValue) {
-        try {
-            if( !path.startsWith("$") ) {
-                path = "$." + path;
-            }
-            String text = jsonPath.read(path, String.class);
-            return text;
-        } catch ( com.jayway.jsonpath.PathNotFoundException exception ) {
-            // System.out.printf("%s not found in %s%n", path, jsonPath.toString());
-            // exception.printStackTrace();
-            return defaultValue;
+        for( String encodedPath : getPossiblePaths(path) ) {
+            try {
+                String text = jsonPath.read(encodedPath, String.class);
+                return text;
+            } catch ( com.jayway.jsonpath.PathNotFoundException ignored ) { /* ignored */ }
         }
+        // System.out.printf("%s not found in %s%n", path, jsonPath.toString());
+        return defaultValue;
     }
 
 

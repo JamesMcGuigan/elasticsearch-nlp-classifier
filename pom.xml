@@ -45,6 +45,14 @@
       <version>1.7.0</version>
       <scope>compile</scope>
     </dependency>
+<!--    <dependency>-->
+<!--      <groupId>org.assertj</groupId>-->
+<!--      <artifactId>assertj-core</artifactId>-->
+<!--      &lt;!&ndash; use 2.9.1 for Java 7 projects &ndash;&gt;-->
+<!--      <version>3.19.0</version>-->
+<!--      <scope>test</scope>-->
+<!--    </dependency>-->
+
 
     <dependency>
       <groupId>org.apache.commons</groupId>
