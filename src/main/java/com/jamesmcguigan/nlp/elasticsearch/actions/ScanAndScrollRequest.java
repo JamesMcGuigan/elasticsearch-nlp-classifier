@@ -1,6 +1,7 @@
-package com.jamesmcguigan.nlp.elasticsearch;
+package com.jamesmcguigan.nlp.elasticsearch.actions;
 
 import com.google.gson.Gson;
+import com.jamesmcguigan.nlp.elasticsearch.ESClient;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchScrollRequest;
