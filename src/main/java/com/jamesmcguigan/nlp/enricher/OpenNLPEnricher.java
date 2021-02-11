@@ -1,7 +1,7 @@
 package com.jamesmcguigan.nlp.enricher;
 
 import com.jamesmcguigan.nlp.classifier.OpenNLPClassifierES;
-import com.jamesmcguigan.nlp.csv.ESJsonPath;
+import com.jamesmcguigan.nlp.data.ESJsonPath;
 import com.jamesmcguigan.nlp.elasticsearch.ESClient;
 import com.jamesmcguigan.nlp.elasticsearch.actions.ScanAndScrollRequest;
 import com.jamesmcguigan.nlp.streams.ESDocumentStream;

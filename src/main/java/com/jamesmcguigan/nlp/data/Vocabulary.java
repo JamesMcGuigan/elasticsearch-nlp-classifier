@@ -1,4 +1,4 @@
-package com.jamesmcguigan.nlp.csv;
+package com.jamesmcguigan.nlp.data;
 
 import java.nio.file.Paths;
 import java.util.Arrays;

@@ -1,6 +1,6 @@
 package com.jamesmcguigan.nlp.classifier;
 
-import com.jamesmcguigan.nlp.csv.ESJsonPath;
+import com.jamesmcguigan.nlp.data.ESJsonPath;
 import com.jamesmcguigan.nlp.tokenize.NLPTokenizer;
 import opennlp.tools.doccat.DoccatFactory;
 import opennlp.tools.doccat.DoccatModel;

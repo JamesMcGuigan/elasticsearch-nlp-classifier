@@ -1,4 +1,4 @@
-package com.jamesmcguigan.nlp.csv;
+package com.jamesmcguigan.nlp.data;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;

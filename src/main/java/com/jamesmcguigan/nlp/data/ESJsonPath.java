@@ -1,4 +1,4 @@
-package com.jamesmcguigan.nlp.csv;
+package com.jamesmcguigan.nlp.data;
 
 import com.jamesmcguigan.nlp.tokenize.NLPTokenizer;
 import com.jayway.jsonpath.DocumentContext;

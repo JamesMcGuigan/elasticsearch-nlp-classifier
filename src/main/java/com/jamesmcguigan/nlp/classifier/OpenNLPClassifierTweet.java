@@ -2,8 +2,8 @@
 package com.jamesmcguigan.nlp.classifier;
 
 import com.google.common.collect.Lists;
-import com.jamesmcguigan.nlp.csv.Tweet;
-import com.jamesmcguigan.nlp.csv.Tweets;
+import com.jamesmcguigan.nlp.data.Tweet;
+import com.jamesmcguigan.nlp.data.Tweets;
 import com.jamesmcguigan.nlp.streams.TweetDocumentStream;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;

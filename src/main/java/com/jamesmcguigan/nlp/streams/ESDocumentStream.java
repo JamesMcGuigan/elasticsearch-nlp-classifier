@@ -1,6 +1,6 @@
 package com.jamesmcguigan.nlp.streams;
 
-import com.jamesmcguigan.nlp.csv.ESJsonPath;
+import com.jamesmcguigan.nlp.data.ESJsonPath;
 import com.jamesmcguigan.nlp.elasticsearch.actions.ScanAndScrollRequest;
 import com.jamesmcguigan.nlp.tokenize.NLPTokenizer;
 import opennlp.tools.doccat.DocumentSample;

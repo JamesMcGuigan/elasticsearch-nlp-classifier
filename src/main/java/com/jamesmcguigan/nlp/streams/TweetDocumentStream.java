@@ -1,6 +1,6 @@
 package com.jamesmcguigan.nlp.streams;
 
-import com.jamesmcguigan.nlp.csv.Tweet;
+import com.jamesmcguigan.nlp.data.Tweet;
 import opennlp.tools.doccat.DocumentSample;
 import opennlp.tools.util.ObjectStream;
 
