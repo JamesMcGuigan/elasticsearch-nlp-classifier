@@ -3,7 +3,7 @@ package com.jamesmcguigan.nlp.enricher;
 import com.jamesmcguigan.nlp.classifier.OpenNLPClassifierES;
 import com.jamesmcguigan.nlp.data.ESJsonPath;
 import com.jamesmcguigan.nlp.elasticsearch.ESClient;
-import com.jamesmcguigan.nlp.elasticsearch.actions.AsyncUpdateQueue;
+import com.jamesmcguigan.nlp.elasticsearch.actions.BulkUpdateQueue;
 import com.jamesmcguigan.nlp.elasticsearch.actions.ScanAndScrollIterator;
 import com.jamesmcguigan.nlp.streams.ESDocumentStream;
 import org.elasticsearch.index.query.BoolQueryBuilder;
@@ -30,11 +30,11 @@ public class OpenNLPEnricher {
 
     private final String       index;
     private final List<String> fields;
-    private final String       target;
+    private final String       target;  // TODO: convert to List<String> targets
     private String             prefix = "_opennlp";
 
     private double accuracy = 0.0;
-    private final OpenNLPClassifierES classifier = new OpenNLPClassifierES();
+    private final OpenNLPClassifierES classifier = new OpenNLPClassifierES();  // TODO: convert to multi-field Map
 
 
     public OpenNLPEnricher(String index, List<String> fields, String target) { this(index, fields, target, null); }
@@ -70,32 +70,36 @@ public class OpenNLPEnricher {
     }
 
 
-
+    // TODO: implement kFoldValidation()
     public <T extends OpenNLPEnricher> T enrich() throws IOException { return enrich(null); }
     public <T extends OpenNLPEnricher> T enrich(@Nullable QueryBuilder query) throws IOException {
-        var request     = new ScanAndScrollIterator<>(index, query, String.class);
-        var updateQueue = new AsyncUpdateQueue(this.index);
-
         int correct = 0;
         int count   = 0;
-        while( request.hasNext() ) {
-            String json       = request.next();
-            var jsonPath      = new ESJsonPath(json);
-            String id         = jsonPath.get("id");
-            String category   = jsonPath.get(this.target);
-            String[] tokens   = jsonPath.tokenize(this.fields).toArray(new String[0]);
-            String prediction = this.classifier.predict(tokens);
-            String updateKey  = this.getUpdateKey(this.target);
 
-            if( this.isUpdateRequired(jsonPath, updateKey, prediction) ) {
-                updateQueue.add(id, updateKey, prediction);
-            }
+        try(
+            var updateQueue = new BulkUpdateQueue(this.index)
+        ) {
+            var request = new ScanAndScrollIterator<>(index, query, String.class);
+            while( request.hasNext() ) {
+                String json       = request.next();
+                var jsonPath      = new ESJsonPath(json);
+                String id         = jsonPath.get("id");
+                String category   = jsonPath.get(this.target);
+                String[] tokens   = jsonPath.tokenize(this.fields).toArray(new String[0]);
+                String prediction = this.classifier.predict(tokens);
+                String updateKey  = this.getUpdateKey(this.target);
 
-            if( !category.isEmpty() ) {
-                correct += category.equals(prediction) ? 1 : 0;
-                count   += 1;
+                if( this.isUpdateRequired(jsonPath, updateKey, prediction) ) {
+                    updateQueue.add(id, updateKey, prediction);
+                }
+
+                if( !category.isEmpty() ) {
+                    correct += category.equals(prediction) ? 1 : 0;
+                    count   += 1;
+                }
             }
         }
+
         this.accuracy = (count > 0) ? (double) correct / count : 0.0;
         return (T) this;
     }
@@ -119,6 +123,7 @@ public class OpenNLPEnricher {
         }
         String className = MethodHandles.lookup().lookupClass().getSimpleName();
         System.out.printf("%s() accuracy for on training data: %s%n", className, accuracies.toString());
+
         ESClient.getInstance().close();
     }
 }

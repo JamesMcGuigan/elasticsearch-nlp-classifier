@@ -59,7 +59,7 @@ public class AsyncUpdateQueue implements UpdateQueue {
                 public void onFailure(Exception e) {
                     AsyncUpdateQueue.this.requestsInFlight -= 1;
                     boolean retry  = false;
-                    String status  = "ERROR";
+                    String action  = "ERROR";
                     String message = e.toString();
 
                     // ERROR: Concurrent request limit exceeded. Please consider batching your requests
@@ -69,12 +69,12 @@ public class AsyncUpdateQueue implements UpdateQueue {
                         if( exception.status().toString().equals("TOO_MANY_REQUESTS") ) {
                             AsyncUpdateQueue.this.maxRequestsInFlight *= 0.9;  // race condition is desirable here
                             retry   = true;
-                            status  = exception.status().toString();
+                            action  = exception.status().toString();
                             message = "reducing maxRequestsInFlight = " + AsyncUpdateQueue.this.maxRequestsInFlight;
                         }
                     }
 
-                    System.out.printf("%s %s(%s) | %s%n", status, index, id, message);
+                    System.out.printf("%s %s(%s) | %s%n", action, index, id, message);
                     if( retry ) {
                         try {
                             AsyncUpdateQueue.this.add(id, updateKeyValues);
@@ -98,4 +98,8 @@ public class AsyncUpdateQueue implements UpdateQueue {
         }
     }
 
+
+    public void close() {
+        // Do Nothing
+    }
 }
