@@ -91,12 +91,12 @@ public class BulkUpdateQueue implements UpdateQueue {
              */
             @Override
             public void afterBulk(long executionId, BulkRequest bulkRequest, BulkResponse bulkResponse) {
-                BulkUpdateQueue.this.logBulkRequest(bulkRequest, bulkResponse);
+                BulkUpdateQueue.this.logBulkResponse(bulkRequest, bulkResponse);
             }
         };
     }
 
-    protected void logBulkRequest(BulkRequest bulkRequest, BulkResponse bulkResponse) {
+    protected void logBulkResponse(BulkRequest bulkRequest, BulkResponse bulkResponse) {
         // TODO: Handle IndexRequest / DeleteRequest
         Map<String, Map<String, Object>> requestMap = bulkRequest.requests().stream()
             .filter(item -> item instanceof UpdateRequest)
