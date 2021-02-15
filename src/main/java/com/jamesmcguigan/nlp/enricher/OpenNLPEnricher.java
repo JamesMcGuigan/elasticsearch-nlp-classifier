@@ -6,17 +6,19 @@ import com.jamesmcguigan.nlp.elasticsearch.ESClient;
 import com.jamesmcguigan.nlp.elasticsearch.actions.BulkUpdateQueue;
 import com.jamesmcguigan.nlp.elasticsearch.actions.ScanAndScrollIterator;
 import com.jamesmcguigan.nlp.streams.ESDocumentStream;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
-import java.lang.invoke.MethodHandles;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
 import java.util.TreeMap;
 
+import static org.apache.logging.log4j.Level.INFO;
 import static org.elasticsearch.index.query.QueryBuilders.existsQuery;
 
 /**
@@ -27,6 +29,7 @@ import static org.elasticsearch.index.query.QueryBuilders.existsQuery;
  */
 @SuppressWarnings("unchecked")
 public class OpenNLPEnricher {
+    private static final Logger logger = LogManager.getLogger();
 
     private final String       index;
     private final List<String> fields;
@@ -121,8 +124,7 @@ public class OpenNLPEnricher {
             Double accuracy = enricher.getAccuracy();
             accuracies.put(target, accuracy);
         }
-        String className = MethodHandles.lookup().lookupClass().getSimpleName();
-        System.out.printf("%s() accuracy for on training data: %s%n", className, accuracies.toString());
+        logger.printf(INFO, "accuracy for on training data: %s", accuracies);
 
         ESClient.getInstance().close();
     }

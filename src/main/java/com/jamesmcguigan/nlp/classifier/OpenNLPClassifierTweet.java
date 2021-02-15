@@ -7,6 +7,8 @@ import com.jamesmcguigan.nlp.data.Tweets;
 import com.jamesmcguigan.nlp.streams.TweetDocumentStream;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
@@ -18,8 +20,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static org.apache.logging.log4j.Level.INFO;
+
 
 public class OpenNLPClassifierTweet extends OpenNLPClassifier {
+    private static final Logger logger = LogManager.getLogger();
 
     //***** Training and Prediction *****//
 
@@ -114,9 +119,6 @@ public class OpenNLPClassifierTweet extends OpenNLPClassifier {
         var predictions = classifier.predict(test);
         Tweets.toSubmissionCSV(submissionPath, test, predictions);
 
-        System.out.printf(
-             "%s() accuracy with kFolds=%d is %.3f%n",
-            className, folds, accuracy
-        );
+        logger.printf(INFO, "accuracy with kFolds=%d is %.3f", folds, accuracy);
     }
 }

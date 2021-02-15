@@ -2,16 +2,20 @@ package com.jamesmcguigan.nlp.classifier;
 
 import com.jamesmcguigan.nlp.elasticsearch.ESClient;
 import com.jamesmcguigan.nlp.streams.ESDocumentStream;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.elasticsearch.script.Script;
 
 import java.io.IOException;
-import java.lang.invoke.MethodHandles;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.apache.logging.log4j.Level.INFO;
 import static org.elasticsearch.index.query.QueryBuilders.*;
 
 public class OpenNLPClassifierES extends OpenNLPClassifier {
+    private static final Logger logger = LogManager.getLogger();
+
 
     public double kFoldValidation(String index, List<String> fields, String target, int folds) throws IOException {
         double[] accuracies = new double[folds];
@@ -40,7 +44,9 @@ public class OpenNLPClassifierES extends OpenNLPClassifier {
             ) {
                 // TODO: multi-target classification
                 this.train(trainStream);
-                accuracies[fold] = this.accuracy(testStream);
+                double accuracy = this.accuracy(testStream);
+
+                accuracies[fold] = accuracy;
                 trainHits[fold]  = trainStream.getTotalHits();
                 testHits[fold]   = testStream.getTotalHits();
             }
@@ -49,10 +55,8 @@ public class OpenNLPClassifierES extends OpenNLPClassifier {
         double accuracy    = Arrays.stream(accuracies).average().orElse(0);
         long meanTrainHits = (long) Arrays.stream(trainHits).average().orElse(0);
         long meanTestHits  = (long) Arrays.stream(testHits).average().orElse(0);
-        String className = MethodHandles.lookup().lookupClass().getSimpleName();
-        System.out.printf("%s() accuracy on %d folds (%d/%d split) is %.3f%n",
-            className, folds, meanTestHits, meanTrainHits, accuracy);
-
+        logger.printf(INFO,"accuracy on %d folds (%d/%d split) is %.3f",
+            folds, meanTestHits, meanTrainHits, accuracy);
         return accuracy;
     }
 

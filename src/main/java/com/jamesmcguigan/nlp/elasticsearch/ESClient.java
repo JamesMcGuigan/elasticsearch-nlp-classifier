@@ -7,6 +7,8 @@ import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.nio.client.HttpAsyncClientBuilder;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.elasticsearch.client.Node;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestClientBuilder;
@@ -18,7 +20,7 @@ import java.lang.invoke.MethodHandles;
 import java.util.Properties;
 
 public class ESClient extends RestHighLevelClient {
-
+    private static final Logger logger = LogManager.getLogger();
     private Sniffer sniffer;
 
 
@@ -27,7 +29,8 @@ public class ESClient extends RestHighLevelClient {
 
     private static ESClient instance;
     public static synchronized ESClient getInstance() throws IOException {
-        if( instance == null ){
+        // BUGFIX: reopen connection if `.close()` has been called to early
+        if( instance == null || !instance.getLowLevelClient().isRunning() ) {
             instance = new ESClient();
         }
         return instance;
@@ -95,14 +98,14 @@ public class ESClient extends RestHighLevelClient {
                             .setSocketTimeout(Integer.parseInt(
                                 properties.getProperty("es.settings.socketTimeout" )
                             ))
-                            ;
+                        ;
                     }
                 }
             )
             .setFailureListener(new RestClient.FailureListener() {
                 @Override
                 public void onFailure(Node node) {
-                    System.out.print(node.toString());
+                    logger.error("setFailureListener() {}", node);
                 }
             })
         ;

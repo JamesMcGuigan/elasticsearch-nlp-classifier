@@ -2,6 +2,8 @@ package com.jamesmcguigan.nlp.elasticsearch.actions;
 
 import com.google.gson.Gson;
 import com.jamesmcguigan.nlp.elasticsearch.ESClient;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.elasticsearch.action.DocWriteRequest;
 import org.elasticsearch.action.DocWriteResponse;
 import org.elasticsearch.action.bulk.BulkItemResponse;
@@ -23,7 +25,9 @@ import static org.elasticsearch.action.bulk.BackoffPolicy.exponentialBackoff;
 import static org.elasticsearch.common.unit.ByteSizeUnit.MB;
 import static org.elasticsearch.common.unit.TimeValue.timeValueSeconds;
 
+
 public class BulkUpdateQueue implements UpdateQueue {
+    private static final Logger logger = LogManager.getLogger();
 
     private final int batchSize           = 1000;
     private final int maxRequestsInFlight = 2;  // Keep this low
@@ -76,7 +80,7 @@ public class BulkUpdateQueue implements UpdateQueue {
             @Override
             public void afterBulk(long executionId, BulkRequest request, Throwable failure) {
                 // intermittent BUG: Bulk Request FAILURE: org.apache.http.ConnectionClosedException: Connection is closed
-                System.out.printf("Bulk Request FAILURE: %s | %s%n", BulkUpdateQueue.this.index, failure.toString());
+                logger.error("Bulk Request FAILURE: {} | {}", BulkUpdateQueue.this.index, failure);
             }
 
             /**
@@ -103,7 +107,7 @@ public class BulkUpdateQueue implements UpdateQueue {
                         BulkItemResponse.Failure failure = bulkItemResponse.getFailure();
                         message += " | " + failure.getCause() + " | " + failure.getMessage();
                     }
-                    System.out.printf("%s %s(%s) | %s%n", action, BulkUpdateQueue.this.index, id, message);
+                    logger.trace("{} {}({}) | {}", action, BulkUpdateQueue.this.index, id, message);
                 }
             }
         };

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- DOCS: https://logging.apache.org/log4j/2.x/manual/configuration.html -->
+<Configuration status="WARN" monitorInterval="60">
+    <Appenders>
+        <!-- DOCS: https://logging.apache.org/log4j/2.x/manual/appenders.html -->
+        <Console name="Console" target="SYSTEM_OUT">
+            <!-- <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/> -->
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} - %msg%n"/>
+        </Console>
+        <!--<File name="FileSingleton" fileName="logs/${logger}.log" append="false">-->
+        <!--    <PatternLayout pattern="%logger{36} - %msg%n"/>-->
+        <!--</File>-->
+        <File name="FileOpenNLPClassifierES" fileName="logs/OpenNLPClassifierES.log" append="false">
+            <PatternLayout pattern="%logger{36} - %msg%n"/>
+        </File>
+        <File name="FileOpenNLPClassifierTweet" fileName="logs/OpenNLPClassifierTweet.log" append="false">
+            <PatternLayout pattern="%logger{36} - %msg%n"/>
+        </File>
+        <File name="FileOpenNLPEnricher" fileName="logs/OpenNLPEnricher.log" append="false">
+            <PatternLayout pattern="%logger{36} - %msg%n"/>
+        </File>
+    </Appenders>
+    <Loggers>
+        <Logger name="com.jamesmcguigan.nlp.classifier.OpenNLPClassifierES" level="INFO" additivity="false">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="FileOpenNLPClassifierES"/>
+        </Logger>
+        <Logger name="com.jamesmcguigan.nlp.classifier.OpenNLPClassifierTweet" level="INFO" additivity="false">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="FileOpenNLPClassifierTweet"/>
+        </Logger>
+        <Logger name="com.jamesmcguigan.nlp.enricher.OpenNLPEnricher" level="INFO" additivity="false">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="FileOpenNLPEnricher"/>
+        </Logger>
+        <Logger name="com.jamesmcguigan.nlp.data" level="TRACE" additivity="false">
+            <AppenderRef ref="Console"/>
+        </Logger>
+        <Logger name="com.jamesmcguigan.nlp.elasticsearch" level="TRACE" additivity="false">
+            <AppenderRef ref="Console"/>
+        </Logger>
+        <Root level="INFO">
+            <AppenderRef ref="Console"/>
+        </Root>
+    </Loggers>
+</Configuration>
