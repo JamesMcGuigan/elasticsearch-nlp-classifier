@@ -78,9 +78,12 @@ public class BulkUpdateQueue implements UpdateQueue {
              * cancelled externally, the thread's interruption status has been restored prior to calling this method.
              */
             @Override
-            public void afterBulk(long executionId, BulkRequest request, Throwable failure) {
+            public void afterBulk(long executionId, BulkRequest bulkRequest, Throwable failure) {
                 // intermittent BUG: Bulk Request FAILURE: org.apache.http.ConnectionClosedException: Connection is closed
                 logger.error("Bulk Request FAILURE: {} | {}", BulkUpdateQueue.this.index, failure);
+
+                // Add any failed requests back onto the queue after ConnectionClosedException
+                BulkUpdateQueue.this.update(bulkRequest);
             }
 
             /**
@@ -88,39 +91,58 @@ public class BulkUpdateQueue implements UpdateQueue {
              */
             @Override
             public void afterBulk(long executionId, BulkRequest bulkRequest, BulkResponse bulkResponse) {
-                Map<String, Map<String, Object>> requestMap = bulkRequest.requests().stream()
-                    .filter(item -> item instanceof UpdateRequest)
-                    .collect(Collectors.toMap(
-                        DocWriteRequest::id,
-                        item -> ((UpdateRequest) item).doc().sourceAsMap()
-                    ))
-                ;
-
-                for( BulkItemResponse bulkItemResponse : bulkResponse ) {
-                    DocWriteResponse response = bulkItemResponse.getResponse();  // instanceof UpdateResponse
-                    String id     = response.getId();
-                    String source = requestMap.getOrDefault(id, new HashMap<>()).toString();
-                    String action = response.getResult().toString();  // "UPDATE"
-
-                    var message = source;
-                    if( bulkItemResponse.isFailed() ) {
-                        BulkItemResponse.Failure failure = bulkItemResponse.getFailure();
-                        message += " | " + failure.getCause() + " | " + failure.getMessage();
-                    }
-                    logger.trace("{} {}({}) | {}", action, BulkUpdateQueue.this.index, id, message);
-                }
+                BulkUpdateQueue.this.logBulkRequest(bulkRequest, bulkResponse);
             }
         };
+    }
+
+    protected void logBulkRequest(BulkRequest bulkRequest, BulkResponse bulkResponse) {
+        // TODO: Handle IndexRequest / DeleteRequest
+        Map<String, Map<String, Object>> requestMap = bulkRequest.requests().stream()
+            .filter(item -> item instanceof UpdateRequest)
+            .collect(Collectors.toMap(
+                DocWriteRequest::id,
+                item -> ((UpdateRequest) item).doc().sourceAsMap()
+            ))
+        ;
+        for( BulkItemResponse bulkItemResponse : bulkResponse ) {
+            DocWriteResponse response = bulkItemResponse.getResponse();  // instanceof UpdateResponse
+            String id     = response.getId();
+            String source = requestMap.getOrDefault(id, new HashMap<>()).toString();
+            String action = response.getResult().toString();  // "UPDATE"
+
+            var message = source;
+            if( bulkItemResponse.isFailed() ) {
+                BulkItemResponse.Failure failure = bulkItemResponse.getFailure();
+                message += " | " + failure.getCause() + " | " + failure.getMessage();
+            }
+            logger.trace("{} {}({}) | {}", action, BulkUpdateQueue.this.index, id, message);
+        }
     }
 
 
 
     @Override
-    public void add(String id, Map<Object, Object> updateKeyValues) {
+    public void update(String id, Map<String, Object> updateKeyValues) {
         // DOCS: https://www.elastic.co/guide/en/elasticsearch/client/java-rest/7.11/java-rest-high-document-update.html
         String json           = new Gson().toJson(updateKeyValues);
         UpdateRequest request = new UpdateRequest(this.index, id).doc(json, XContentType.JSON);
         this.bulkProcessor.add(request);  // HighLevelRESTClient is thread-safe
+    }
+
+    /**
+     * This allows a raw BulkRequest to be re-added to the queue on ConnectionClosedException
+     * @param bulkRequest raw BulkRequest object from BulkProcessor.Listener
+     */
+    public void update(BulkRequest bulkRequest) {
+        bulkRequest.requests().stream()
+            .filter(item -> item instanceof UpdateRequest)
+            .forEach(item -> {
+                String id  = item.id();
+                Map<String, Object> source = ((UpdateRequest) item).doc().sourceAsMap();
+                this.update(id, source);
+            })
+        ;
     }
 
     public void close() {

@@ -43,7 +43,7 @@ public class AsyncUpdateQueue implements UpdateQueue {
 
 
     @Override
-    public void add(String id, Map<Object, Object> updateKeyValues) throws IOException {
+    public void update(String id, Map<String, Object> updateKeyValues) throws IOException {
         this.waitForQueue();
 
         this.requestsInFlight += 1;
@@ -83,7 +83,7 @@ public class AsyncUpdateQueue implements UpdateQueue {
                     logger.printf(TRACE, "%s %s(%s) | %s", action, index, id, message);
                     if( retry ) {
                         try {
-                            AsyncUpdateQueue.this.add(id, updateKeyValues);
+                            AsyncUpdateQueue.this.update(id, updateKeyValues);
                         } catch( IOException ioException ) {
                             ioException.printStackTrace();
                         }

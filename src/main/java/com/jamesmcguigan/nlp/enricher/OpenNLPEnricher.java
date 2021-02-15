@@ -93,7 +93,7 @@ public class OpenNLPEnricher {
                 String updateKey  = this.getUpdateKey(this.target);
 
                 if( this.isUpdateRequired(jsonPath, updateKey, prediction) ) {
-                    updateQueue.add(id, updateKey, prediction);
+                    updateQueue.update(id, updateKey, prediction);
                 }
 
                 if( !category.isEmpty() ) {
