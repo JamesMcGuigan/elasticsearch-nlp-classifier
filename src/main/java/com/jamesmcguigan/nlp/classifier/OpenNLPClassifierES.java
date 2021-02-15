@@ -33,7 +33,7 @@ public class OpenNLPClassifierES extends OpenNLPClassifier {
                 boolQuery()
                     .must(existsQuery(target))
                     .must(scriptQuery(new Script("Integer.parseInt(doc['_id'].value) % "+split+" == 0")))
-            ).setTokenizer(classifier.tokenizer);
+            ).setTokenizer(classifier.tokenizer)
         ) {
             // TODO: multi-target classification
             classifier.train(trainStream);
