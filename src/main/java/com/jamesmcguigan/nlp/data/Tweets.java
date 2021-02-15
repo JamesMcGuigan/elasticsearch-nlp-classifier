@@ -4,8 +4,8 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.csv.CSVRecord;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.BufferedReader;
 import java.io.FileWriter;
@@ -18,10 +18,10 @@ import java.util.Iterator;
 import java.util.List;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
-
+import static org.apache.logging.log4j.Level.INFO;
 
 public class Tweets {
-    private static final Logger logger = LoggerFactory.getLogger(Tweets.class);
+    private static final Logger logger = LogManager.getLogger();
 
     public static List<Tweet> fromCSV(Path csvFile) {
         List<Tweet> tweets = new ArrayList<>();
@@ -60,7 +60,7 @@ public class Tweets {
             for( int i = 0; i < tweets.size(); i++ ) {
                 printer.printRecord(tweets.get(i).id, predictions.get(i));
             }
-            Tweets.logger.info("wrote: {} = {} Kb", csvFile, Files.size(csvFile)/1024);
+            Tweets.logger.printf(INFO, "wrote: %s = %d Kb", csvFile, Files.size(csvFile)/1024);
         } catch (IOException ex) {
             Tweets.logger.error("unable to write: {}", csvFile);
         }
@@ -70,7 +70,7 @@ public class Tweets {
     {
         List<Tweet> tweets = Tweets.fromCSV(Paths.get("input/test.csv"));
         for ( Tweet tweet : tweets) {
-            Tweets.logger.trace("{}", tweet);
+            Tweets.logger.trace(tweet);
         }
     }
 }

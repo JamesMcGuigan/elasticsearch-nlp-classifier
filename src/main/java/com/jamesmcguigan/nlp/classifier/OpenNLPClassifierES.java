@@ -2,19 +2,19 @@ package com.jamesmcguigan.nlp.classifier;
 
 import com.jamesmcguigan.nlp.elasticsearch.ESClient;
 import com.jamesmcguigan.nlp.streams.ESDocumentStream;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.elasticsearch.script.Script;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.apache.logging.log4j.Level.INFO;
 import static org.elasticsearch.index.query.QueryBuilders.*;
 
-
 public class OpenNLPClassifierES extends OpenNLPClassifier {
-    private static final Logger logger = LoggerFactory.getLogger(OpenNLPClassifierES.class);
+    private static final Logger logger = LogManager.getLogger();
 
 
     public double kFoldValidation(String index, List<String> fields, String target, int folds) throws IOException {
@@ -55,8 +55,8 @@ public class OpenNLPClassifierES extends OpenNLPClassifier {
         double accuracy    = Arrays.stream(accuracies).average().orElse(0);
         long meanTrainHits = (long) Arrays.stream(trainHits).average().orElse(0);
         long meanTestHits  = (long) Arrays.stream(testHits).average().orElse(0);
-        logger.info("accuracy on {} folds ({}/{} split) is {}",
-            folds, meanTestHits, meanTrainHits, String.format("%.3f", accuracy));
+        logger.printf(INFO,"accuracy on %d folds (%d/%d split) is %.3f",
+            folds, meanTestHits, meanTrainHits, accuracy);
         return accuracy;
     }
 

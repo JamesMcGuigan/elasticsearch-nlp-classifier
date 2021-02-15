@@ -1,20 +1,22 @@
 package com.jamesmcguigan.nlp.elasticsearch.actions;
 
 import com.jamesmcguigan.nlp.elasticsearch.ESClient;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.elasticsearch.ElasticsearchStatusException;
 import org.elasticsearch.action.ActionListener;
 import org.elasticsearch.action.update.UpdateRequest;
 import org.elasticsearch.action.update.UpdateResponse;
 import org.elasticsearch.client.RequestOptions;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.Map;
 
+import static org.apache.logging.log4j.Level.TRACE;
+
 
 public class AsyncUpdateQueue implements UpdateQueue {
-    private static final Logger logger = LoggerFactory.getLogger(AsyncUpdateQueue.class);
+    private static final Logger logger = LogManager.getLogger();
 
     private int requestsInFlight    = 0;
     private int minRequestsInFlight = 5;
@@ -55,7 +57,9 @@ public class AsyncUpdateQueue implements UpdateQueue {
                     AsyncUpdateQueue.this.requestsInFlight -= 1;
 
                     var result = updateResponse.getResult();
-                    logger.trace("{} {}({}) | {}", result, index, id, updateKeyValues);
+                    logger.printf(TRACE, "%s %s(%s) | %s ",
+                        result.toString(), index, id, updateKeyValues.toString()
+                    );
                 }
                 @Override
                 public void onFailure(Exception e) {
@@ -76,7 +80,7 @@ public class AsyncUpdateQueue implements UpdateQueue {
                         }
                     }
 
-                    logger.trace("{} {}({}) | {}", action, index, id, message);
+                    logger.printf(TRACE, "%s %s(%s) | %s", action, index, id, message);
                     if( retry ) {
                         try {
                             AsyncUpdateQueue.this.add(id, updateKeyValues);

@@ -2,6 +2,8 @@ package com.jamesmcguigan.nlp.elasticsearch.actions;
 
 import com.google.gson.Gson;
 import com.jamesmcguigan.nlp.elasticsearch.ESClient;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.elasticsearch.action.DocWriteRequest;
 import org.elasticsearch.action.DocWriteResponse;
 import org.elasticsearch.action.bulk.BulkItemResponse;
@@ -12,8 +14,6 @@ import org.elasticsearch.action.update.UpdateRequest;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.common.unit.ByteSizeValue;
 import org.elasticsearch.common.xcontent.XContentType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -27,7 +27,7 @@ import static org.elasticsearch.common.unit.TimeValue.timeValueSeconds;
 
 
 public class BulkUpdateQueue implements UpdateQueue {
-    private static final Logger logger = LoggerFactory.getLogger(BulkUpdateQueue.class);
+    private static final Logger logger = LogManager.getLogger();
 
     private final int batchSize           = 1000;
     private final int maxRequestsInFlight = 2;  // Keep this low
