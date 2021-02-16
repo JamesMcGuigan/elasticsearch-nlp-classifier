@@ -16,9 +16,10 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Deque;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.NoSuchElementException;
+import java.util.concurrent.ConcurrentLinkedDeque;
 
 /**
  * ElasticSearch ScanAndScrollRequest implemented as an Iterator
@@ -40,7 +41,7 @@ public class ScanAndScrollIterator<T> implements Iterator<T> {
     private String scrollId;        // ScrollId of current request
     private Long totalHits;         // Total number of results from query
     private Long pos = 0L;          // Position in the stream
-    private final LinkedList<SearchHit> buffer;
+    private final Deque<SearchHit> buffer = new ConcurrentLinkedDeque<>();
 
 
     public ScanAndScrollIterator(String index, QueryBuilder query, Class<? extends T> type) throws IOException {
@@ -49,7 +50,6 @@ public class ScanAndScrollIterator<T> implements Iterator<T> {
         this.scrollId = null;
         this.client   = ESClient.getInstance();
         this.type     = type;
-        this.buffer   = new LinkedList<>();
     }
     public void reset() {
         this.totalHits = null;
