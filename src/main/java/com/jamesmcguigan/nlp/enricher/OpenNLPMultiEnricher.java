@@ -1,11 +1,11 @@
 package com.jamesmcguigan.nlp.enricher;
 
 import com.google.common.collect.Streams;
-import com.jamesmcguigan.nlp.classifier.OpenNLPClassifier;
 import com.jamesmcguigan.nlp.data.ESJsonPath;
 import com.jamesmcguigan.nlp.elasticsearch.ESClient;
 import com.jamesmcguigan.nlp.elasticsearch.actions.BulkUpdateQueue;
 import com.jamesmcguigan.nlp.elasticsearch.actions.ScanAndScrollIterator;
+import com.jamesmcguigan.nlp.enricher.classifier.OpenNLPClassifier;
 import com.jamesmcguigan.nlp.iterators.MultiplexIterator;
 import com.jamesmcguigan.nlp.iterators.MultiplexIterators;
 import com.jamesmcguigan.nlp.streams.FilteredJsonDocumentStream;

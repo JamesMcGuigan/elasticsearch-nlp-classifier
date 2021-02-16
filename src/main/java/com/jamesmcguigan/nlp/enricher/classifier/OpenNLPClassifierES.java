@@ -1,4 +1,4 @@
-package com.jamesmcguigan.nlp.classifier;
+package com.jamesmcguigan.nlp.enricher.classifier;
 
 import com.jamesmcguigan.nlp.elasticsearch.ESClient;
 import com.jamesmcguigan.nlp.streams.ESDocumentStream;

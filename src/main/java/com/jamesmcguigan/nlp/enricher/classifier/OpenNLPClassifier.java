@@ -1,4 +1,4 @@
-package com.jamesmcguigan.nlp.classifier;
+package com.jamesmcguigan.nlp.enricher.classifier;
 
 import com.jamesmcguigan.nlp.data.ESJsonPath;
 import com.jamesmcguigan.nlp.tokenize.NLPTokenizer;

@@ -1,5 +1,5 @@
 // Example: https://github.com/mmm0469/apache-opennlp-examples/blob/master/DocumentCategorizerMaxentExample.java
-package com.jamesmcguigan.nlp.classifier;
+package com.jamesmcguigan.nlp.enricher.classifier;
 
 import com.google.common.collect.Lists;
 import com.jamesmcguigan.nlp.data.Tweet;
