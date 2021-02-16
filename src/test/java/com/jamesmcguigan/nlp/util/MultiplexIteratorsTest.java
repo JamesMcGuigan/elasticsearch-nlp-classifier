@@ -68,6 +68,7 @@ class MultiplexIteratorsTest {
             assertThrows(NoSuchElementException.class, child::next);
         }
         assertFalse(multiplex.hasNext());
+        assertTrue(multiplex.isEmpty());
         assertThrows(NoSuchElementException.class, multiplex::next);
     }
 
@@ -90,6 +91,7 @@ class MultiplexIteratorsTest {
             })
         ;
         assertFalse(multiplex.hasNext());
+        assertTrue(multiplex.isEmpty());
         assertThrows(NoSuchElementException.class, multiplex::next);
     }
 
@@ -114,6 +116,7 @@ class MultiplexIteratorsTest {
                 })
             ;
             assertFalse(multiplex.hasNext());
+            assertTrue(multiplex.isEmpty());
             assertThrows(NoSuchElementException.class, multiplex::next);
         }
     }
