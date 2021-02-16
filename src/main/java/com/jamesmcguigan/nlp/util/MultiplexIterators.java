@@ -18,7 +18,7 @@ import java.util.stream.Stream;
  * @param <T> type of iterator being multiplexed
  */
 public class MultiplexIterators<T> {
-    // Shared lock between all children prevent race conditions in .stream().parallel() work
+    // Shared lock between all children prevent race conditions in .stream().parallel() - tested as thread-safe
     ReentrantLock lock = new ReentrantLock();
 
     protected final Iterator<T> parentIterator;
@@ -26,20 +26,7 @@ public class MultiplexIterators<T> {
     protected final List<String> names;
 
 
-    /**
-     * Creates a map of N numbered children capable of reading from the same iterator
-     * @param parentIterator shared iterator between all children
-     * @param count          number of children to create
-     */
-    MultiplexIterators(Iterator<T> parentIterator, int count) {
-        this(
-            parentIterator,
-            Stream.iterate(0, n -> n + 1)
-                .limit(count)
-                .map(String::valueOf)
-                .collect(Collectors.toList())
-        );
-    }
+    //***** Constructors *****//
 
     /**
      * Creates a map of named children capable of reading from the same iterator
@@ -54,10 +41,34 @@ public class MultiplexIterators<T> {
         }
     }
 
-
+    /**
+     * Creates a map of N numbered children capable of reading from the same iterator.
+     * Internally stored as strings, but still accessible via {@code .get(int)} lookup
+     * @param parentIterator shared iterator between all children
+     * @param count          number of children to create
+     */
+    MultiplexIterators(Iterator<T> parentIterator, int count) {
+        this(parentIterator, namesFromCount(count));
+    }
 
     /**
-     * multiplex.stream().parallel().forEach(child -> {}) tested as thread-safe
+     * Converts a numeric count into a list of string names
+     * @param count number of strings to generate
+     * @return      list of stringified ints
+     */
+    public static List<String> namesFromCount(int count) {
+        return Stream.iterate(0, n -> n + 1)
+            .limit(count)
+            .map(String::valueOf)
+            .collect(Collectors.toList())
+        ;
+    }
+
+
+    //***** Getters *****//
+
+    /**
+     * {@code multiplex.stream().parallel().forEach(childIterator -> {})} tested as thread-safe
      */
     public Stream<MultiplexIterator<T>> stream() {
         return this.children.values().stream();
@@ -116,6 +127,7 @@ public class MultiplexIterators<T> {
 }
 
 
+
 /**
  * This is the child class of MultiplexIterators
  */
@@ -128,6 +140,9 @@ class MultiplexIterator<T> implements Iterator<T> {
         this.parent = parent;
         this.name   = name;
     }
+
+
+    //***** Getters *****//
 
     /**
      * This allows MultiplexIterators to dynamically add items to the buffer
