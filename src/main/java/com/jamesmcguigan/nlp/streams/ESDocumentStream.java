@@ -12,12 +12,8 @@ import java.util.List;
 
 public class ESDocumentStream extends JsonDocumentStream implements ObjectStream<DocumentSample> {
 
-    private String index;
-    private String target;
-    private List<String> fields;
-    private QueryBuilder query;
-    private ScanAndScrollIterator<String> iterator;
-
+    protected String index;
+    protected QueryBuilder query;
 
     public ESDocumentStream(String index, String field, String target, QueryBuilder query) throws IOException {
         this(index, Collections.singletonList(field), target, query);
@@ -33,11 +29,11 @@ public class ESDocumentStream extends JsonDocumentStream implements ObjectStream
     }
     private ESDocumentStream(Iterator<String> iterator, List<String> fields, String target) {
         super(iterator, fields, target);
+        assert iterator instanceof ScanAndScrollIterator;
     }
 
-
     @Override
-    public void reset()                { this.iterator.reset(); }
-    public Long size()                 { return this.iterator.size(); }
-    public Long getTotalHits()         { return this.iterator.getTotalHits(); }
+    public void reset()        {        ((ScanAndScrollIterator<String>) this.iterator).reset();        }
+    public Long size()         { return ((ScanAndScrollIterator<String>) this.iterator).size();         }
+    public Long getTotalHits() { return ((ScanAndScrollIterator<String>) this.iterator).getTotalHits(); }
 }

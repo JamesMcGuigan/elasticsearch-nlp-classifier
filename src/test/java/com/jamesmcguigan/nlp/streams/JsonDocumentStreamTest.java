@@ -65,6 +65,7 @@ public class JsonDocumentStreamTest {
             Arrays.asList("text1", "text2"),
             "target"
         ).setTokenizer(tokenizer);
+        assertEquals( tokenizer, stream.getTokenizer() );
 
         DocumentSample documentSample1 = stream.read();
         DocumentSample documentSample2 = stream.read();

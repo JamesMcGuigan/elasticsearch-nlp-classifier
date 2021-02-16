@@ -34,7 +34,7 @@ public class TweetDocumentStream implements ObjectStream<DocumentSample> {
     }
 
     @Override
-    public void reset() throws UnsupportedOperationException {
+    public void reset() {
         this.index = 0;
     }
 
