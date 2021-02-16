@@ -1,4 +1,4 @@
-package com.jamesmcguigan.nlp.streams;
+package com.jamesmcguigan.nlp.iterators.streams;
 
 import com.jamesmcguigan.nlp.elasticsearch.actions.ScanAndScrollIterator;
 import opennlp.tools.doccat.DocumentSample;

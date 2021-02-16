@@ -1,7 +1,7 @@
 package com.jamesmcguigan.nlp.enricher.classifier;
 
 import com.jamesmcguigan.nlp.elasticsearch.ESClient;
-import com.jamesmcguigan.nlp.streams.ESDocumentStream;
+import com.jamesmcguigan.nlp.iterators.streams.ESDocumentStream;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.elasticsearch.script.Script;

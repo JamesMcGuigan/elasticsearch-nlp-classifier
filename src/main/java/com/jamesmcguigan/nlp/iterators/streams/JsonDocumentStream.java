@@ -1,4 +1,4 @@
-package com.jamesmcguigan.nlp.streams;
+package com.jamesmcguigan.nlp.iterators.streams;
 
 import com.jamesmcguigan.nlp.data.ESJsonPath;
 import com.jamesmcguigan.nlp.tokenize.NLPTokenizer;

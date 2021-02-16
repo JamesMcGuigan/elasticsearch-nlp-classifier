@@ -1,4 +1,4 @@
-package com.jamesmcguigan.nlp.iterators;
+package com.jamesmcguigan.nlp.iterators.multiplex;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;

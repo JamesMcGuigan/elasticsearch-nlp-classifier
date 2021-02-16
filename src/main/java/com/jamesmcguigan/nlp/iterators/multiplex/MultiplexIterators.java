@@ -1,4 +1,4 @@
-package com.jamesmcguigan.nlp.iterators;
+package com.jamesmcguigan.nlp.iterators.multiplex;
 
 import java.util.Iterator;
 import java.util.List;

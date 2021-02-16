@@ -1,4 +1,4 @@
-package com.jamesmcguigan.nlp.streams;
+package com.jamesmcguigan.nlp.iterators.streams;
 
 import com.jamesmcguigan.nlp.tokenize.NLPTokenizer;
 import opennlp.tools.doccat.DocumentSample;

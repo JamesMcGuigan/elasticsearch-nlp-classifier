@@ -5,7 +5,7 @@ import com.jamesmcguigan.nlp.elasticsearch.ESClient;
 import com.jamesmcguigan.nlp.elasticsearch.actions.BulkUpdateQueue;
 import com.jamesmcguigan.nlp.elasticsearch.actions.ScanAndScrollIterator;
 import com.jamesmcguigan.nlp.enricher.classifier.OpenNLPClassifierES;
-import com.jamesmcguigan.nlp.streams.ESDocumentStream;
+import com.jamesmcguigan.nlp.iterators.streams.ESDocumentStream;
 import com.jamesmcguigan.nlp.tokenize.NLPTokenizer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
