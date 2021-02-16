@@ -1,7 +1,8 @@
-package com.jamesmcguigan.nlp.util;
+package com.jamesmcguigan.nlp.iterators;
 
-import java.util.*;
-import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -22,7 +23,7 @@ public class MultiplexIterators<T> {
     ReentrantLock lock = new ReentrantLock();
 
     protected final Iterator<T> parentIterator;
-    protected final Map<String, MultiplexIterator<T>> children = new HashMap<>();
+    protected final Map<String, MultiplexIterator<T>> children;
     protected final List<String> names;
 
 
@@ -33,12 +34,15 @@ public class MultiplexIterators<T> {
      * @param parentIterator shared iterator between all children
      * @param names          list of names for the children
      */
-    MultiplexIterators(Iterator<T> parentIterator, List<String> names) {
+    public MultiplexIterators(Iterator<T> parentIterator, List<String> names) {
         this.names = names;
         this.parentIterator = parentIterator;
-        for( String name : names ) {
-            this.children.put(name, new MultiplexIterator<>(this, name));
-        }
+        this.children = // ImmutableMap.copyOf(
+            names.stream().collect(Collectors.toMap(
+                name -> name,
+                name -> new MultiplexIterator<>(this, name)
+            ));
+        // );
     }
 
     /**
@@ -47,7 +51,7 @@ public class MultiplexIterators<T> {
      * @param parentIterator shared iterator between all children
      * @param count          number of children to create
      */
-    MultiplexIterators(Iterator<T> parentIterator, int count) {
+    public MultiplexIterators(Iterator<T> parentIterator, int count) {
         this(parentIterator, namesFromCount(count));
     }
 
@@ -67,12 +71,18 @@ public class MultiplexIterators<T> {
 
     //***** Getters *****//
 
+    public Map<String, MultiplexIterator<T>> getChildren() { return this.children; }
+
     /**
-     * {@code multiplex.stream().parallel().forEach(childIterator -> {})} tested as thread-safe
+     * {@code multiplex.streamValues().parallel().forEach(childIterator -> {})} tested as thread-safe
      */
     public Stream<MultiplexIterator<T>> stream() {
         return this.children.values().stream();
     }
+    public Stream<MultiplexIterator<T>> parallelStream() {
+        return this.children.values().parallelStream();
+    }
+
 
     /**
      * If initialized by count, children can be accessed via int index, which is internally stored as a string
@@ -127,73 +137,4 @@ public class MultiplexIterators<T> {
 }
 
 
-
-/**
- * This is the child class of MultiplexIterators
- */
-class MultiplexIterator<T> implements Iterator<T> {
-    protected final MultiplexIterators<T> parent;
-    protected final String name;
-    protected final Deque<T> buffer = new ConcurrentLinkedDeque<>();  // all access is also synchronized or locked
-
-    protected MultiplexIterator(MultiplexIterators<T> parent, String name) {
-        this.parent = parent;
-        this.name   = name;
-    }
-
-
-    //***** Getters *****//
-
-    /**
-     * This allows MultiplexIterators to dynamically add items to the buffer
-     * @param item the item to be added
-     */
-    protected void add(T item) {
-        this.buffer.add(item);
-    }
-
-
-    //***** Iterator Interface *****//
-
-    /**
-     * Returns {@code true} if the iteration has more elements.
-     * (In other words, returns {@code true} if {@link #next} would
-     * return an element rather than throwing an exception.)
-     *
-     * @return {@code true} if the iteration has more elements
-     */
-    @Override
-    public boolean hasNext() {
-        // Lock is shared between all child iterators
-        this.parent.lock.lock();
-        try {
-            return !this.buffer.isEmpty() || this.parent.hasNext();
-        } finally {
-            this.parent.lock.unlock();
-        }
-    }
-
-    /**
-     * Returns the next element in the iteration.
-     *
-     * @return the next element in the iteration
-     * @throws NoSuchElementException if the iteration has no more elements
-     */
-    @Override
-    public T next() {
-        // Lock is shared between all child iterators
-        this.parent.lock.lock();
-        try {
-            if( this.buffer.isEmpty() ) {
-                this.parent.next();  // adds to this.buffer as side effect
-            }
-            if( this.buffer.isEmpty() ) {
-                throw new NoSuchElementException();
-            }
-            return this.buffer.pop();
-        } finally {
-            this.parent.lock.unlock();
-        }
-    }
-}
 

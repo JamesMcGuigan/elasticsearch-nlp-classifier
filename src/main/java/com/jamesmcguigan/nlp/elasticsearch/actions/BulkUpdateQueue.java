@@ -2,24 +2,23 @@ package com.jamesmcguigan.nlp.elasticsearch.actions;
 
 import com.google.gson.Gson;
 import com.jamesmcguigan.nlp.elasticsearch.ESClient;
+import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.elasticsearch.action.DocWriteRequest;
-import org.elasticsearch.action.DocWriteResponse;
 import org.elasticsearch.action.bulk.BulkItemResponse;
 import org.elasticsearch.action.bulk.BulkProcessor;
 import org.elasticsearch.action.bulk.BulkRequest;
 import org.elasticsearch.action.bulk.BulkResponse;
+import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.update.UpdateRequest;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.common.unit.ByteSizeValue;
 import org.elasticsearch.common.xcontent.XContentType;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 import static org.elasticsearch.action.bulk.BackoffPolicy.exponentialBackoff;
 import static org.elasticsearch.common.unit.ByteSizeUnit.MB;
@@ -67,7 +66,7 @@ public class BulkUpdateQueue implements UpdateQueue {
              * Callback before the bulk is executed.
              */
             @Override
-            public void beforeBulk(long executionId, BulkRequest request) {
+            public void beforeBulk(long executionId, BulkRequest bulkRequest) {
                 // Do Nothing
             }
 
@@ -97,34 +96,33 @@ public class BulkUpdateQueue implements UpdateQueue {
     }
 
     protected void logBulkResponse(BulkRequest bulkRequest, BulkResponse bulkResponse) {
-        // TODO: Handle IndexRequest / DeleteRequest
-        Map<String, Map<String, Object>> requestMap = bulkRequest.requests().stream()
-            .filter(item -> item instanceof UpdateRequest)
-            .collect(Collectors.toMap(
-                DocWriteRequest::id,
-                item -> ((UpdateRequest) item).doc().sourceAsMap()
-            ))
-        ;
-        for( BulkItemResponse bulkItemResponse : bulkResponse ) {
-            DocWriteResponse response = bulkItemResponse.getResponse();  // instanceof UpdateResponse
-            String id     = response.getId();
-            String source = requestMap.getOrDefault(id, new HashMap<>()).toString();
-            String action = response.getResult().toString();  // "UPDATE"
-
+        Level level = Level.TRACE;
+        if( !logger.isEnabled(level) ) { return; }
+        for( int i = 0; i < Math.min(bulkRequest.requests().size(), bulkResponse.getItems().length); i++ ) {
+            var request = bulkRequest.requests().get(i);
+            var response  = bulkResponse.getItems()[i];
+            String id = response.getId();
+            String source = this.requestToString(request);
+            String action = response.getResponse().getResult().toString();  // "UPDATE"
             var message = source;
-            if( bulkItemResponse.isFailed() ) {
-                BulkItemResponse.Failure failure = bulkItemResponse.getFailure();
+            if( response.isFailed() ) {
+                BulkItemResponse.Failure failure = response.getFailure();
                 message += " | " + failure.getCause() + " | " + failure.getMessage();
             }
-            logger.trace("{} {}({}) | {}", action, BulkUpdateQueue.this.index, id, message);
+            logger.log(level, "{} {}({}) | {}", action, BulkUpdateQueue.this.index, id, message);
         }
     }
-
+    protected String requestToString(DocWriteRequest<?> request) {
+        if( request instanceof UpdateRequest ) { return ((UpdateRequest) request).doc().sourceAsMap().toString(); }
+        if( request instanceof IndexRequest  ) { return ((IndexRequest)  request).sourceAsMap().toString();       }
+        return request.toString();
+    }
 
 
     @Override
     public void update(String id, Map<String, Object> updateKeyValues) {
         // DOCS: https://www.elastic.co/guide/en/elasticsearch/client/java-rest/7.11/java-rest-high-document-update.html
+        if( updateKeyValues.isEmpty() ) { return; }
         String json           = new Gson().toJson(updateKeyValues);
         UpdateRequest request = new UpdateRequest(this.index, id).doc(json, XContentType.JSON);
         this.bulkProcessor.add(request);  // HighLevelRESTClient is thread-safe

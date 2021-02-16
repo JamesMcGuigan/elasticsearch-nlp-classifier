@@ -16,12 +16,14 @@ class ESDocumentStreamTest {
     @Test
     void getTotalHits() throws IOException {
         ESDocumentStream stream = new ESDocumentStream("twitter", "text", "target", null);
+        assertNotNull( stream.getTotalHits() );
         assertTrue(stream.getTotalHits() > 1000 );
     }
 
     @Test
     void size() throws IOException {
         ESDocumentStream stream = new ESDocumentStream("twitter", "text", "target", null);
+        assertNotNull( stream.size() );
         assertTrue(stream.size() > 1000 );
     }
 

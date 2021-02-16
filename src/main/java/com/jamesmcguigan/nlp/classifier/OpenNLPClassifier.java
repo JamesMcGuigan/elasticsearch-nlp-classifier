@@ -18,7 +18,7 @@ public class OpenNLPClassifier {
     protected final TrainingParameters params;
     protected DoccatModel model;
     protected DocumentCategorizerME doccat;
-    public final NLPTokenizer tokenizer = ESJsonPath.getDefaultTokenizer();
+    protected NLPTokenizer tokenizer = ESJsonPath.getDefaultTokenizer();
 
 
     //***** Constructor *****//
@@ -52,6 +52,9 @@ public class OpenNLPClassifier {
         }
         return (T) this;
     }
+
+    public NLPTokenizer getTokenizer() { return this.tokenizer; }
+    public <T extends OpenNLPClassifier> T setTokenizer(NLPTokenizer tokenizer) { this.tokenizer = tokenizer; return (T) this; }
 
 
     //***** Training and Prediction *****//
