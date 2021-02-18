@@ -14,11 +14,9 @@ import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.json.JSONObject;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Deque;
-import java.util.Iterator;
-import java.util.NoSuchElementException;
+import java.util.*;
 import java.util.concurrent.ConcurrentLinkedDeque;
 
 /**
@@ -30,26 +28,37 @@ import java.util.concurrent.ConcurrentLinkedDeque;
  * @param <T> return type of .next()
  */
 public class ScanAndScrollIterator<T> implements Iterator<T> {
-    private final String index;
-    private final QueryBuilder query;
-    private final RestHighLevelClient client;
     private final Class<? extends T> type;
+    private final String index;
+    @Nullable private final QueryBuilder query;
+    @Nullable private final String[] fields;
 
-    private int bufferSize = 1000;  // Number of items to keep in buffer
-    private long ttl       = 360;   // API timeout in seconds
+    private int  bufferSize = 1000;     // Number of items to keep in buffer
+    private long ttl        = 360;      // API timeout in seconds
 
-    private String scrollId;        // ScrollId of current request
-    private Long totalHits;         // Total number of results from query
-    private Long pos = 0L;          // Position in the stream
+    @Nullable private Long totalHits;   // Total number of results from query
+    @Nullable private String scrollId;  // ScrollId of current request
+    private Long pos = 0L;              // Position in the stream
+
+    private final RestHighLevelClient client;
     private final Deque<SearchHit> buffer = new ConcurrentLinkedDeque<>();
 
 
-    public ScanAndScrollIterator(String index, QueryBuilder query, Class<? extends T> type) throws IOException {
-        this.index    = index;
-        this.query    = query;
-        this.scrollId = null;
-        this.client   = ESClient.getInstance();
-        this.type     = type;
+    public ScanAndScrollIterator(Class<? extends T> type, String index)                                throws IOException { this(type, index, null, null); }
+    public ScanAndScrollIterator(Class<? extends T> type, String index, @Nullable QueryBuilder query ) throws IOException { this(type, index, query, null); }
+    public ScanAndScrollIterator(Class<? extends T> type, String index, @Nullable List<String> fields) throws IOException { this(type, index, null, fields); }
+    public ScanAndScrollIterator(
+        Class<? extends T> type,
+        String index,
+        @Nullable QueryBuilder query,
+        @Nullable List<String> fields
+    ) throws IOException {
+        this.index  = index;
+        this.query  = query;
+        this.fields = fields != null ? fields.toArray(new String[0]) : null;
+        this.type   = type;
+        this.client = ESClient.getInstance();
+        this.reset();
     }
     public void reset() {
         this.totalHits = null;
@@ -89,10 +98,11 @@ public class ScanAndScrollIterator<T> implements Iterator<T> {
         }
     }
     protected SearchRequest getScanAndScrollRequest() {
-        // DOCS: https://www.elastic.co/guide/en/elasticsearch/client/java-rest/current/java-rest-high-search-scroll.html
+        // DOCS: https://www.elastic.co/guide/en/elasticsearch/client/java-rest/7.11/java-rest-high-search.html
         SearchRequest searchRequest = new SearchRequest(this.index);
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
         searchSourceBuilder.query(this.query);
+        searchSourceBuilder.fetchSource(this.fields, null);
         searchSourceBuilder.size(this.bufferSize);
 
         searchRequest.source(searchSourceBuilder);
@@ -100,6 +110,7 @@ public class ScanAndScrollIterator<T> implements Iterator<T> {
         return searchRequest;
     }
     protected SearchHits scanAndScroll() throws IOException {
+        // DOCS: https://www.elastic.co/guide/en/elasticsearch/client/java-rest/current/java-rest-high-search-scroll.html
         SearchResponse searchResponse;
         if( this.scrollId == null ) {
             SearchRequest searchRequest = this.getScanAndScrollRequest();

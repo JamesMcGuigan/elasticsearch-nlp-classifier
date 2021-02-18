@@ -72,7 +72,7 @@ public class OpenNLPMultiEnricher {
 
     public <T extends OpenNLPMultiEnricher> T train() throws IOException { return train(null); }
     public <T extends OpenNLPMultiEnricher> T train(@Nullable QueryBuilder query) throws IOException {
-        var scanAndScroll = new ScanAndScrollIterator<>(this.index, this.getTargetQuery(query), String.class);
+        var scanAndScroll = new ScanAndScrollIterator<>(String.class, this.index, this.getTargetQuery(query));
         var multiplexer   = new MultiplexIterators<>(scanAndScroll, this.targets);
         multiplexer
             .parallelStream()
@@ -110,7 +110,7 @@ public class OpenNLPMultiEnricher {
         ) {
             // Read the items from scanAndScroll one at a time
             // TODO: Streams.stream(scanAndScroll).parallel()
-            var scanAndScroll = new ScanAndScrollIterator<>(this.index, query, String.class);
+            var scanAndScroll = new ScanAndScrollIterator<>(String.class, this.index, query);
             Streams.stream(scanAndScroll)
                 .parallel()
                 .map(this::predictUpdatePairFromJson)

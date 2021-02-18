@@ -20,7 +20,7 @@ public class ESDocumentStream extends JsonDocumentStream implements ObjectStream
     }
     public ESDocumentStream(String index, List<String> fields, String target, QueryBuilder query) throws IOException {
         this(
-            new ScanAndScrollIterator<>(index, query, String.class),
+            new ScanAndScrollIterator<>(String.class, index, query),
             fields,
             target
         );

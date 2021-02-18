@@ -90,7 +90,7 @@ public class OpenNLPEnricher {
         try(
             var updateQueue = new BulkUpdateQueue(this.index)
         ) {
-            var request = new ScanAndScrollIterator<>(index, query, String.class);
+            var request = new ScanAndScrollIterator<>(String.class, index, query);
             while( request.hasNext() ) {
                 String json         = request.next();
                 ESJsonPath jsonPath = new ESJsonPath(json).setTokenizer(this.tokenizer);
