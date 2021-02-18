@@ -10,7 +10,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class JsonDocumentStreamTest {
+class JsonDocumentStreamTest {
     List<String> input = Arrays.asList(
         """
         { "target": 1, "text1": "hello world", "text2": "goodbye world" }
@@ -49,11 +49,11 @@ public class JsonDocumentStreamTest {
         DocumentSample documentSample1 = stream.read();
         DocumentSample documentSample2 = stream.read();
 
-        assertEquals(documentSample1.getCategory(), "1");
-        assertArrayEquals(documentSample1.getText(), new String[]{"hello", "world", "goodby", "world"});
+        assertEquals("1", documentSample1.getCategory());
+        assertArrayEquals(new String[]{"hello", "world", "goodby", "world"}, documentSample1.getText());
 
-        assertEquals(documentSample2.getCategory(), "0");
-        assertArrayEquals(documentSample2.getText(), new String[]{"pen", "pineappl", "appl", "pen"});
+        assertEquals("0", documentSample2.getCategory());
+        assertArrayEquals(new String[]{"pen", "pineappl", "appl", "pen"}, documentSample2.getText());
     }
 
     @Test
@@ -70,10 +70,10 @@ public class JsonDocumentStreamTest {
         DocumentSample documentSample1 = stream.read();
         DocumentSample documentSample2 = stream.read();
 
-        assertEquals(documentSample1.getCategory(), "1");
-        assertArrayEquals(documentSample1.getText(), new String[]{"hello", "world", "goodbye", "world"});
+        assertEquals("1", documentSample1.getCategory());
+        assertArrayEquals(new String[]{"hello", "world", "goodbye", "world"}, documentSample1.getText());
 
-        assertEquals(documentSample2.getCategory(), "0");
-        assertArrayEquals(documentSample2.getText(), new String[]{"pen", "pineapple", "apple", "pen"});
+        assertEquals("0", documentSample2.getCategory());
+        assertArrayEquals(new String[]{"pen", "pineapple", "apple", "pen"}, documentSample2.getText());
     }
 }

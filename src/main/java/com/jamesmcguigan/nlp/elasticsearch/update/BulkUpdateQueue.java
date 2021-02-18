@@ -28,10 +28,10 @@ import static org.elasticsearch.common.unit.TimeValue.timeValueSeconds;
 public class BulkUpdateQueue implements UpdateQueue {
     private static final Logger logger = LogManager.getLogger();
 
-    private final int batchSize           = 1000;
-    private final int maxRequestsInFlight = 2;  // Keep this low
-    private final int maxRetries          = 5;
-    private final int flushSeconds        = 5;
+    private int batchSize           = 1000;
+    private int maxRequestsInFlight = 2;  // Keep this low
+    private int maxRetries          = 5;
+    private int flushSeconds        = 5;
 
     private final BulkProcessor.Listener listener;
     private final BulkProcessor bulkProcessor;
@@ -39,11 +39,24 @@ public class BulkUpdateQueue implements UpdateQueue {
     private final String        index;
 
 
+    //***** Constructor *****//
+
     public BulkUpdateQueue(String index) throws IOException {
         this.index         = index;
         this.client        = ESClient.getInstance();
         this.listener      = this.getListener();
         this.bulkProcessor = this.getBuilder(this.listener).build();
+    }
+    public BulkUpdateQueue(String index, int batchSize, int maxRequestsInFlight, int maxRetries, int flushSeconds) throws IOException {
+        this.index               = index;
+        this.batchSize           = batchSize;
+        this.maxRequestsInFlight = maxRequestsInFlight;
+        this.maxRetries          = maxRetries;
+        this.flushSeconds        = flushSeconds;
+
+        this.client              = ESClient.getInstance();
+        this.listener            = this.getListener();
+        this.bulkProcessor       = this.getBuilder(this.listener).build();
     }
 
     private BulkProcessor.Builder getBuilder(BulkProcessor.Listener listener) {
@@ -96,7 +109,7 @@ public class BulkUpdateQueue implements UpdateQueue {
     }
 
     protected void logBulkResponse(BulkRequest bulkRequest, BulkResponse bulkResponse) {
-        Level level = Level.TRACE;
+        Level level = Level.INFO;
         if( !logger.isEnabled(level) ) { return; }
         for( int i = 0; i < Math.min(bulkRequest.requests().size(), bulkResponse.getItems().length); i++ ) {
             var request = bulkRequest.requests().get(i);
@@ -118,6 +131,8 @@ public class BulkUpdateQueue implements UpdateQueue {
         return request.toString();
     }
 
+
+    //***** Public Interface *****//
 
     @Override
     public void update(String id, Map<String, Object> updateKeyValues) {

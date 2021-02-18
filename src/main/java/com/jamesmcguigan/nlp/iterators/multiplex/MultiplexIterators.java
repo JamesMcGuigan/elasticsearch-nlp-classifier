@@ -1,5 +1,7 @@
 package com.jamesmcguigan.nlp.iterators.multiplex;
 
+import com.google.common.collect.ImmutableMap;
+
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -37,12 +39,12 @@ public class MultiplexIterators<T> {
     public MultiplexIterators(Iterator<T> parentIterator, List<String> names) {
         this.names = names;
         this.parentIterator = parentIterator;
-        this.children = // ImmutableMap.copyOf(
+        this.children = ImmutableMap.copyOf(
             names.stream().collect(Collectors.toMap(
                 name -> name,
                 name -> new MultiplexIterator<>(this, name)
-            ));
-        // );
+            ))
+        );
     }
 
     /**

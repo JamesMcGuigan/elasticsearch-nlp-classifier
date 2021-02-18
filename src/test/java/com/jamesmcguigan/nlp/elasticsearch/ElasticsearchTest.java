@@ -39,7 +39,7 @@ import static org.elasticsearch.index.query.QueryBuilders.*;
 
 
 
-public class ElasticsearchTest {
+class ElasticsearchTest {
     ESClient client  = ESClient.getInstance();
     String index     = "twitter";
     List<String> ids = Arrays.asList("1", "2", "3", "4");
@@ -150,11 +150,10 @@ public class ElasticsearchTest {
     }
 
 
-    @Ignore
     //@Test
+    @Ignore("Bonsai - BROKEN: URI [_mtermvectors], status line [HTTP/1.1 400 Bad Request")
     void brokenMultiTermVector1() throws IOException {
         // This is the version taken directly from the ElasticSearch docs
-        // Bonsai - BROKEN: URI [_mtermvectors], status line [HTTP/1.1 400 Bad Request
         // DOCS: https://www.elastic.co/guide/en/elasticsearch/client/java-rest/current/java-rest-high-document-multi-term-vectors.html
 
         MultiTermVectorsRequest request = new MultiTermVectorsRequest();
@@ -179,8 +178,8 @@ public class ElasticsearchTest {
     }
 
 
-    @Ignore
     //@Test
+    @Ignore("Bonsai - BROKEN: URI [_mtermvectors], status line [HTTP/1.1 400 Bad Request")
     void brokenMultiTermVector2() {
         // This is the version taken directly from a github example
         // Bonsai - BROKEN: URI [_mtermvectors], status line [HTTP/1.1 400 Bad Request

@@ -7,8 +7,6 @@ import com.jamesmcguigan.nlp.elasticsearch.update.BulkUpdateQueue;
 import com.jamesmcguigan.nlp.enricher.classifier.OpenNLPClassifierES;
 import com.jamesmcguigan.nlp.iterators.streams.ESDocumentStream;
 import com.jamesmcguigan.nlp.tokenize.NLPTokenizer;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 
@@ -28,14 +26,13 @@ import static org.elasticsearch.index.query.QueryBuilders.existsQuery;
  */
 @SuppressWarnings("unchecked")
 public class OpenNLPEnricher {
-    private static final Logger logger = LogManager.getLogger();
-    private NLPTokenizer tokenizer     = ESJsonPath.getDefaultTokenizer();
+    private NLPTokenizer tokenizer = ESJsonPath.getDefaultTokenizer();
 
     private final String       index;
     private final List<String> fields;
-    private final String       target;  // TODO: convert to List<String> targets
+    private final String       target;
     private String             prefix = "_opennlp";
-    private final OpenNLPClassifierES classifier = new OpenNLPClassifierES();  // TODO: convert to multi-field Map
+    private final OpenNLPClassifierES classifier = new OpenNLPClassifierES();
 
 
 

@@ -57,9 +57,7 @@ public class AsyncUpdateQueue implements UpdateQueue {
                     AsyncUpdateQueue.this.requestsInFlight -= 1;
 
                     var result = updateResponse.getResult();
-                    logger.printf(TRACE, "%s %s(%s) | %s ",
-                        result.toString(), index, id, updateKeyValues.toString()
-                    );
+                    logger.info("{} {}({}) | {}", result, index, id, updateKeyValues);
                 }
                 @Override
                 public void onFailure(Exception e) {

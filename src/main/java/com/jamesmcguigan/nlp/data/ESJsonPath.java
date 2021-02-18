@@ -3,6 +3,8 @@ package com.jamesmcguigan.nlp.data;
 import com.jamesmcguigan.nlp.tokenize.NLPTokenizer;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -10,6 +12,7 @@ import java.util.Collections;
 import java.util.List;
 
 public class ESJsonPath {
+    private static final Logger logger = LogManager.getLogger();
 
     public static NLPTokenizer getDefaultTokenizer() {
         return new NLPTokenizer()
@@ -59,7 +62,7 @@ public class ESJsonPath {
                 return text;
             } catch ( com.jayway.jsonpath.PathNotFoundException ignored ) { /* ignored */ }
         }
-        // System.out.printf("%s not found in %s%n", path, jsonPath.toString());
+        logger.debug("{} not found in {}", path::toString, jsonPath::jsonString);
         return defaultValue;
     }
 

@@ -42,7 +42,6 @@ public class OpenNLPClassifierES extends OpenNLPClassifier {
                         )
                 ).setTokenizer(this.tokenizer)
             ) {
-                // TODO: multi-target classification
                 this.train(trainStream);
                 double accuracy = this.accuracy(testStream);
 

@@ -12,8 +12,6 @@ import com.jamesmcguigan.nlp.iterators.streams.FilteredJsonDocumentStream;
 import com.jamesmcguigan.nlp.iterators.streams.JsonDocumentStream;
 import com.jamesmcguigan.nlp.tokenize.NLPTokenizer;
 import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.elasticsearch.index.query.QueryBuilder;
 
 import javax.annotation.Nullable;
@@ -32,8 +30,7 @@ import static org.elasticsearch.index.query.QueryBuilders.existsQuery;
  */
 @SuppressWarnings("unchecked")
 public class OpenNLPMultiEnricher {
-    private static final Logger logger = LogManager.getLogger();
-    private NLPTokenizer tokenizer     = ESJsonPath.getDefaultTokenizer();
+    private NLPTokenizer tokenizer = ESJsonPath.getDefaultTokenizer();
 
     private final String       index;
     private final List<String> fields;
@@ -109,7 +106,6 @@ public class OpenNLPMultiEnricher {
             BulkUpdateQueue updateQueue = new BulkUpdateQueue(this.index)
         ) {
             // Read the items from scanAndScroll one at a time
-            // TODO: Streams.stream(scanAndScroll).parallel()
             var scanAndScroll = new ScanAndScrollIterator<>(String.class, this.index, query);
             Streams.stream(scanAndScroll)
                 .parallel()

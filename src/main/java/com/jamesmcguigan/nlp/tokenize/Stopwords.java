@@ -1,5 +1,7 @@
 package com.jamesmcguigan.nlp.tokenize;
 
+import com.google.common.collect.ImmutableSet;
+
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.List;
@@ -14,7 +16,7 @@ public class Stopwords {
 
     private Stopwords() {}
 
-    public static final Set<String> stopwords = new BufferedReader(new InputStreamReader(
+    protected static final Set<String> stopwords = new BufferedReader(new InputStreamReader(
             Objects.requireNonNull(
                 Stopwords.class.getClassLoader().getResourceAsStream("stopwords.txt")
             )
@@ -25,6 +27,7 @@ public class Stopwords {
         .collect(Collectors.toUnmodifiableSet())
     ;
 
+    public static ImmutableSet<String> getStopwords() { return ImmutableSet.copyOf(stopwords); }
     public static List<String> removeStopwords(List<String> tokens) {
         tokens = tokens.stream()
             .filter(token -> !Stopwords.stopwords.contains(token.toLowerCase()))

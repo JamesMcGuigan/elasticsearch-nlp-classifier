@@ -33,10 +33,10 @@
             <AppenderRef ref="Console"/>
             <AppenderRef ref="FileOpenNLPEnricher"/>
         </Logger>
-        <Logger name="com.jamesmcguigan.nlp.data" level="TRACE" additivity="false">
+        <Logger name="com.jamesmcguigan.nlp.data" level="INFO" additivity="false">
             <AppenderRef ref="Console"/>
         </Logger>
-        <Logger name="com.jamesmcguigan.nlp.elasticsearch" level="TRACE" additivity="false">
+        <Logger name="com.jamesmcguigan.nlp.elasticsearch" level="INFO" additivity="false">
             <AppenderRef ref="Console"/>
         </Logger>
         <Root level="INFO">

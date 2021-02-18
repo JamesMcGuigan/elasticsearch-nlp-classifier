@@ -79,9 +79,7 @@ public class ScanAndScrollIterator<T> implements Iterator<T> {
         return this.getTotalHits() - this.pos;
     }
     public Long getTotalHits() {
-        if( this.totalHits == null ) {
-            this.populateBuffer();
-        }
+        this.populateBuffer();
         return this.totalHits;
     }
 
@@ -91,8 +89,10 @@ public class ScanAndScrollIterator<T> implements Iterator<T> {
     protected void populateBuffer() {
         // TODO: Asynchronous loading of buffer
         try {
-            SearchHits hits = this.scanAndScroll();
-            this.buffer.addAll(Arrays.asList(hits.getHits()));
+            if( this.totalHits == null || this.buffer.isEmpty() ) {
+                SearchHits hits = this.scanAndScroll();
+                this.buffer.addAll(Arrays.asList(hits.getHits()));
+            }
         } catch( IOException e ) {
             e.printStackTrace();
         }
@@ -138,9 +138,7 @@ public class ScanAndScrollIterator<T> implements Iterator<T> {
      */
     @Override
     public boolean hasNext() {
-        if( this.buffer.isEmpty() ) {
-            this.populateBuffer();
-        }
+        this.populateBuffer();
         return !this.buffer.isEmpty();
     }
 

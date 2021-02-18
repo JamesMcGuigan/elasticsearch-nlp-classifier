@@ -4,9 +4,7 @@ import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
-import org.apache.http.client.config.RequestConfig;
 import org.apache.http.impl.client.BasicCredentialsProvider;
-import org.apache.http.impl.nio.client.HttpAsyncClientBuilder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.elasticsearch.client.Node;
@@ -21,6 +19,7 @@ import java.util.Properties;
 
 public class ESClient extends RestHighLevelClient {
     private static final Logger logger = LogManager.getLogger();
+    private static final boolean useSniffer = false;  // Sniffer breaks HTTPS connectivity with Bonsai
     private Sniffer sniffer;
 
 
@@ -42,7 +41,7 @@ public class ESClient extends RestHighLevelClient {
 
     private ESClient() throws IOException {
         super( getBuilder() );
-        // this.loadSniffer();  // Sniffer breaks HTTPS connectivity with Bonsai
+        this.loadSniffer();
         this.registerShutdownHook();
     }
 
@@ -78,29 +77,17 @@ public class ESClient extends RestHighLevelClient {
                 properties.getProperty("es.scheme")
             )
         )
-            .setHttpClientConfigCallback(
-                new RestClientBuilder.HttpClientConfigCallback() {
-                    @Override
-                    public HttpAsyncClientBuilder customizeHttpClient(HttpAsyncClientBuilder httpClientBuilder) {
-                        httpClientBuilder.disableAuthCaching();
-                        return httpClientBuilder.setDefaultCredentialsProvider(credentialsProvider);
-                    }
-                }
-            )
-            .setRequestConfigCallback(
-                new RestClientBuilder.RequestConfigCallback() {
-                    @Override
-                    public RequestConfig.Builder customizeRequestConfig(RequestConfig.Builder requestConfigBuilder) {
-                        return requestConfigBuilder
-                            .setConnectTimeout(Integer.parseInt(
-                                properties.getProperty("es.settings.connectTimeout")
-                            ))
-                            .setSocketTimeout(Integer.parseInt(
-                                properties.getProperty("es.settings.socketTimeout" )
-                            ))
-                        ;
-                    }
-                }
+            .setHttpClientConfigCallback(httpClientBuilder -> {
+                httpClientBuilder.disableAuthCaching();
+                return httpClientBuilder.setDefaultCredentialsProvider(credentialsProvider);
+            })
+            .setRequestConfigCallback(requestConfigBuilder -> requestConfigBuilder
+                .setConnectTimeout(Integer.parseInt(
+                    properties.getProperty("es.settings.connectTimeout")
+                ))
+                .setSocketTimeout(Integer.parseInt(
+                    properties.getProperty("es.settings.socketTimeout" )
+                ))
             )
             .setFailureListener(new RestClient.FailureListener() {
                 @Override
@@ -113,8 +100,10 @@ public class ESClient extends RestHighLevelClient {
     }
     private void loadSniffer() {
         // DOCS: https://www.elastic.co/guide/en/elasticsearch/client/java-rest/master/_usage.html
-        // NOTE: Sniffer breaks HTTPS connectivity with Bonsai
-        this.sniffer = Sniffer.builder(this.getLowLevelClient()).build();
+        // BUG:  Sniffer breaks HTTPS connectivity with Bonsai
+        if( useSniffer ) {
+            this.sniffer = Sniffer.builder(this.getLowLevelClient()).build();
+        }
     }
     private void registerShutdownHook() {
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
