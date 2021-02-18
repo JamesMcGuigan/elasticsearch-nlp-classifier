@@ -1,6 +1,6 @@
 package com.jamesmcguigan.nlp.iterators.streams;
 
-import com.jamesmcguigan.nlp.elasticsearch.actions.ScanAndScrollIterator;
+import com.jamesmcguigan.nlp.elasticsearch.read.ScanAndScrollIterator;
 import opennlp.tools.doccat.DocumentSample;
 import opennlp.tools.util.ObjectStream;
 import org.elasticsearch.index.query.QueryBuilder;

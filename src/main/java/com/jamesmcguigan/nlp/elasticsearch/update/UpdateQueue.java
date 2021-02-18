@@ -1,4 +1,4 @@
-package com.jamesmcguigan.nlp.elasticsearch.actions;
+package com.jamesmcguigan.nlp.elasticsearch.update;
 
 import java.io.Closeable;
 import java.io.IOException;

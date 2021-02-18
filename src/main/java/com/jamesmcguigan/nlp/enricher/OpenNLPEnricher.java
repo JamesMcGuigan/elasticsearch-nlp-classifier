@@ -2,8 +2,8 @@ package com.jamesmcguigan.nlp.enricher;
 
 import com.jamesmcguigan.nlp.data.ESJsonPath;
 import com.jamesmcguigan.nlp.elasticsearch.ESClient;
-import com.jamesmcguigan.nlp.elasticsearch.actions.BulkUpdateQueue;
-import com.jamesmcguigan.nlp.elasticsearch.actions.ScanAndScrollIterator;
+import com.jamesmcguigan.nlp.elasticsearch.read.ScanAndScrollIterator;
+import com.jamesmcguigan.nlp.elasticsearch.update.BulkUpdateQueue;
 import com.jamesmcguigan.nlp.enricher.classifier.OpenNLPClassifierES;
 import com.jamesmcguigan.nlp.iterators.streams.ESDocumentStream;
 import com.jamesmcguigan.nlp.tokenize.NLPTokenizer;

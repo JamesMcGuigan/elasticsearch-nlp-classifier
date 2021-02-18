@@ -1,4 +1,4 @@
-package com.jamesmcguigan.nlp.elasticsearch.actions;
+package com.jamesmcguigan.nlp.elasticsearch.update;
 
 import com.google.gson.Gson;
 import com.jamesmcguigan.nlp.elasticsearch.ESClient;
