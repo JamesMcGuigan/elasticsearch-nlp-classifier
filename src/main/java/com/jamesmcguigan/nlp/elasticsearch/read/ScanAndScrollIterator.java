@@ -1,6 +1,7 @@
 package com.jamesmcguigan.nlp.elasticsearch.read;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import com.jamesmcguigan.nlp.elasticsearch.ESClient;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
@@ -19,14 +20,15 @@ import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.stream.Collectors;
 
 /**
  * ElasticSearch ScanAndScrollRequest implemented as an Iterator
+ * <p/>
+ * Performs synchronous HTTP request on first iteration,
+ * then attempts to asynchronously keep the buffer populated with at least {@code bufferSize} entries
  *
- * Caches `bufferSize` entries then makes a synchronous API call to refresh the buffer when empty.
- * .next() return type is cast to type T.
- *
- * @param <T> return type of .next()
+ * @param <T> AutoCast = {@link SearchHit} | {@link String} | {@link JsonObject} | {@code JavaBean}
  */
 public class ScanAndScrollIterator<T> implements Iterator<T> {
     private final Class<? extends T> type;
@@ -37,7 +39,7 @@ public class ScanAndScrollIterator<T> implements Iterator<T> {
     private int  bufferSize = 1000;     // Number of items to load in buffer, pre-fetching may double this
     private long ttl        = 360;      // API timeout in seconds
 
-    @Nullable private Long totalHits;   // Total number of results from query
+    @Nullable private Long  totalHits;  // Total number of results from query
     @Nullable private String scrollId;  // ScrollId of current request
     private Long pos = 0L;              // Position in the stream
 
@@ -73,44 +75,47 @@ public class ScanAndScrollIterator<T> implements Iterator<T> {
 
     //***** Getters / Setters *****//
 
-    public int  getBufferSize()               { return this.bufferSize; }
-    public long getTTL()                      { return this.ttl;  }
-    public void setBufferSize(int bufferSize) { this.bufferSize = bufferSize; }
-    public void setTTL(long ttl)              { this.ttl  = ttl;  }
-
-    public Long size() {
-        return this.getTotalHits() - this.pos;
-    }
     public Long getTotalHits() {
-        // Prevent recursive loop
-        if( this.totalHits == null ) { this.populateBuffer(); }
+        if( this.totalHits == null ) { this.populateBuffer(true); }
         return this.totalHits;
     }
-    protected boolean hasMoreRequests() {
-        return this.getTotalHits() - this.pos - this.buffer.size() > 0;
-    }
+    public Long    size()                  { return this.getTotalHits() - this.pos; }
+    public boolean hasMoreRequests()       { return this.getTotalHits() - this.pos - this.buffer.size() > 0; }
+    public int     getBufferSize()         { return this.bufferSize; }
+    public long    getTTL()                { return this.ttl;  }
+
+    public void    setBufferSize(int size) { this.bufferSize = size; }
+    public void    setTTL(long ttl)        { this.ttl  = ttl;  }
+
 
 
     //***** ElasticSearch functions *****//
 
     protected synchronized void populateBuffer() { this.populateBuffer(false); }
     protected synchronized void populateBuffer(boolean force) {
-        // NOTE: synchronized due to this.buffer.size() - only have one request in flight
-        if( this.totalHits != null && !this.hasMoreRequests() ) { return; }  // prevent recursive loop
+        // NOTE: synchronized due to this.buffer.isEmpty() - only have one request in flight
         try {
             // Synchronous fetching of buffer
-            if( force || this.totalHits == null || this.buffer.isEmpty() ) {
-                SearchHits hits = this.scanAndScroll();
-                this.buffer.addAll(Arrays.asList(hits.getHits()));
-            }
-            // Async prefetch of buffer, if not already pre-fetching
-            else if( this.buffer.size() < this.bufferSize && this.future.isDone() ) {
-                this.future = CompletableFuture.runAsync(() -> this.populateBuffer(true));
+            if( force || this.buffer.isEmpty() ) {
+                this.buffer.addAll(this.fetch());
+            } else {
+                this.prefetchBuffer();
             }
         } catch( IOException e ) {
             e.printStackTrace();
         }
     }
+
+    /**
+     * Async prefetch of buffer, if not already pre-fetching
+     */
+    protected synchronized void prefetchBuffer() {
+        // NOTE: synchronized due to this.future.isDone() - only have one request in flight
+        if( this.buffer.size() < this.bufferSize && this.future.isDone() && this.hasMoreRequests() ) {
+            this.future = CompletableFuture.runAsync(() -> this.populateBuffer(true));
+        }
+    }
+
     protected SearchRequest getScanAndScrollRequest() {
         // DOCS: https://www.elastic.co/guide/en/elasticsearch/client/java-rest/7.11/java-rest-high-search.html
         SearchRequest searchRequest = new SearchRequest(this.index);
@@ -123,7 +128,7 @@ public class ScanAndScrollIterator<T> implements Iterator<T> {
         searchRequest.scroll(TimeValue.timeValueSeconds(this.ttl));
         return searchRequest;
     }
-    protected synchronized SearchHits scanAndScroll() throws IOException {
+    protected synchronized List<SearchHit> fetch() throws IOException {
         // DOCS: https://www.elastic.co/guide/en/elasticsearch/client/java-rest/current/java-rest-high-search-scroll.html
         // NOTE: synchronized due to this.scrollId - only have one request in flight
         SearchResponse searchResponse;
@@ -138,7 +143,7 @@ public class ScanAndScrollIterator<T> implements Iterator<T> {
         }
         this.scrollId   = searchResponse.getScrollId();
         SearchHits hits = searchResponse.getHits();
-        return hits;
+        return Arrays.asList(hits.getHits());
     }
 
 
@@ -166,13 +171,29 @@ public class ScanAndScrollIterator<T> implements Iterator<T> {
     @Override
     public T next() {
         if( this.hasNext() ) {
-            SearchHit hit = this.buffer.pop();
-            T item        = this.cast(hit);
+            T item = this.cast(this.buffer.pop());
             this.pos++;
             return item;
         } else {
             throw new NoSuchElementException();
         }
+    }
+
+    /**
+     * Grab all the items currently in the buffer and async refresh
+     */
+    public synchronized List<T> popBuffer() {
+        // NOTE: synchronized to prevent double reading of buffer
+        // NOTE: Ensure this logic matches that of this.next()
+        this.populateBuffer();  // synchronous reload if buffer is empty
+        List<T> output = this.buffer.stream()
+            .map(this::cast)
+            .collect(Collectors.toList())
+        ;
+        this.pos += output.size();
+        this.buffer.clear();    // pop() everything
+        this.prefetchBuffer();  // async reload in anticipation of next call
+        return output;
     }
 
     @SuppressWarnings("unchecked")
