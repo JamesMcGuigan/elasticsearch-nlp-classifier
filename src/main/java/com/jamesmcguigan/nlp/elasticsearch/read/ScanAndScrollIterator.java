@@ -17,6 +17,7 @@ import org.json.JSONObject;
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentLinkedDeque;
 
 /**
@@ -33,7 +34,7 @@ public class ScanAndScrollIterator<T> implements Iterator<T> {
     @Nullable private final QueryBuilder query;
     @Nullable private final String[] fields;
 
-    private int  bufferSize = 1000;     // Number of items to keep in buffer
+    private int  bufferSize = 1000;     // Number of items to load in buffer, pre-fetching may double this
     private long ttl        = 360;      // API timeout in seconds
 
     @Nullable private Long totalHits;   // Total number of results from query
@@ -41,7 +42,8 @@ public class ScanAndScrollIterator<T> implements Iterator<T> {
     private Long pos = 0L;              // Position in the stream
 
     private final RestHighLevelClient client;
-    private final Deque<SearchHit> buffer = new ConcurrentLinkedDeque<>();
+    private final Deque<SearchHit>    buffer = new ConcurrentLinkedDeque<>();
+    private CompletableFuture<Void>   future = CompletableFuture.completedFuture(null);  // Semaphore for async promises
 
 
     public ScanAndScrollIterator(Class<? extends T> type, String index)                                throws IOException { this(type, index, null, null); }
@@ -65,6 +67,7 @@ public class ScanAndScrollIterator<T> implements Iterator<T> {
         this.scrollId  = null;
         this.pos       = 0L;
         this.buffer.clear();
+        this.future.cancel(true);
     }
 
 
@@ -79,19 +82,30 @@ public class ScanAndScrollIterator<T> implements Iterator<T> {
         return this.getTotalHits() - this.pos;
     }
     public Long getTotalHits() {
-        this.populateBuffer();
+        // Prevent recursive loop
+        if( this.totalHits == null ) { this.populateBuffer(); }
         return this.totalHits;
+    }
+    protected boolean hasMoreRequests() {
+        return this.getTotalHits() - this.pos - this.buffer.size() > 0;
     }
 
 
     //***** ElasticSearch functions *****//
 
-    protected void populateBuffer() {
-        // TODO: Asynchronous loading of buffer
+    protected synchronized void populateBuffer() { this.populateBuffer(false); }
+    protected synchronized void populateBuffer(boolean force) {
+        // NOTE: synchronized due to this.buffer.size() - only have one request in flight
+        if( this.totalHits != null && !this.hasMoreRequests() ) { return; }  // prevent recursive loop
         try {
-            if( this.totalHits == null || this.buffer.isEmpty() ) {
+            // Synchronous fetching of buffer
+            if( force || this.totalHits == null || this.buffer.isEmpty() ) {
                 SearchHits hits = this.scanAndScroll();
                 this.buffer.addAll(Arrays.asList(hits.getHits()));
+            }
+            // Async prefetch of buffer, if not already pre-fetching
+            else if( this.buffer.size() < this.bufferSize && this.future.isDone() ) {
+                this.future = CompletableFuture.runAsync(() -> this.populateBuffer(true));
             }
         } catch( IOException e ) {
             e.printStackTrace();
@@ -109,8 +123,9 @@ public class ScanAndScrollIterator<T> implements Iterator<T> {
         searchRequest.scroll(TimeValue.timeValueSeconds(this.ttl));
         return searchRequest;
     }
-    protected SearchHits scanAndScroll() throws IOException {
+    protected synchronized SearchHits scanAndScroll() throws IOException {
         // DOCS: https://www.elastic.co/guide/en/elasticsearch/client/java-rest/current/java-rest-high-search-scroll.html
+        // NOTE: synchronized due to this.scrollId - only have one request in flight
         SearchResponse searchResponse;
         if( this.scrollId == null ) {
             SearchRequest searchRequest = this.getScanAndScrollRequest();
