@@ -45,13 +45,13 @@ public class ScanAndScrollIterator<T> implements Iterator<T> {
 
 
     public ScanAndScrollIterator(Class<? extends T> type, String index)                                throws IOException { this(type, index, null, null); }
-    public ScanAndScrollIterator(Class<? extends T> type, String index, @Nullable QueryBuilder query ) throws IOException { this(type, index, query, null); }
-    public ScanAndScrollIterator(Class<? extends T> type, String index, @Nullable List<String> fields) throws IOException { this(type, index, null, fields); }
+    public ScanAndScrollIterator(Class<? extends T> type, String index, @Nullable QueryBuilder query ) throws IOException { this(type, index, null, query); }
+    public ScanAndScrollIterator(Class<? extends T> type, String index, @Nullable List<String> fields) throws IOException { this(type, index, fields, null); }
     public ScanAndScrollIterator(
         Class<? extends T> type,
         String index,
-        @Nullable QueryBuilder query,
-        @Nullable List<String> fields
+        @Nullable List<String> fields,
+        @Nullable QueryBuilder query
     ) throws IOException {
         this.index  = index;
         this.query  = query;
