@@ -165,13 +165,13 @@ public class TermVectorIterator<T> implements Iterator<T> {
         if( this.type.isAssignableFrom( response.getClass() ) ) {
             item = (T) response;
         }
-        else if( this.type.isAssignableFrom(TermVectorDocTokens.class) ) {
+        else if( this.type.equals(TermVectorDocTokens.class) ) {
             item = (T) new TermVectorDocTokens(response);
         }
-        else if( this.type.isAssignableFrom(TermVectorTokens.class) ) {
+        else if( this.type.equals(TermVectorTokens.class) ) {
             item = (T) new TermVectorTokens(response);
         }
-        else if( this.type.isAssignableFrom(String[].class) ) {
+        else if( this.type.equals(String[].class) ) {
             item = (T) new TermVectorTokens(response).tokenize().toArray(new String[0]);
         }
         if( item == null ) {
