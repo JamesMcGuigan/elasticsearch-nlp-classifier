@@ -1,7 +1,6 @@
-package com.jamesmcguigan.nlp.elasticsearch;
+package com.jamesmcguigan.nlp.elasticsearch.read;
 
 import com.jamesmcguigan.nlp.data.Tweet;
-import com.jamesmcguigan.nlp.elasticsearch.read.ScanAndScrollIterator;
 import org.elasticsearch.index.query.TermQueryBuilder;
 import org.elasticsearch.search.SearchHit;
 import org.json.JSONObject;
