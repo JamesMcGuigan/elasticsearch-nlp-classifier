@@ -9,18 +9,20 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 import static com.google.common.truth.Truth.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 
 class ScanAndScrollIteratorTest {
+    final String           index = "twitter";
+    final String           term  = "disaster".toLowerCase();
+    final TermQueryBuilder query = new TermQueryBuilder("text", term);
+
     @Test
     void testIterator() throws IOException {
-        var request = new ScanAndScrollIterator<>(SearchHit.class, "twitter");
+        var request = new ScanAndScrollIterator<>(SearchHit.class, index);
         var size = request.getTotalHits();
         assertTrue( size > 1000 );
 
@@ -38,7 +40,7 @@ class ScanAndScrollIteratorTest {
     @ValueSource(strings = {"id", "text", "text,location,keyword", "text,location"})
     void testIteratorFields(String field) throws IOException {
         var fields = Arrays.asList(field.split(","));
-        var request = new ScanAndScrollIterator<>(SearchHit.class, "twitter", fields);
+        var request = new ScanAndScrollIterator<>(SearchHit.class, index, fields);
         assertTrue( request.hasNext() );
 
         Map<String, Object> hit = request.next().getSourceAsMap();
@@ -47,9 +49,7 @@ class ScanAndScrollIteratorTest {
 
     @Test
     void testIteratorQuery() throws IOException {
-        String term = "disaster".toLowerCase();
-        var query   = new TermQueryBuilder("text", term);
-        var request = new ScanAndScrollIterator<>(SearchHit.class, "twitter", query);
+        var request = new ScanAndScrollIterator<>(SearchHit.class, index, query);
         var size = request.getTotalHits();
         assertTrue( size > 0 );
         assertTrue( size < 1000 );
@@ -70,9 +70,7 @@ class ScanAndScrollIteratorTest {
 
     @Test
     void testIteratorTypedTweet() throws IOException {
-        String term = "disaster".toLowerCase();
-        var query   = new TermQueryBuilder("text", term);
-        var request = new ScanAndScrollIterator<>(Tweet.class, "twitter", query);
+        var request = new ScanAndScrollIterator<>(Tweet.class, index, query);
         var size = request.getTotalHits();
         assertTrue( size > 0 );
 
@@ -87,9 +85,7 @@ class ScanAndScrollIteratorTest {
 
     @Test
     void testIteratorTypedString() throws IOException {
-        String term = "disaster".toLowerCase();
-        var query   = new TermQueryBuilder("text", term);
-        var request = new ScanAndScrollIterator<>(String.class, "twitter", query);
+        var request = new ScanAndScrollIterator<>(String.class, index, query);
         var size = request.getTotalHits();
         assertTrue( size > 0 );
 
@@ -105,9 +101,7 @@ class ScanAndScrollIteratorTest {
 
     @Test
     void testIteratorMap() throws IOException {
-        String term = "disaster".toLowerCase();
-        var query   = new TermQueryBuilder("text", term);
-        var request = new ScanAndScrollIterator<>(TreeMap.class, "twitter", query);
+        var request = new ScanAndScrollIterator<>(TreeMap.class, index, query);
         var size = request.getTotalHits();
         assertTrue( size > 0 );
 
@@ -127,9 +121,7 @@ class ScanAndScrollIteratorTest {
 
     @Test
     void testIteratorJSONObject() throws IOException {
-        String term = "disaster".toLowerCase();
-        var query   = new TermQueryBuilder("text", term);
-        var request = new ScanAndScrollIterator<>(JSONObject.class, "twitter", query);
+        var request = new ScanAndScrollIterator<>(JSONObject.class, index, query);
         var size = request.getTotalHits();
         assertTrue( size > 0 );
 
@@ -148,9 +140,7 @@ class ScanAndScrollIteratorTest {
 
     @Test
     void testIteratorReset() throws IOException {
-        String term = "disaster".toLowerCase();
-        var query   = new TermQueryBuilder("text", term);
-        var request = new ScanAndScrollIterator<>(SearchHit.class, "twitter", query);
+        var request = new ScanAndScrollIterator<>(SearchHit.class, index, query);
         for( int i = 0; i <= 2; i++ ) {
             request.reset();  // This lets us reread the ScanAndScroll request from the beginning
 
@@ -171,4 +161,48 @@ class ScanAndScrollIteratorTest {
         }
     }
 
+
+    @Test
+    void testPopBuffer() throws IOException {
+        int bufferSize = 100;
+        var request    = new ScanAndScrollIterator<>(String.class, index, query);
+        request.setBufferSize(bufferSize);
+        Long totalHits = request.getTotalHits();
+
+        // First read the buffer the old fashioned way via .next()
+        ArrayList<String> resultsNext      = new ArrayList<>();
+        ArrayList<String> resultsPopBuffer = new ArrayList<>();
+        while( request.hasNext() ) {
+            resultsNext.add(request.next());
+        }
+
+        // Reset and re-read the buffer using .popBuffer()
+        request.reset();
+        List<String> buffer;
+        for( int pos = 0; pos <= totalHits; pos += bufferSize ) {
+            buffer = request.popBuffer();
+            resultsPopBuffer.addAll(buffer);
+
+            // Test we have the correct size being returned
+            assertThat(buffer.isEmpty()).isFalse();
+            assertThat(buffer.size()).isAtMost(bufferSize);
+            assertThat(buffer.size()).isAtLeast((int) Math.min(bufferSize, totalHits-pos));
+        }
+
+        // Test we can safely read an empty buffer after
+        buffer = request.popBuffer();
+        assertThat(buffer.isEmpty()).isTrue();
+
+        // Test results count matches expected
+        assertThat(resultsNext.size()).isEqualTo(totalHits);
+        assertThat(resultsPopBuffer.size()).isEqualTo(totalHits);
+
+        // Test results are unique with no duplicates
+        assertThat(Set.copyOf(resultsNext)).containsExactlyElementsIn(resultsNext);           // is unique
+        assertThat(Set.copyOf(resultsPopBuffer)).containsExactlyElementsIn(resultsPopBuffer); // is unique
+
+        // Test both methods returns the exact same data
+        // NOTE: async results not guaranteed to be in exactly the same order
+        assertThat(resultsPopBuffer).containsExactlyElementsIn(resultsNext);
+    }
 }
