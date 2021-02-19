@@ -1,17 +1,24 @@
 package com.jamesmcguigan.nlp.data;
 
+import com.jamesmcguigan.nlp.tokenize.NLPTokenizer;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Stream;
 
-class ESJsonTest {
+import static com.google.common.truth.Truth.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+
+class ESJsonPathTest {
 
     @ParameterizedTest
     @CsvSource({"""
@@ -20,10 +27,22 @@ class ESJsonTest {
     """})
     void getLiteralPath(String input, String expected) {
         String actual = ESJsonPath.getLiteralPath(input);
-        Assertions.assertEquals(expected, actual);
+        assertEquals(expected, actual);
     }
 
+    @ParameterizedTest
+    @ValueSource(strings = { "{}", "{\"answer\":42}"} )
+    void testToString(String input) {
+        String output = new ESJsonPath(input).toString();  // renders without whitespace
+        assertThat(output).isEqualTo(input);
+    }
 
+    @Test
+    void getSetTokenizer() {
+        NLPTokenizer input  = new NLPTokenizer();
+        NLPTokenizer output = new ESJsonPath("{}").setTokenizer(input).getTokenizer();
+        assertEquals(input, output);
+    }
 
     private static Stream<Arguments> datasetForGetPossiblePaths() {
         return Stream.of(
@@ -50,8 +69,8 @@ class ESJsonTest {
     void get(String json, String path, String expected) {
         var jsonPath  = new ESJsonPath(json);
         String actual = jsonPath.get(path);
-        Assertions.assertEquals(expected, actual);
-        Assertions.assertEquals(String.class, actual.getClass());
+        assertEquals(expected, actual);
+        assertEquals(String.class, actual.getClass());
     }
 
 

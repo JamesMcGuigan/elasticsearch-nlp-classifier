@@ -31,7 +31,7 @@ public class ESJsonPath {
     public ESJsonPath(String json) {
         this.jsonPath = JsonPath.parse(json);
     }
-    public String toString() { return this.jsonPath.toString(); }
+    public String toString()           { return this.jsonPath.jsonString(); }
     public NLPTokenizer getTokenizer() { return tokenizer; }
     @SuppressWarnings("unchecked")
     public <T extends ESJsonPath> T setTokenizer(NLPTokenizer tokenizer) { this.tokenizer = tokenizer;return (T) this; }
