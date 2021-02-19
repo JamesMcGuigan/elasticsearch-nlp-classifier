@@ -27,7 +27,6 @@ import static java.util.Collections.singletonList;
  * Performs synchronous HTTP request on first iteration,
  * then attempts to asynchronously keep the buffer populated with at least {@code bufferSize} entries
  * <p/>
- * TODO: Write Unit Tests
  *
  * @param <T> AutoCast = {@link TermVectorsResponse} | {@link TermVectorDocTokens} | {@link TermVectorTokens} | {@code String[]}
  */
@@ -36,7 +35,8 @@ public class TermVectorIterator<T> implements Iterator<T> {
     private final String index;
     private final List<String> fields;
 
-    private Long pos = 0L;  // Position in the stream
+    private int  bufferSize = 100;  // Reduce buffer size to reduce Connection-is-Closed errors
+    private Long pos = 0L;          // Position in the stream
 
     private final ScanAndScrollIterator<SearchHit> scanAndScroll;
     private final Deque<TermVectorsResponse>       buffer = new ConcurrentLinkedDeque<>();
@@ -56,6 +56,7 @@ public class TermVectorIterator<T> implements Iterator<T> {
         this.type   = type;
         this.fields = fields;
         this.scanAndScroll = new ScanAndScrollIterator<>(SearchHit.class, index, singletonList("id"), query);
+        this.scanAndScroll.setBufferSize(this.bufferSize);
         this.reset();
     }
     public void reset() {
@@ -67,14 +68,14 @@ public class TermVectorIterator<T> implements Iterator<T> {
 
     //***** Getters / Setters *****//
 
-    public Long size()                        { return this.scanAndScroll.getTotalHits() - this.pos; }
-    public Long getTotalHits()                { return this.scanAndScroll.getTotalHits();     }
-    public boolean hasMoreRequests()          { return this.scanAndScroll.hasMoreRequests();  }
-    public int  getBufferSize()               { return this.scanAndScroll.getBufferSize();    }
-    public long getTTL()                      { return this.scanAndScroll.getTTL();           }
+    public Long size()                  { return this.scanAndScroll.getTotalHits() - this.pos; }
+    public Long getTotalHits()          { return this.scanAndScroll.getTotalHits();     }
+    public boolean hasMoreRequests()    { return this.scanAndScroll.hasMoreRequests();  }
+    public int  getBufferSize()         { return this.scanAndScroll.getBufferSize();    }
+    public long getTTL()                { return this.scanAndScroll.getTTL();           }
 
-    public void setBufferSize(int bufferSize) { this.scanAndScroll.setBufferSize(bufferSize); }
-    public void setTTL(long ttl)              { this.scanAndScroll.setTTL(ttl);               }
+    public void setBufferSize(int size) { this.scanAndScroll.setBufferSize(size); this.bufferSize = size; }
+    public void setTTL(long ttl)        { this.scanAndScroll.setTTL(ttl);               }
 
 
     protected List<String> getScanAndScrollIds() {

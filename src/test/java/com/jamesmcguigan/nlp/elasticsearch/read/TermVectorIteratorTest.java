@@ -2,6 +2,7 @@ package com.jamesmcguigan.nlp.elasticsearch.read;
 
 import com.jamesmcguigan.nlp.data.TermVectorDocTokens;
 import com.jamesmcguigan.nlp.data.TermVectorTokens;
+import com.jamesmcguigan.nlp.elasticsearch.ESClient;
 import org.elasticsearch.client.core.TermVectorsResponse;
 import org.elasticsearch.index.query.TermQueryBuilder;
 import org.junit.jupiter.api.BeforeEach;
@@ -27,9 +28,8 @@ class TermVectorIteratorTest {
 
     @BeforeEach
     void setUp() throws IOException {
+        ESClient.getInstance();  // refresh connection if closed
         iterator = new TermVectorIterator<>(TermVectorsResponse.class, index, fields, query);
-        iterator.setBufferSize(10);  // ensure buffer size is smaller than query size
-        iterator.reset();
     }
 
     @Test
@@ -55,7 +55,6 @@ class TermVectorIteratorTest {
 
     @Test
     void sizeTotalHits() {
-        iterator.setBufferSize(1000);  // increase speed of test
         Long totalHits = iterator.getTotalHits();
         assertThat( iterator.size() ).isEqualTo( totalHits );
         for( int pos = 0; pos < totalHits; pos++ ) {
@@ -92,11 +91,11 @@ class TermVectorIteratorTest {
 
     @Test
     void getScanAndScrollIds() {
-        iterator.setBufferSize(10000); // ensure buffer is larger than query size
-        iterator.reset();
-        List<String> ids = iterator.getScanAndScrollIds();
+        List<String> ids  = iterator.getScanAndScrollIds();
+        long expectedSize = Math.min( iterator.getTotalHits(), iterator.getBufferSize() );
+
         assertThat( Set.copyOf(ids) ).containsExactlyElementsIn(ids);
-        assertThat( ids.size()      ).isEqualTo( iterator.getTotalHits() );
+        assertThat( ids.size()      ).isEqualTo( expectedSize );
     }
 
     @Test
