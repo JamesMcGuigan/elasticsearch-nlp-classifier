@@ -40,8 +40,15 @@ public class TermVectorQuery {
     public <T extends TermVectorQuery> T setPositions(boolean positions) { this.positions = positions; return (T) this; }
 
 
+    public List<TermVectorsResponse> getMultiTermVectors(List<String> ids) throws IOException {
+        if( ids.isEmpty() ) { return new ArrayList<>(); }
+        String requestJson  = this.getMultiTermVectorsRequestJson(ids);
+        String responseJson = this.getMultiTermVectorsResponseJson(requestJson);
+        return this.castTermVectorsResponse(responseJson);
+    }
 
-    public Request getMultiTermVectorRequest(List<String> ids) {
+    
+    public String getMultiTermVectorsRequestJson(List<String> ids) {
         // WORKAROUND: client.mtermvectors(new MultiTermVectorsRequest()) on Bonsai throws 400 Bad Request
         // DOCS: https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-multi-termvectors.html
         // DOCS: https://github.com/javadev/underscore-java
@@ -54,23 +61,30 @@ public class TermVectorQuery {
                     .add("positions", this.positions)
                     .add("term_statistics", this.termStatistics)
                 ), U.arrayBuilder())
-            ).toJson();
+            ).toJson()
+        ;
+        return requestJson;
+    }
 
+
+    public Request getMultiTermVectorsRequest(String requestJson) {
         Request request = new Request("POST", "/"+this.index+"/_mtermvectors");
         request.setJsonEntity(requestJson);
         return request;
     }
 
 
-    public List<TermVectorsResponse> getMultiTermVectors(List<String> ids) throws IOException {
+    public String getMultiTermVectorsResponseJson(String requestJson) throws IOException {
         // DOCS: https://www.elastic.co/guide/en/elasticsearch/client/java-rest/7.11/java-rest-high-document-multi-term-vectors.html
-        if( ids.isEmpty() ) { return new ArrayList<>(); }
-
-        ESClient client = ESClient.getInstance();
-        Request request = this.getMultiTermVectorRequest(ids);
-
+        ESClient client     = ESClient.getInstance();
+        Request request     = this.getMultiTermVectorsRequest(requestJson);
         Response response   = client.getLowLevelClient().performRequest(request);
         String responseJson = EntityUtils.toString(response.getEntity());
+        return responseJson;
+    }
+
+
+    public List<TermVectorsResponse> castTermVectorsResponse(String responseJson) throws IOException {
         try(
             // Manually generate MultiTermVectorsResponse() from JSON to reuse ES object model
             XContentParser xContentParser = XContentType.JSON.xContent().createParser(
