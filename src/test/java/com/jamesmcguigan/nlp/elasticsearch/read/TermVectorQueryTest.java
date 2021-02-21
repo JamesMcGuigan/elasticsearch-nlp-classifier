@@ -28,7 +28,7 @@ class TermVectorQueryTest {
     private final List<String> fields = Arrays.asList("text", "location", "keyword");
 
     @BeforeEach
-    void setUp() {
+    void setUp() throws IOException {
         this.termVectorQuery = new TermVectorQuery(this.index, this.fields);
     }
 

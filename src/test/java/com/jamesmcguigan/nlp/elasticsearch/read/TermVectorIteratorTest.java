@@ -76,8 +76,8 @@ class TermVectorIteratorTest {
     @ParameterizedTest
     @ValueSource(ints = { 1, 10, 100, 1000 })
     void getSetBufferSize(int input) {
-        iterator.setBufferSize(input);
-        int output = iterator.getBufferSize();
+        iterator.setRequestSize(input);
+        int output = iterator.getRequestSize();
         assertThat( output ).isEqualTo( input );
     }
 
@@ -92,7 +92,7 @@ class TermVectorIteratorTest {
     @Test
     void getScanAndScrollIds() {
         List<String> ids  = iterator.getScanAndScrollIds();
-        long expectedSize = Math.min( iterator.getTotalHits(), iterator.getBufferSize() );
+        long expectedSize = Math.min( iterator.getTotalHits(), iterator.getRequestSize() );
 
         assertThat( Set.copyOf(ids) ).containsExactlyElementsIn(ids);
         assertThat( ids.size()      ).isEqualTo( expectedSize );
@@ -101,7 +101,7 @@ class TermVectorIteratorTest {
     @Test
     void fetch() throws IOException {
         List<TermVectorsResponse> buffer = iterator.fetch();
-        assertThat( buffer.size() ).isEqualTo( iterator.getBufferSize() );
+        assertThat( buffer.size() ).isEqualTo( iterator.getRequestSize() );
     }
 
     @ParameterizedTest

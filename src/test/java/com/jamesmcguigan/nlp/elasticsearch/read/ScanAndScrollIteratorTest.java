@@ -166,7 +166,7 @@ class ScanAndScrollIteratorTest {
     void testPopBuffer() throws IOException {
         int bufferSize = 100;
         var request    = new ScanAndScrollIterator<>(String.class, index, query);
-        request.setBufferSize(bufferSize);
+        request.setRequestSize(bufferSize);
         Long totalHits = request.getTotalHits();
 
         // First read the buffer the old fashioned way via .next()

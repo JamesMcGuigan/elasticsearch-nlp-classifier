@@ -29,8 +29,11 @@ public class TermVectorQuery {
     private boolean payloads       = true;
     private boolean positions      = true;
 
-    public TermVectorQuery(String index) { this(index, null); }
-    public TermVectorQuery(String index, @Nullable List<String> fields) {
+    private final ESClient client  = ESClient.getInstance();
+
+
+    public TermVectorQuery(String index) throws IOException { this(index, null); }
+    public TermVectorQuery(String index, @Nullable List<String> fields) throws IOException {
         this.index  = index;
         this.fields = fields;
     }
@@ -76,7 +79,6 @@ public class TermVectorQuery {
 
     public String getMultiTermVectorsResponseJson(String requestJson) throws IOException {
         // DOCS: https://www.elastic.co/guide/en/elasticsearch/client/java-rest/7.11/java-rest-high-document-multi-term-vectors.html
-        ESClient client     = ESClient.getInstance();
         Request request     = this.getMultiTermVectorsRequest(requestJson);
         Response response   = client.getLowLevelClient().performRequest(request);
         String responseJson = EntityUtils.toString(response.getEntity());
