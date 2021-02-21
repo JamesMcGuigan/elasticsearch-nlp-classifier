@@ -4,7 +4,7 @@ import com.google.common.collect.ImmutableSet;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.util.List;
+import java.util.Arrays;
 import java.util.Objects;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -28,12 +28,12 @@ public class Stopwords {
     ;
 
     public static ImmutableSet<String> getStopwords() { return ImmutableSet.copyOf(stopwords); }
-    public static List<String> removeStopwords(List<String> tokens) {
-        tokens = tokens.stream()
+    public static String[] removeStopwords(String[] tokens) {
+        tokens = Arrays.stream(tokens)
             .filter(token -> !Stopwords.stopwords.contains(token.toLowerCase()))
             .filter(token -> !Stopwords.regexPunctuation.matcher(token).matches())
             .filter(token -> !token.isEmpty())
-            .collect(Collectors.toList())
+            .toArray(String[]::new)
         ;
         return tokens;
     }

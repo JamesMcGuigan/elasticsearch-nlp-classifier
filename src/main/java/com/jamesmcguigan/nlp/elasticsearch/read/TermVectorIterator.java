@@ -115,7 +115,10 @@ public class TermVectorIterator<T> extends BufferedIterator<T, TermVectorsRespon
             item = (T) new TermVectorTokens(bufferItem);
         }
         else if( this.type.equals(String[].class) ) {
-            item = (T) new TermVectorTokens(bufferItem).tokenize().toArray(new String[0]);
+            item = (T) new TermVectorTokens(bufferItem).tokenize();
+        }
+        else if( this.type.equals(String.class) ) {
+            item = (T) String.join("\t", new TermVectorTokens(bufferItem).tokenize());
         }
         if( item == null ) {
             throw new IllegalArgumentException("unsupported type: " + this.type.getCanonicalName());

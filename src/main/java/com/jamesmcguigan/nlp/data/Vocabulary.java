@@ -6,8 +6,12 @@ import java.util.Collections;
 import java.util.List;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 class Vocabulary extends TreeSet<String> {
+    Vocabulary(String[] words) {
+        this(Arrays.asList(words));
+    }
     Vocabulary(List<String> words) {
         this.addAll(words);
     }
@@ -31,7 +35,7 @@ class Vocabulary extends TreeSet<String> {
     public static Vocabulary fromTweets(List<Tweet> tweets ) {
         var words = tweets.stream()
                 .map(Tweet::tokenize)
-                .flatMap(List::stream)
+                .flatMap(Stream::of)
                 .distinct()
                 .collect(Collectors.toList())
         ;

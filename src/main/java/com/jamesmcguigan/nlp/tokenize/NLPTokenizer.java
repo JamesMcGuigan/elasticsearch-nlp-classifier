@@ -3,17 +3,14 @@ package com.jamesmcguigan.nlp.tokenize;
 import opennlp.tools.stemmer.Stemmer;
 import opennlp.tools.stemmer.snowball.SnowballStemmer;
 import opennlp.tools.tokenize.SimpleTokenizer;
-import opennlp.tools.tokenize.Tokenizer;
 import vendor.twittertokenizer.Twokenizer;
 
 import java.util.Arrays;
-import java.util.List;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import static opennlp.tools.stemmer.snowball.SnowballStemmer.ALGORITHM.ENGLISH;
 
-public class NLPTokenizer {
+public class NLPTokenizer extends AbstractTokenizer {
 
     //***** Default Settings *****//
     private boolean useStopwords = false;
@@ -57,9 +54,8 @@ public class NLPTokenizer {
 
     //***** Methods *****//
 
-
-    public List<String> tokenize(String text) {
-        List<String> tokens = this.split(text);
+    public String[] tokenize(String text) {
+        String[] tokens = this.split(text);
         if( this.useCleanTwitter ) {
             tokens = this.cleanTwitter(tokens);
         }
@@ -75,40 +71,41 @@ public class NLPTokenizer {
         return tokens;
     }
 
-    public List<String> split(String text) {
+    public String[] split(String text) {
+        String[] tokens;
         if( this.useTwitter ) {
-            Twokenizer tokenizer = new Twokenizer();
-            List<String> tokens = tokenizer.twokenize(text);
-            return tokens;
+            var tokenizer = new Twokenizer();
+            tokens = tokenizer.twokenize(text).toArray(new String[0]);
         } else {
-            Tokenizer tokenizer = SimpleTokenizer.INSTANCE;
-            List<String> tokens = Arrays.asList( tokenizer.tokenize(text) );
+            var tokenizer = SimpleTokenizer.INSTANCE;
+            tokens = tokenizer.tokenize(text);
             return tokens;
         }
+        return tokens;
     }
 
-    public List<String> cleanTwitter(List<String> tokens) {
-        tokens = tokens.stream()
+    public String[] cleanTwitter(String[] tokens) {
+        tokens = Arrays.stream(tokens)
             .filter(string -> !this.regexTwitterHandle.matcher(string).find())
             .filter(string -> !this.regexUrl.matcher(string).find())
             .map(string -> this.regexHashtag.matcher(string).replaceAll(""))
-            .collect(Collectors.toList())
+            .toArray(String[]::new)
         ;
         return tokens;
     }
 
-    public List<String> lowercase(List<String> tokens) {
-        tokens = tokens.stream()
+    public String[] lowercase(String[] tokens) {
+        tokens = Arrays.stream(tokens)
             .map(String::toLowerCase)
-            .collect(Collectors.toList())
+            .toArray(String[]::new)
         ;
         return tokens;
     }
 
-    public List<String> stem(List<String> tokens) {
-        tokens = tokens.stream()
+    public String[] stem(String[] tokens) {
+        tokens = Arrays.stream(tokens)
             .map(token -> this.stemmer.stem(token).toString())
-            .collect(Collectors.toList())
+            .toArray(String[]::new)
         ;
         return tokens;
     }

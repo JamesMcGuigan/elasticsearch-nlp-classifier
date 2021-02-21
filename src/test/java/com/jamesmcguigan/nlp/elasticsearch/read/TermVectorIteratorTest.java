@@ -109,7 +109,8 @@ class TermVectorIteratorTest {
         TermVectorsResponse.class,
         TermVectorDocTokens.class,
         TermVectorTokens.class,
-        String[].class
+        String[].class,
+        String.class
     })
     void cast(Class<?> type) throws IOException {
         var typedIterator = new TermVectorIterator<>(type, index, fields, query);

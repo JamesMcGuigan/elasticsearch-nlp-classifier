@@ -75,17 +75,19 @@ class TermVectorTokensTest {
 
     @Test
     void tokenize() {
-        List<String> tokens = termVectorTokens.tokenize();
-        assertThat(tokens).containsExactly("", "all", "allah", "are", "deeds", "earthquake", "forgive", "may", "of", "our", "reason", "the", "this", "us");
+        String[] tokens   = termVectorTokens.tokenize();
+        String[] expected = new String[]{ "", "all", "allah", "are", "deeds", "earthquake", "forgive", "may", "of", "our", "reason", "the", "this", "us" };
+        assertThat(tokens).isEqualTo(expected);
 
     }
 
     @Test
     void tokenizeField() {
-        List<String> tokensText = termVectorTokens.tokenize("text");
-        assertThat(tokensText).containsExactly("all", "allah", "are", "deeds", "earthquake", "forgive", "may", "of", "our", "reason", "the", "this", "us");
+        String[] tokensText = termVectorTokens.tokenize("text");
+        String[] expected   = new String[]{ "all", "allah", "are", "deeds", "earthquake", "forgive", "may", "of", "our", "reason", "the", "this", "us" };
+        assertThat(tokensText).isEqualTo(expected);
 
-        List<String> tokensKeyword = termVectorTokens.tokenize("keyword");
-        assertThat(tokensKeyword).containsExactly("");
+        String[] tokensKeyword = termVectorTokens.tokenize("keyword");
+        assertThat(tokensKeyword).isEqualTo(new String[]{ "" });
     }
 }

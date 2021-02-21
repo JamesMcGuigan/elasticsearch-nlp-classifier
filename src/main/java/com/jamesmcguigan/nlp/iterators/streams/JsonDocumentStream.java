@@ -43,7 +43,7 @@ public class JsonDocumentStream implements ObjectStream<DocumentSample> {
     protected DocumentSample cast(String json) {
         ESJsonPath jsonPath = new ESJsonPath(json).setTokenizer(this.tokenizer);
         String category     = jsonPath.get(this.target);
-        String[] tokens     = jsonPath.tokenize(this.fields).toArray(new String[0]);
+        String[] tokens     = jsonPath.tokenize(this.fields);
         var documentSample  = new DocumentSample(category, tokens);
         return documentSample;
     }

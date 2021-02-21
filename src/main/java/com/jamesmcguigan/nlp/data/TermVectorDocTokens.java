@@ -2,8 +2,7 @@ package com.jamesmcguigan.nlp.data;
 
 import org.elasticsearch.client.core.TermVectorsResponse;
 
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Arrays;
 
 
 /**
@@ -18,16 +17,16 @@ public class TermVectorDocTokens extends TermVectorTokens {
     }
 
     @Override
-    public List<String> tokenize() {
-        List<String> tokens = super.tokenize();
-        tokens = tokens.stream().distinct().collect(Collectors.toList());
+    public String[] tokenize() {
+        String[] tokens = super.tokenize();
+        tokens = Arrays.stream(tokens).distinct().toArray(String[]::new);
         return tokens;
     }
 
     @Override
-    public List<String> tokenize(String fieldName) {
-        List<String> tokens = super.tokenize(fieldName);
-        tokens = tokens.stream().distinct().collect(Collectors.toList());
+    public String[] tokenize(String fieldName) {
+        String[] tokens = super.tokenize(fieldName);
+        tokens = Arrays.stream(tokens).distinct().toArray(String[]::new);
         return tokens;
     }
 }

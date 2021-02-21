@@ -4,8 +4,6 @@ import com.jamesmcguigan.nlp.tokenize.NLPTokenizer;
 import opennlp.tools.doccat.DocumentSample;
 
 import javax.annotation.Nullable;
-import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class Tweet {
@@ -44,24 +42,24 @@ public class Tweet {
         );
     }
 
-    public List<String> tokenize() {
+    public String[] tokenize() {
         return Stream.of(
                 // this.keyword,
                 // this.location,
                 this.text
             )
             .map(this.tokenizer::tokenize)
-            .flatMap(List<String>::stream)
-            .collect(Collectors.toList())
+            .flatMap(Stream::of)
+            .toArray(String[]::new)
         ;
     }
 
     public DocumentSample toDocumentSampleKeyword() {
-        var tokens = this.tokenizer.tokenize(this.text).toArray(new String[0]);
+        var tokens = this.tokenizer.tokenize(this.text);
         return new DocumentSample(this.keyword, tokens);
     }
     public DocumentSample toDocumentSampleTarget() {
-        String[] tokens = this.tokenizer.tokenize(this.text).toArray(new String[0]);
+        String[] tokens = this.tokenizer.tokenize(this.text);
         return new DocumentSample(this.target, tokens);
     }
 }

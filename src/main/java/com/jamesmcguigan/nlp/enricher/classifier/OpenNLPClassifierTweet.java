@@ -35,7 +35,7 @@ public class OpenNLPClassifierTweet extends OpenNLPClassifier {
 
 
     public String predict(Tweet tweet) {
-        var tokens = tweet.tokenize().toArray(new String[0]);
+        var tokens = tweet.tokenize();
         return this.predict(tokens);
     }
     public List<String> predict(List<Tweet> tweets) {

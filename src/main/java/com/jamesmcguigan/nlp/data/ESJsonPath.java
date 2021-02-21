@@ -6,10 +6,10 @@ import com.jayway.jsonpath.JsonPath;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Stream;
 
 public class ESJsonPath {
     private static final Logger logger = LogManager.getLogger();
@@ -67,14 +67,14 @@ public class ESJsonPath {
     }
 
 
-    public List<String> tokenize(String path)        { return tokenize(Collections.singletonList(path)); }
-    public List<String> tokenize(List<String> paths) {
-        List<String> tokens = new ArrayList<>();
-        for( String path : paths ) {
-            String text = get(path);
-            List<String> tokenized = tokenizer.tokenize(text);
-            tokens.addAll(tokenized);
-        }
+    public String[] tokenize(String path)        { return tokenize(Collections.singletonList(path)); }
+    public String[] tokenize(List<String> paths) {
+        String[] tokens = paths.stream()
+            .map(this::get)
+            .map(tokenizer::tokenize)
+            .flatMap(Stream::of)
+            .toArray(String[]::new)
+        ;
         return tokens;
     }
 }

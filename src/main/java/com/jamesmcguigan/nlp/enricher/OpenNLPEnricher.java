@@ -92,7 +92,7 @@ public class OpenNLPEnricher {
                 String json         = request.next();
                 ESJsonPath jsonPath = new ESJsonPath(json).setTokenizer(this.tokenizer);
                 String id           = jsonPath.get("id");
-                String[] tokens     = jsonPath.tokenize(this.fields).toArray(new String[0]);
+                String[] tokens     = jsonPath.tokenize(this.fields);
                 String prediction   = this.classifier.predict(tokens);
                 String updateKey    = this.getUpdateKey(this.target);
 

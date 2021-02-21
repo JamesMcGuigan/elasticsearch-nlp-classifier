@@ -126,7 +126,7 @@ public class OpenNLPMultiEnricher {
     private @Nullable ImmutablePair<String, Map<String, Object>> predictUpdatePairFromJson(String json) {
         var jsonPath    = new ESJsonPath(json);
         String id       = jsonPath.get("id");
-        String[] tokens = jsonPath.tokenize(this.fields).toArray(new String[0]);
+        String[] tokens = jsonPath.tokenize(this.fields);
 
         // Loop over each of the target fields
         HashMap<String, Object> updateMap = new HashMap<>();

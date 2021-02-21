@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 
 /**
@@ -34,11 +35,11 @@ public class TermVectorTokens {
      * @return List of all tokens, for all fields,
      *         duplicated in accordance with getTermFreq()
      */
-    public List<String> tokenize() {
-        List<String> tokens = this.getFields().stream()
+    public String[] tokenize() {
+        String[] tokens = this.getFields().stream()
             .map(this::tokenize)
-            .flatMap(Collection::stream)
-            .collect(Collectors.toList())
+            .flatMap(Stream::of)
+            .toArray(String[]::new)
         ;
         return tokens;
     }
@@ -47,8 +48,8 @@ public class TermVectorTokens {
      * @return List of all tokens, for a given fieldName,
      *         duplicated in accordance with getTermFreq()
      */
-    public List<String> tokenize(String fieldName) {
-        List<String> tokens = response.getTermVectorsList().stream()
+    public String[] tokenize(String fieldName) {
+        String[] tokens = response.getTermVectorsList().stream()
             .filter(termVector -> termVector.getFieldName().equals(fieldName))
             .map(TermVectorsResponse.TermVector::getTerms)
             .flatMap(Collection::stream)
@@ -61,7 +62,7 @@ public class TermVectorTokens {
                 return termTokens;
             })
             .flatMap(Collection::stream)
-            .collect(Collectors.toList())
+            .toArray(String[]::new)
         ;
         return tokens;
     }

@@ -77,10 +77,10 @@ class ESJsonPathTest {
 
     private static Stream<Arguments> datasetForTokenize() {
         return Stream.of(
-            Arguments.of("{ \"text\": 1 }",                            "text",            Collections.singletonList("1")),
-            Arguments.of("{ \"text\": \"hello world\" }",              "text",            Arrays.asList("hello", "world")),
-            Arguments.of("{ \"_opennlp.target\": \"hello world\" }",   "_opennlp.target", Arrays.asList("hello", "world")),
-            Arguments.of("{ \"_opennlp\": { \"target\": \"1.234\" }}", "_opennlp.target", Collections.singletonList("1.234")),
+            Arguments.of("{ \"text\": 1 }",                            "text",            new String[]{ "1" }),
+            Arguments.of("{ \"text\": \"hello world\" }",              "text",            new String[]{ "hello", "world" }),
+            Arguments.of("{ \"_opennlp.target\": \"hello world\" }",   "_opennlp.target", new String[]{ "hello", "world" }),
+            Arguments.of("{ \"_opennlp\": { \"target\": \"1.234\" }}", "_opennlp.target", new String[]{ "1.234" }),
             Arguments.of(
                 """
                 { 
@@ -88,14 +88,14 @@ class ESJsonPathTest {
                     "_opennlp": { "target": "1.234" }
                 }
                 """,
-                "_opennlp.target", Arrays.asList("hello", "world"))  // prefer top-level key
+                "_opennlp.target", new String[]{ "hello", "world" })  // prefer top-level key
         );
     }
     @ParameterizedTest
     @MethodSource("datasetForTokenize")
-    void tokenize(String json, String path, List<String> expected) {
-        var jsonPath        = new ESJsonPath(json);
-        List<String> actual = jsonPath.tokenize(path);
-        Assertions.assertIterableEquals(expected, actual);
+    void tokenize(String json, String path, String[] expected) {
+        var jsonPath    = new ESJsonPath(json);
+        String[] actual = jsonPath.tokenize(path);
+        assertThat(actual).isEqualTo(expected);
     }
 }

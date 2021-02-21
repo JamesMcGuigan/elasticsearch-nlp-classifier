@@ -71,7 +71,7 @@ public class OpenNLPClassifier {
 
 
     public String predict(String text) {
-        String[] tokens = this.tokenizer.tokenize(text).toArray(new String[0]);
+        String[] tokens = this.tokenizer.tokenize(text);
         return this.predict(tokens);
     }
     public String predict(String[] tokens) {
