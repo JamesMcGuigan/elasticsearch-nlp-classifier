@@ -1,7 +1,7 @@
 # Data
-input/
-output/
-logs/
+input
+output
+logs
 
 # Build
 target/
