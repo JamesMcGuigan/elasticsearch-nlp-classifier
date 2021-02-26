@@ -57,12 +57,21 @@ mvn archetype:generate \
 
 ### Run
 ```
+mvn dependency:build-classpath -Dmdep.outputFile=classpath
+java -cp target/classes:`cat classpath` com.jamesmcguigan.nlp.v2.CLI
+
 mvn compile exec:java --quiet
-mvn compile exec:java -Dexec.mainClass="com.jamesmcguigan.nlp.App" -q
-java -cp target/classes/ com.jamesmcguigan.nlp.App
-mvn package; java -jar target/elasticsearch-nlp-classifier-1.0-SNAPSHOT.jar
+mvn compile exec:java -q -Dexec.mainClass="com/jamesmcguigan/nlp/v1/enricher/OpenNLPMultiEnricher.java" 
+
+mvn package; java -jar target/elasticsearch-nlp-classifier-1.0-SNAPSHOT.jar -c config/pipelines/elasticsearch/0_pipeline_elasticsearch.yaml
+
+mvn compile exec:java -q -Dexec.args="-c config/pipelines/elasticsearch/0_pipeline_elasticsearch.yaml"
 ```
 
+Broken:
+```
+java -cp target/elasticsearch-nlp-classifier-1.0-SNAPSHOT.jar  com.jamesmcguigan.nlp.v1.App
+```
 
 ## Apace Zeppelin
 - https://quicknotepadtutorial.blogspot.com/2019/12/how-to-install-apache-zeppelin-on.html

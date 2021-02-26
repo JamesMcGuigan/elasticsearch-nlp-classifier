@@ -1,4 +1,4 @@
-package com.jamesmcguigan.nlp;
+package com.jamesmcguigan.nlp.v1;
 
 import com.jamesmcguigan.nlp.v1.classifier.OpenNLPClassifierES;
 import com.jamesmcguigan.nlp.v1.classifier.OpenNLPClassifierTweet;
