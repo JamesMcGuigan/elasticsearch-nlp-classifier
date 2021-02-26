@@ -1,6 +1,12 @@
+# Data
+input/
+output/
+logs/
+
 # Build
 target/
 out/
+
 
 # UML Files
 *.puml
