@@ -40,13 +40,11 @@ public class TermVectorIterator<T> extends BufferedIterator<T, TermVectorsRespon
 
     //***** Constructors *****//
 
-    public TermVectorIterator(Class<? extends T> type, String index)                      throws IOException { this(type, index, null, null); }
-    public TermVectorIterator(Class<? extends T> type, String index, QueryBuilder query ) throws IOException { this(type, index, null, query); }
     public TermVectorIterator(Class<? extends T> type, String index, List<String> fields) throws IOException { this(type, index, fields, null); }
     public TermVectorIterator(
         Class<? extends T> type,
         String index,
-        @Nullable List<String> fields,
+        List<String> fields,
         @Nullable QueryBuilder query
     ) throws IOException {
         super(type);
@@ -57,6 +55,8 @@ public class TermVectorIterator<T> extends BufferedIterator<T, TermVectorsRespon
         this.setRequestSize(this.defaultRequestSize);
         this.setTTL(this.defaultTtl);
         this.reset();
+
+        if( fields == null ) { throw new AssertionError("_mtermvectors returns empty results if no fields are specified"); }
     }
     @Override
     public void reset() {
@@ -118,7 +118,8 @@ public class TermVectorIterator<T> extends BufferedIterator<T, TermVectorsRespon
             item = (T) new TermVectorTokens(bufferItem).tokenize();
         }
         else if( this.type.equals(String.class) ) {
-            item = (T) String.join("\t", new TermVectorTokens(bufferItem).tokenize());
+            String[] tokens = new TermVectorTokens(bufferItem).tokenize();
+            item = (T) String.join("\t", tokens);
         }
         if( item == null ) {
             throw new IllegalArgumentException("unsupported type: " + this.type.getCanonicalName());

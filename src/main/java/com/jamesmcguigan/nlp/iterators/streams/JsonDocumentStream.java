@@ -1,8 +1,8 @@
 package com.jamesmcguigan.nlp.iterators.streams;
 
 import com.jamesmcguigan.nlp.data.ESJsonPath;
-import com.jamesmcguigan.nlp.tokenize.NLPTokenizer;
 import opennlp.tools.doccat.DocumentSample;
+import opennlp.tools.tokenize.Tokenizer;
 import opennlp.tools.util.ObjectStream;
 
 import java.util.Iterator;
@@ -12,7 +12,7 @@ public class JsonDocumentStream implements ObjectStream<DocumentSample> {
     protected final Iterator<String> iterator;
     protected final List<String>     fields;
     protected final String           target;
-    protected NLPTokenizer tokenizer = ESJsonPath.getDefaultTokenizer();
+    protected Tokenizer tokenizer = ESJsonPath.getDefaultTokenizer();
 
     public JsonDocumentStream(Iterator<String> iterator, List<String> fields, String target) {
         this.iterator = iterator;
@@ -20,9 +20,9 @@ public class JsonDocumentStream implements ObjectStream<DocumentSample> {
         this.target   = target;
     }
 
-    public NLPTokenizer getTokenizer() { return this.tokenizer; }
+    public Tokenizer getTokenizer() { return this.tokenizer; }
     @SuppressWarnings("unchecked")
-    public <T extends JsonDocumentStream> T setTokenizer(NLPTokenizer tokenizer) { this.tokenizer = tokenizer; return (T) this; }
+    public <T extends JsonDocumentStream> T setTokenizer(Tokenizer tokenizer) { this.tokenizer = tokenizer; return (T) this; }
 
 
     /**

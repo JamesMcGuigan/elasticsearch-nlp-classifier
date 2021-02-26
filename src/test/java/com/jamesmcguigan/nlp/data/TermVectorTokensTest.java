@@ -6,6 +6,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 
 import static com.google.common.truth.Truth.assertThat;
@@ -58,7 +59,7 @@ class TermVectorTokensTest {
 
     @BeforeEach
     void setUp() throws IOException {
-        termVectorQuery  = new TermVectorQuery("twitter");
+        termVectorQuery  = new TermVectorQuery("twitter", Arrays.asList("text", "keyword"));
         response         = termVectorQuery.castTermVectorsResponse(responseJson);
         termVectorTokens = new TermVectorTokens(response.get(0));
     }

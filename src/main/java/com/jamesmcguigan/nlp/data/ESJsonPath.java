@@ -3,6 +3,7 @@ package com.jamesmcguigan.nlp.data;
 import com.jamesmcguigan.nlp.tokenize.NLPTokenizer;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
+import opennlp.tools.tokenize.Tokenizer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -14,7 +15,7 @@ import java.util.stream.Stream;
 public class ESJsonPath {
     private static final Logger logger = LogManager.getLogger();
 
-    public static NLPTokenizer getDefaultTokenizer() {
+    public static Tokenizer getDefaultTokenizer() {
         return new NLPTokenizer()
             // .setCleanTwitter(true)  // Kaggle score = 0.76248
             // .setTwitter(false)      // Kaggle score = 0.76831
@@ -24,17 +25,15 @@ public class ESJsonPath {
             .setStemming(true)
         ;
     }
-    private NLPTokenizer tokenizer = getDefaultTokenizer();
+    private Tokenizer tokenizer = getDefaultTokenizer();
     private final DocumentContext jsonPath;
 
 
-    public ESJsonPath(String json) {
-        this.jsonPath = JsonPath.parse(json);
-    }
-    public String toString()           { return this.jsonPath.jsonString(); }
-    public NLPTokenizer getTokenizer() { return tokenizer; }
+    public ESJsonPath(String json)  { this.jsonPath = JsonPath.parse(json); }
+    public String toString()        { return this.jsonPath.jsonString(); }
+    public Tokenizer getTokenizer() { return tokenizer; }
     @SuppressWarnings("unchecked")
-    public <T extends ESJsonPath> T setTokenizer(NLPTokenizer tokenizer) { this.tokenizer = tokenizer;return (T) this; }
+    public <T extends ESJsonPath> T setTokenizer(Tokenizer tokenizer) { this.tokenizer = tokenizer; return (T) this; }
 
 
     /**

@@ -6,7 +6,7 @@ import com.jamesmcguigan.nlp.elasticsearch.read.ScanAndScrollIterator;
 import com.jamesmcguigan.nlp.elasticsearch.update.BulkUpdateQueue;
 import com.jamesmcguigan.nlp.enricher.classifier.OpenNLPClassifierES;
 import com.jamesmcguigan.nlp.iterators.streams.ESDocumentStream;
-import com.jamesmcguigan.nlp.tokenize.NLPTokenizer;
+import opennlp.tools.tokenize.Tokenizer;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 
@@ -26,7 +26,7 @@ import static org.elasticsearch.index.query.QueryBuilders.existsQuery;
  */
 @SuppressWarnings("unchecked")
 public class OpenNLPEnricher {
-    private NLPTokenizer tokenizer = ESJsonPath.getDefaultTokenizer();
+    private Tokenizer tokenizer = ESJsonPath.getDefaultTokenizer();
 
     private final String       index;
     private final List<String> fields;
@@ -53,8 +53,8 @@ public class OpenNLPEnricher {
     public <T extends OpenNLPEnricher> T load(Path filepath) throws IOException { this.classifier.load(filepath); return (T) this; }
     public <T extends OpenNLPEnricher> T save(Path filepath) throws IOException { this.classifier.save(filepath); return (T) this; }
 
-    public NLPTokenizer getTokenizer() { return this.tokenizer; }
-    public <T extends OpenNLPEnricher> T setTokenizer(NLPTokenizer tokenizer) { this.tokenizer = tokenizer; return (T) this; }
+    public Tokenizer getTokenizer() { return this.tokenizer; }
+    public <T extends OpenNLPEnricher> T setTokenizer(Tokenizer tokenizer) { this.tokenizer = tokenizer; return (T) this; }
 
     public String getUpdateKey(String target) { return this.prefix.isEmpty() ? target : this.prefix+'.'+target; }
 

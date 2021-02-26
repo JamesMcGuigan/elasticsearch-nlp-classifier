@@ -10,7 +10,7 @@ import com.jamesmcguigan.nlp.iterators.multiplex.MultiplexIterator;
 import com.jamesmcguigan.nlp.iterators.multiplex.MultiplexIterators;
 import com.jamesmcguigan.nlp.iterators.streams.FilteredJsonDocumentStream;
 import com.jamesmcguigan.nlp.iterators.streams.JsonDocumentStream;
-import com.jamesmcguigan.nlp.tokenize.NLPTokenizer;
+import opennlp.tools.tokenize.Tokenizer;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.elasticsearch.index.query.QueryBuilder;
 
@@ -30,29 +30,32 @@ import static org.elasticsearch.index.query.QueryBuilders.existsQuery;
  */
 @SuppressWarnings("unchecked")
 public class OpenNLPMultiEnricher {
-    private NLPTokenizer tokenizer = ESJsonPath.getDefaultTokenizer();
+    protected Tokenizer tokenizer = ESJsonPath.getDefaultTokenizer();
 
-    private final String       index;
-    private final List<String> fields;
-    private final List<String> targets;
-    private String             prefix = "_opennlp";
+    protected final String       index;
+    protected final List<String> fields;
+    protected final List<String> targets;
+    protected String             prefix = "_opennlp";
 
-    private final Map<String, OpenNLPClassifier> classifiers;
+    protected final Map<String, OpenNLPClassifier> classifiers;
 
 
     //***** Constructors *****//
 
-    public OpenNLPMultiEnricher(String index, List<String> fields, List<String> targets) { this(index, fields, targets, null); }
-    public OpenNLPMultiEnricher(String index, List<String> fields, List<String> targets, @Nullable String prefix) {
+    public OpenNLPMultiEnricher(String index, List<String> fields, List<String> targets) {
         this.index   = index;
         this.fields  = fields;
         this.targets = targets;
-        this.prefix  = (prefix != null) ? prefix : this.prefix;
         this.classifiers = targets.stream().collect(Collectors.toMap(
             target -> target,
             target -> new OpenNLPClassifier()
         ));
     }
+    public OpenNLPMultiEnricher(String index, List<String> fields, List<String> targets, String prefix) {
+        this(index, fields, targets);
+        this.prefix = prefix;
+    }
+
 
 
 
@@ -60,22 +63,15 @@ public class OpenNLPMultiEnricher {
 
     public String getUpdateKey(String target) { return this.prefix.isEmpty() ? target : this.prefix+'.'+target; }
 
-    public NLPTokenizer getTokenizer() { return this.tokenizer; }
-    public <T extends OpenNLPMultiEnricher> T setTokenizer(NLPTokenizer tokenizer) { this.tokenizer = tokenizer; return (T) this; }
+    public Tokenizer getTokenizer() { return this.tokenizer; }
+    public <T extends OpenNLPMultiEnricher> T setTokenizer(Tokenizer tokenizer) { this.tokenizer = tokenizer; return (T) this; }
 
 
 
-    //***** Train *****//
+    //***** Iterators *****//
 
-    public <T extends OpenNLPMultiEnricher> T train() throws IOException { return train(null); }
-    public <T extends OpenNLPMultiEnricher> T train(@Nullable QueryBuilder query) throws IOException {
-        var scanAndScroll = new ScanAndScrollIterator<>(String.class, this.index, this.getTargetQuery(query));
-        var multiplexer   = new MultiplexIterators<>(scanAndScroll, this.targets);
-        multiplexer
-            .parallelStream()
-            .forEach(this::trainClassifier)
-        ;
-        return (T) this;
+    public Iterator<String> getIterator(@Nullable QueryBuilder query) throws IOException {
+        return new ScanAndScrollIterator<>(String.class, this.index, query);
     }
 
     protected QueryBuilder getTargetQuery(@Nullable QueryBuilder query) {
@@ -83,6 +79,21 @@ public class OpenNLPMultiEnricher {
         if( query != null ) { targetQuery = targetQuery.must(query); }
         for( String target : this.targets ) { targetQuery = targetQuery.must(existsQuery(target)); }
         return targetQuery;
+    }
+
+
+    //***** Train *****//
+
+    public <T extends OpenNLPMultiEnricher> T train() throws IOException { return train(null); }
+    public <T extends OpenNLPMultiEnricher> T train(@Nullable QueryBuilder query) throws IOException {
+        var targetQuery = this.getTargetQuery(query);
+        var scanAndScroll = this.getIterator(targetQuery);
+        var multiplexer   = new MultiplexIterators<>(scanAndScroll, this.targets);
+        multiplexer
+            .parallelStream()
+            .forEach(this::trainClassifier)
+        ;
+        return (T) this;
     }
 
     protected void trainClassifier(MultiplexIterator<String> iterator) {

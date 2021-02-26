@@ -1,6 +1,7 @@
 package com.jamesmcguigan.nlp.data;
 
 import com.jamesmcguigan.nlp.tokenize.NLPTokenizer;
+import opennlp.tools.tokenize.Tokenizer;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -39,8 +40,8 @@ class ESJsonPathTest {
 
     @Test
     void getSetTokenizer() {
-        NLPTokenizer input  = new NLPTokenizer();
-        NLPTokenizer output = new ESJsonPath("{}").setTokenizer(input).getTokenizer();
+        Tokenizer input  = new NLPTokenizer();
+        Tokenizer output = new ESJsonPath("{}").setTokenizer(input).getTokenizer();
         assertEquals(input, output);
     }
 

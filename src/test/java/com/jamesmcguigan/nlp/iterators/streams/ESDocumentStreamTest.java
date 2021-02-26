@@ -2,6 +2,7 @@ package com.jamesmcguigan.nlp.iterators.streams;
 
 import com.jamesmcguigan.nlp.tokenize.NLPTokenizer;
 import opennlp.tools.doccat.DocumentSample;
+import opennlp.tools.tokenize.Tokenizer;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.junit.jupiter.api.Test;
 
@@ -45,7 +46,7 @@ class ESDocumentStreamTest {
         String target = "1";
         String term   = "disaster";
 
-        NLPTokenizer tokenizer = new NLPTokenizer().setLowercase(true).setStemming(false);
+        Tokenizer tokenizer = new NLPTokenizer().setLowercase(true).setStemming(false);
         BoolQueryBuilder query = boolQuery()
             .must(matchQuery("target", target))
             .must(termQuery("text", term));

@@ -2,6 +2,7 @@ package com.jamesmcguigan.nlp.iterators.streams;
 
 import com.jamesmcguigan.nlp.tokenize.NLPTokenizer;
 import opennlp.tools.doccat.DocumentSample;
+import opennlp.tools.tokenize.Tokenizer;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -59,7 +60,7 @@ class JsonDocumentStreamTest {
     @Test
     void setTokenizerSimple() {
         Iterator<String> iterator = input.iterator();
-        NLPTokenizer tokenizer    = new NLPTokenizer().setLowercase(true).setStemming(false);
+        Tokenizer tokenizer       = new NLPTokenizer().setLowercase(true).setStemming(false);
         JsonDocumentStream stream = new JsonDocumentStream(
             iterator,
             Arrays.asList("text1", "text2"),

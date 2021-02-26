@@ -12,7 +12,6 @@ import org.elasticsearch.common.xcontent.NamedXContentRegistry;
 import org.elasticsearch.common.xcontent.XContentParser;
 import org.elasticsearch.common.xcontent.XContentType;
 
-import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,10 +31,11 @@ public class TermVectorQuery {
     private final ESClient client  = ESClient.getInstance();
 
 
-    public TermVectorQuery(String index) throws IOException { this(index, null); }
-    public TermVectorQuery(String index, @Nullable List<String> fields) throws IOException {
+    public TermVectorQuery(String index, List<String> fields) throws IOException {
         this.index  = index;
         this.fields = fields;
+
+        if( this.fields == null ) { throw new AssertionError("_mtermvectors returns empty results if no fields are specified"); }
     }
     public <T extends TermVectorQuery> T setTermStatistics(boolean termStatistics) { this.termStatistics = termStatistics; return (T) this; }
     public <T extends TermVectorQuery> T setOffsets(boolean offsets)     { this.offsets = offsets;     return (T) this; }
