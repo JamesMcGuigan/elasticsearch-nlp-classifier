@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 
 class TweetsTest {
     @ParameterizedTest
-    @ValueSource(strings = { "input/train.csv", "input/test.csv" })
+    @ValueSource(strings = { "input/nlp-getting-started/train.csv", "input/nlp-getting-started/test.csv" })
     void canReadCSV(String filename) throws IOException {
         Path path = Paths.get(filename);
         Assertions.assertTrue( Files.exists(path) );

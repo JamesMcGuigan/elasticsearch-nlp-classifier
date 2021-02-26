@@ -7,9 +7,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class VocabularyTest {
     @Test
     void testFromFiles() {
-        Vocabulary train = Vocabulary.fromFiles("input/train.csv");
-        Vocabulary test  = Vocabulary.fromFiles("input/test.csv");
-        Vocabulary both  = Vocabulary.fromFiles("input/train.csv", "input/test.csv");
+        Vocabulary train = Vocabulary.fromFiles("input/nlp-getting-started/train.csv");
+        Vocabulary test  = Vocabulary.fromFiles("input/nlp-getting-started/test.csv");
+        Vocabulary both  = Vocabulary.fromFiles("input/nlp-getting-started/train.csv",
+                                                "input/nlp-getting-started/test.csv");
 
         assertTrue( train.size() > 0 );
         assertTrue( test.size() > 0  );
