@@ -1,8 +1,8 @@
 package com.jamesmcguigan.nlp;
 
-import com.jamesmcguigan.nlp.enricher.OpenNLPEnricher;
-import com.jamesmcguigan.nlp.enricher.classifier.OpenNLPClassifierES;
-import com.jamesmcguigan.nlp.enricher.classifier.OpenNLPClassifierTweet;
+import com.jamesmcguigan.nlp.v1.classifier.OpenNLPClassifierES;
+import com.jamesmcguigan.nlp.v1.classifier.OpenNLPClassifierTweet;
+import com.jamesmcguigan.nlp.v1.enricher.OpenNLPEnricher;
 
 import java.io.IOException;
 
