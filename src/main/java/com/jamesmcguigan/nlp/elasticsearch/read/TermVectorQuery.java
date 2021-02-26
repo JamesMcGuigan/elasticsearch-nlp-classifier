@@ -2,7 +2,10 @@ package com.jamesmcguigan.nlp.elasticsearch.read;
 
 import com.github.underscore.lodash.U;
 import com.jamesmcguigan.nlp.elasticsearch.ESClient;
+import org.apache.http.ConnectionClosedException;
 import org.apache.http.util.EntityUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.elasticsearch.client.Request;
 import org.elasticsearch.client.Response;
 import org.elasticsearch.client.core.MultiTermVectorsResponse;
@@ -21,12 +24,16 @@ import java.util.List;
  */
 @SuppressWarnings("unchecked")
 public class TermVectorQuery {
+    private static final Logger logger = LogManager.getLogger();
+    private static final int retries = 5;  // number of times to retry connection before throwing exception
+
     private final String       index;
     private final List<String> fields;
     private boolean termStatistics = true;
     private boolean offsets        = true;
     private boolean payloads       = true;
     private boolean positions      = true;
+
 
     private final ESClient client  = ESClient.getInstance();
 
@@ -77,14 +84,23 @@ public class TermVectorQuery {
     }
 
 
-    public String getMultiTermVectorsResponseJson(String requestJson) throws IOException {
+    protected String getMultiTermVectorsResponseJson(String requestJson) throws IOException {
         // DOCS: https://www.elastic.co/guide/en/elasticsearch/client/java-rest/7.11/java-rest-high-document-multi-term-vectors.html
-        Request request     = this.getMultiTermVectorsRequest(requestJson);
-        Response response   = client.getLowLevelClient().performRequest(request);
-        String responseJson = EntityUtils.toString(response.getEntity());
-        return responseJson;
+        // If we get a ConnectionClosedException then try again - happens intermittently
+        IOException exception = new IOException("retry limit exceeded");
+        for( int i = 0; i < retries; i++ ) {
+            try {
+                Request request     = this.getMultiTermVectorsRequest(requestJson);
+                Response response   = client.getLowLevelClient().performRequest(request);
+                String responseJson = EntityUtils.toString(response.getEntity());
+                return responseJson;
+            } catch( ConnectionClosedException e ) {
+                logger.debug(e.getCause());
+                exception = e;
+            }
+        }
+        throw exception;
     }
-
 
     public List<TermVectorsResponse> castTermVectorsResponse(String responseJson) throws IOException {
         try(
