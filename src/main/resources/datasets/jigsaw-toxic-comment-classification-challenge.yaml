@@ -1,0 +1,17 @@
+# https://www.kaggle.com/c/jigsaw-toxic-comment-classification-challenge/data
+jigsaw-toxic-comment-classification-challenge:
+  type: csv
+  source:
+    train:  input/jigsaw-toxic-comment-classification-challenge/train.csv
+    test:   input/jigsaw-toxic-comment-classification-challenge/test.csv
+    output: output/jigsaw-toxic-comment-classification-challenge.csv
+  fields:
+    id: id
+    comment_text: text
+  labels:
+    toxic: binary
+    severe_toxic: binary
+    obscene: binary
+    threat: binary
+    insult: binary
+    identity_hate: binary

@@ -1,0 +1,12 @@
+# https://www.kaggle.com/c/nlp-getting-started/data
+nlp-getting-started:
+  type: elasticsearch
+  source:
+    index: twitter
+  fields:
+    id: id
+    keyword: categorical
+    location: text
+    text: text
+  labels:
+    target: binary

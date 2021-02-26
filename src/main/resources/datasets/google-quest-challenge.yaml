@@ -1,0 +1,50 @@
+# https://www.kaggle.com/c/google-quest-challenge/data
+google_quest_challenge:
+  type: csv
+  source:
+    train:  input/google-quest-challenge/train.csv
+    test:   input/google-quest-challenge/test.csv
+    output: output/google-quest-challenge.csv
+  fields:
+    qa_id: id
+    question_title: text
+    question_body: text
+    question_user_name: categorical
+    question_user_page: categorical
+    answer: text
+    answer_user_name: categorical
+    answer_user_page: categorical
+    url: text
+    category: categorical
+    host: categorical
+  labels:
+    question_asker_intent_understanding: numeric
+    question_body_critical: numeric
+    question_conversational: numeric
+    question_expect_short_answer: numeric
+    question_fact_seeking: numeric
+    question_has_commonly_accepted_answer: numeric
+    question_interestingness_others: numeric
+    question_interestingness_self: numeric
+    question_multi_intent: numeric
+    question_not_really_a_question: numeric
+    question_opinion_seeking: numeric
+    question_type_choice: numeric
+    question_type_compare: numeric
+    question_type_consequence: numeric
+    question_type_definition: numeric
+    question_type_entity: numeric
+    question_type_instructions: numeric
+    question_type_procedure: numeric
+    question_type_reason_explanation: numeric
+    question_type_spelling: numeric
+    question_well_written: numeric
+    answer_helpful: numeric
+    answer_level_of_information: numeric
+    answer_plausible: numeric
+    answer_relevance: numeric
+    answer_satisfaction: numeric
+    answer_type_instructions: numeric
+    answer_type_procedure: numeric
+    answer_type_reason_explanation: numeric
+    answer_well_written: numeric

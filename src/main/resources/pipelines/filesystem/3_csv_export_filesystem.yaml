@@ -1,0 +1,22 @@
+nlp-getting-started-elasticsearch:
+  extractor: com.jamesmcguigan.nlp.enricher.NaiveBayesEnricher
+  condition: None
+  configuration:
+    task:    csv
+    context: None
+    predict:
+      - target
+      - keyword
+    datasets:
+      - datasets/nlp-getting-started-elasticsearch.yaml
+      - datasets/quora-insincere-questions-classification.yaml
+      - datasets/stumbleupon.yaml
+      - datasets/jigsaw-unintended-bias-in-toxicity-classification.yaml
+      - datasets/nlp-getting-started.yaml
+      - datasets/whats-cooking.yaml
+      - datasets/word2vec-nlp-tutorial.yaml
+      - datasets/random-acts-of-pizza.yaml
+      - datasets/sentiment-analysis-on-movie-reviews.yaml
+      - datasets/google-quest-challenge.yaml
+      - datasets/jigsaw-toxic-comment-classification-challenge.yaml
+      - datasets/tradeshift-text-classification.yaml

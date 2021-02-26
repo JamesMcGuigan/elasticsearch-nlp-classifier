@@ -1,0 +1,14 @@
+# https://www.kaggle.com/c/nlp-getting-started/data
+nlp-getting-started:
+  type: csv
+  source:
+    train:  input/nlp-getting-started/train.csv
+    test:   input/nlp-getting-started/test.csv
+    output: output/nlp-getting-started.csv
+  fields:
+    id: id
+    keyword: categorical
+    location: text
+    text: text
+  labels:
+    target: binary

@@ -1,0 +1,13 @@
+# https://www.kaggle.com/c/sentiment-analysis-on-movie-reviews/data
+sentiment-analysis-on-movie-reviews:
+  type: tsv
+  source:
+    train:   input/sentiment-analysis-on-movie-reviews/train.tsv
+    test:    input/sentiment-analysis-on-movie-reviews/test.tsv
+    output:  output/sentiment-analysis-on-movie-reviews.csv
+  fields:
+    PhraseId: id
+    SentenceId: categorical
+    Phrase: text
+  labels:
+    Sentiment: categorical  # 0 = negative | 1 = somewhat negative | 2 = neutral | 3 = somewhat positive | 4 = positive

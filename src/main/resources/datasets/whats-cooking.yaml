@@ -1,0 +1,12 @@
+# https://www.kaggle.com/c/whats-cooking/data
+whats-cooking:
+  type: json
+  source:
+    train:  input/whats-cooking/train.json
+    test:   input/whats-cooking/test.json
+    output: output/whats-cooking.csv
+  fields:
+    id: id
+    ingredients: list_categorical
+  labels:
+    cuisine: categorical

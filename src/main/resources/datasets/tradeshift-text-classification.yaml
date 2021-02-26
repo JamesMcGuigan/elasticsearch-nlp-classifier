@@ -1,0 +1,48 @@
+# https://www.kaggle.com/c/tradeshift-text-classification/data
+# https://www.kaggle.com/jamesmcguigan/tradeshift-profilereport-eda/
+tradeshift-text-classification:
+  type: csv
+  source:
+     train:
+           - input/tradeshift-text-classification/train.csv
+           - input/tradeshift-text-classification/trainLabels.csv
+     test:   input/tradeshift-text-classification/test.csv
+     output: output/tradeshift-text-classification.csv
+  fields:
+    id: id
+    # x1,x2 x3 x4 x5 x6 x7 x8,x9,x10,x11,x12,x13,x14,x15,x16,x17,x18,x19,x20,x21,x22,x23,x24,x25,x26,x27,x28,x29,x30,x31,x32,x33,x34,x35,x36,x37,x38,x39,x40,x41,x42,x43,x44,x45,x46,x47,x48,x49,x50,x51,x52,x53,x54,x55,x56,x57,x58,x59,x60,x61,x62,x63,x64,x65,x66,x67,x68,x69,x70,x71,x72,x73,x74,x75,x76,x77,x78,x79,x80,x81,x82,x83,x84,x85,x86,x87,x88,x89,x90,x91,x92,x93,x94,x95,x96,x97,x98,x99,x100,x101,x102,x103,x104,x105,x106,x107,x108,x109,x110,x111,x112,x113,x114,x115,x116,x117,x118,x119,x120,x121,x122,x123,x124,x125,x126,x127,x128,x129,x130,x131,x132,x133,x134,x135,x136,x137,x138,x139,x140,x141,x142,x143,x144,x145
+  labels:
+     y1:  binary
+     y2:  binary
+     y3:  binary
+     y4:  binary
+     y5:  binary
+     y6:  binary
+     y7:  binary
+     y8:  binary
+     y9:  binary
+     y10: binary
+     y11: binary
+     y12: binary
+     y13: binary
+     y14: binary
+     y15: binary
+     y16: binary
+     y17: binary
+     y18: binary
+     y19: binary
+     y20: binary
+     y21: binary
+     y22: binary
+     y23: binary
+     y24: binary
+     y25: binary
+     y26: binary
+     y27: binary
+     y28: binary
+     y29: binary
+     y30: binary
+     y31: binary
+     y32: binary
+     y33: binary
+

@@ -1,0 +1,12 @@
+# https://www.kaggle.com/c/word2vec-nlp-tutorial/data
+word2vec-nlp-tutorial:
+  type: tsv
+  source:
+    train:  input/word2vec-nlp-tutorial/labeledTrainData.tsv
+    test:   input/word2vec-nlp-tutorial/testData.tsv
+    output: output/word2vec-nlp-tutorial.csv
+  fields:
+    id: id
+    review: text
+  labels:
+    sentiment: binary

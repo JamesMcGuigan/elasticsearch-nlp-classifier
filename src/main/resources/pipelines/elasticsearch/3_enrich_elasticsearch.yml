@@ -1,0 +1,13 @@
+nlp-getting-started-elasticsearch-enrich:
+  extractor: com.jamesmcguigan.nlp.enricher.NaiveBayesEnricher
+  condition: None
+  configuration:
+    task:    statistics
+    context: naivebayes
+    predict:
+      - target
+      - keyword
+    datasets:
+      - datasets/nlp-getting-started-elasticsearch.yaml
+
+

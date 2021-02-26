@@ -1,0 +1,57 @@
+# https://www.kaggle.com/c/jigsaw-unintended-bias-in-toxicity-classification/data
+jigsaw-unintended-bias-in-toxicity-classification:
+  type: csv
+  source:
+    train:  input/jigsaw-unintended-bias-in-toxicity-classification/train.csv
+    test:   input/jigsaw-unintended-bias-in-toxicity-classification/test_private_expanded.csv
+    output: output/jigsaw-unintended-bias-in-toxicity-classification.csv
+  fields:
+    id: id
+    comment_text: text
+  labels:
+    target: numeric
+    severe_toxicity: numeric
+    obscene: numeric
+    identity_attack: numeric
+    insult: numeric
+    threat: numeric
+    asian: numeric
+    atheist: numeric
+    bisexual: numeric
+    black: numeric
+    buddhist: numeric
+    christian: numeric
+    female: numeric
+    heterosexual: numeric
+    hindu: numeric
+    homosexual_gay_or_lesbian: numeric
+    intellectual_or_learning_disability: numeric
+    jewish: numeric
+    latino: numeric
+    male: numeric
+    muslim: numeric
+    other_disability: numeric
+    other_gender: numeric
+    other_race_or_ethnicity: numeric
+    other_religion: numeric
+    other_sexual_orientation: numeric
+    physical_disability: numeric
+    psychiatric_or_mental_illness: numeric
+    transgender: numeric
+    white: numeric
+    created_date: date
+    publication_id: categorical
+    parent_id: categorical
+    article_id: categorical
+    rating: categorical
+    funny: numeric
+    wow: numeric
+    sad: numeric
+    likes: numeric
+    disagree: numeric
+    sexual_explicit: numeric
+    identity_annotator_count: numeric
+    toxicity_annotator_count: numeric
+  output:
+    id: id
+    prediction: target

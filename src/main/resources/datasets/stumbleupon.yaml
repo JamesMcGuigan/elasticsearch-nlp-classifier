@@ -1,0 +1,36 @@
+# https://www.kaggle.com/c/stumbleupon/data
+stumbleupon:
+  type: tsv
+  source:
+    train:  input/stumbleupon/train.tsv
+    test:   input/stumbleupon/test.tsv
+    output: output/stumbleupon.csv
+  fields:
+    urlid: id                       # StumbleUpon's unique identifier for each url
+    url: text                       # Url of the webpage to be classified
+    boilerplate: text               # json Boilerplate text
+    alchemy_category: categorical   # Alchemy category (per the publicly available Alchemy API found at www.alchemyapi.com)
+    alchemy_category_score: numeric # Alchemy category score
+    avglinksize: numeric            # Average number of words in each link
+    commonLinkRatio_1: numeric      # of links sharing at least 1 word with 1 other links / # of links
+    commonLinkRatio_2: numeric      # of links sharing at least 1 word with 2 other links / # of links
+    commonLinkRatio_3: numeric      # of links sharing at least 1 word with 3 other links / # of links
+    commonLinkRatio_4: numeric      # of links sharing at least 1 word with 4 other links / # of links
+    compression_ratio: numeric      # Compression achieved on this page via gzip (measure of redundancy)
+    embed_ratio: numeric            # Count of number of <embed>  usage
+    frameBased: binary              # A page is frame-based (1) if it has no body markup but have a frameset markup
+    frameTagRatio: numeric          # Ratio of iframe markups over total number of markups
+    hasDomainLink: binary           # True (1) if it contains an <a>  with an url with domain
+    html_ratio: numeric             # Ratio of tags vs text in the page
+    image_ratio: numeric            # Ratio of <img> tags vs text in the page
+    is_news: binary                 # True (1) if StumbleUpon's news classifier determines that this webpage is news
+    lengthyLinkDomain: binary       # True (1) if at least 3 <a> 's text contains more than 30 alphanumeric characters
+    linkwordscore: numeric          # Percentage of words on the page that are in hyperlink's text
+    news_front_page: binary         # True (1) if StumbleUpon's news classifier determines that this webpage is front-page news
+    non_markup_alphanum_characters: numeric  # integer Page's text's number of alphanumeric characters
+    numberOfLinks: numeric          # integer Number of <a>  markups
+    numwords_in_url: numeric        # Number of words in url
+    parametrizedLinkRatio: numeric  # A link is parametrized if it's url contains parameters  or has an attached onClick event
+    spelling_errors_ratio: numeric  # Ratio of words not found in wiki (considered to be a spelling mistake)
+  labels:
+    label: binary

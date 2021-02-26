@@ -1,0 +1,15 @@
+# https://www.kaggle.com/c/quora-insincere-questions-classification/data
+quora-insincere-questions-classification:
+  type: csv
+  source:
+    train:  input/quora-insincere-questions-classification/train.csv
+    test:   input/quora-insincere-questions-classification/test.csv
+    output: output/quora-insincere-questions-classification.csv
+  fields:
+    qid: id
+    question_text: text
+  labels:
+    target: binary
+  output_mapping:
+    qid: qid
+    prediction: target
