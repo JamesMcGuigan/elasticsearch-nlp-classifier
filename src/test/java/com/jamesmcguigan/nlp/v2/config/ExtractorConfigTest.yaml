@@ -1,0 +1,29 @@
+pipeline-config-test:
+  extractor: com.jamesmcguigan.nlp.v2.extractor.Pipeline
+  condition: None
+  context:   test
+  configuration:
+    predict:
+      - target
+      - keyword
+    datasets:
+      - datasets/nlp-getting-started-elasticsearch.yaml
+#    tasks:
+#      - train:
+#          - extractor: com.jamesmcguigan.nlp.classifier.NaiveBayesClassifier
+#            # task:      train  # implied
+#          - extractor: com.jamesmcguigan.nlp.classifier.LGBMClassifier
+#            # task:      train  # implied
+#      - statistics:
+#          - extractor: com.jamesmcguigan.nlp.classifier.NaiveBayesClassifier
+#            # task:      statistics  # implied
+#          - extractor: com.jamesmcguigan.nlp.classifier.LGBMClassifier
+#            # task:      statistics  # implied
+#      - enrich:
+#          - extractor: com.jamesmcguigan.nlp.classifier.NaiveBayesClassifier
+#            # task:      enrich  # implied
+#          - extractor: com.jamesmcguigan.nlp.classifier.LGBMClassifier
+#            # task:      enrich  # implied
+
+
+

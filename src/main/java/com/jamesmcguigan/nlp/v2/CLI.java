@@ -1,12 +1,17 @@
 package com.jamesmcguigan.nlp.v2;
 
+import com.jamesmcguigan.nlp.v2.config.ExtractorConfig;
+import com.jamesmcguigan.nlp.v2.config.YamlParser;
+import com.jamesmcguigan.nlp.v2.controller.Controller;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.config.Configurator;
 import picocli.CommandLine;
 
-import java.io.File;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.util.List;
 import java.util.concurrent.Callable;
 
 // Usage:
@@ -24,7 +29,7 @@ public class CLI implements Callable<Integer> {
     private static final Logger logger = LogManager.getLogger(CLI.class);
 
     @CommandLine.Option(names={"-c", "--config"}, required=true, description="YAML configuration file")
-    private File config;
+    private Path path;
 
     @CommandLine.Option(names={"-v", "--verbose"}, description="Verbose Logging")
     private boolean verbose = false;
@@ -33,23 +38,37 @@ public class CLI implements Callable<Integer> {
     private boolean quiet = false;
 
 
-    public void setQuiet()   { Configurator.setAllLevels(LogManager.getRootLogger().getName(), Level.ERROR); }
-    public void setVerbose() {
-        Configurator.setAllLevels(LogManager.getRootLogger().getName(), Level.DEBUG);
-    }
-
-
-    @Override
-    public Integer call() {
-        if( this.verbose ) { this.setVerbose(); }
-        if( this.quiet   ) { this.setQuiet();   }
-        logger.info(this.config.getAbsolutePath());
-        return 0;
-    }
-
     public static void main(String[] args) {
         int exitCode = new CommandLine(new CLI()).execute(args);
         System.exit(exitCode);
     }
 
+    @Override
+    public Integer call() {
+        if( this.verbose ) { this.setVerbose(); }
+        if( this.quiet   ) { this.setQuiet();   }
+        if( !this.path.toFile().exists()  ) {
+            logger.error("path {} does not exist", this.path);
+            return 126;  // unix exitcode 126 = Command invoked cannot execute
+        }
+        try {
+            this.parseConfig();
+            return 0;    // unix exitcode 0 = success
+        } catch( Exception e ) {
+            logger.error(e);
+            e.printStackTrace();
+            return 1;    // unix exitcode 1 = Catchall for general errors
+        }
+    }
+
+    public void setQuiet()   { Configurator.setAllLevels(LogManager.getRootLogger().getName(), Level.ERROR); }
+    public void setVerbose() { Configurator.setAllLevels(LogManager.getRootLogger().getName(), Level.DEBUG); }
+
+    private void parseConfig() throws IOException {
+        List<ExtractorConfig> configs = YamlParser.getExtractorConfigs(this.path);
+        for( ExtractorConfig config : configs ) {
+            Controller controller = new Controller(config);
+            controller.run();
+        }
+    }
 }

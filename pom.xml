@@ -164,6 +164,16 @@
       <artifactId>underscore</artifactId>
       <version>1.63</version>
     </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.dataformat</groupId>
+      <artifactId>jackson-dataformat-yaml</artifactId>
+      <version>2.11.2</version>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.datatype</groupId>
+      <artifactId>jackson-datatype-jsr310</artifactId>
+      <version>2.11.2</version>
+    </dependency>
 
 <!--    <dependency>-->
 <!--      <groupId>com.alibaba</groupId>-->
