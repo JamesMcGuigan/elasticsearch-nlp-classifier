@@ -86,8 +86,9 @@ public class BulkUpdateQueue implements UpdateQueue {
             /**
              * Callback after a failed execution of bulk request.
              *
-             * Note that in case an instance of <code>InterruptedException</code> is passed, which means that request processing has been
-             * cancelled externally, the thread's interruption status has been restored prior to calling this method.
+             * Note that in case an instance of <code>InterruptedException</code> is passed,
+             * which means that request processing has been cancelled externally,
+             * the thread's interruption status has been restored prior to calling this method.
              */
             @Override
             public void afterBulk(long executionId, BulkRequest bulkRequest, Throwable failure) {
@@ -150,7 +151,7 @@ public class BulkUpdateQueue implements UpdateQueue {
     public void update(BulkRequest bulkRequest) {
         bulkRequest.requests().stream()
             .filter(item -> item instanceof UpdateRequest)
-            .forEach(item -> {
+            .forEach((DocWriteRequest<?> item) -> {
                 String id  = item.id();
                 Map<String, Object> source = ((UpdateRequest) item).doc().sourceAsMap();
                 this.update(id, source);

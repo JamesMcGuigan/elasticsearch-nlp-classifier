@@ -13,6 +13,7 @@ import org.elasticsearch.index.query.QueryBuilder;
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -41,7 +42,7 @@ public class OpenNLPEnricher {
     public OpenNLPEnricher(String index, List<String> fields, String target) { this(index, fields, target, null); }
     public OpenNLPEnricher(String index, List<String> fields, String target, @Nullable String prefix) {
         this.index  = index;
-        this.fields = fields;
+        this.fields = new ArrayList<>(fields);
         this.target = target;
         this.prefix = (prefix != null) ? prefix : this.prefix;
     }
@@ -56,7 +57,7 @@ public class OpenNLPEnricher {
     public Tokenizer getTokenizer() { return this.tokenizer; }
     public <T extends OpenNLPEnricher> T setTokenizer(Tokenizer tokenizer) { this.tokenizer = tokenizer; return (T) this; }
 
-    public String getUpdateKey(String target) { return this.prefix.isEmpty() ? target : this.prefix+'.'+target; }
+    public String getUpdateKey(String target) { return this.prefix.isEmpty() ? target : (this.prefix+'.'+target); }
 
 
 
@@ -96,7 +97,7 @@ public class OpenNLPEnricher {
                 String prediction   = this.classifier.predict(tokens);
                 String updateKey    = this.getUpdateKey(this.target);
 
-                if( this.isUpdateRequired(jsonPath, updateKey, prediction) ) {
+                if( isUpdateRequired(jsonPath, updateKey, prediction) ) {
                     updateQueue.update(id, updateKey, prediction);
                 }
             }
@@ -104,7 +105,7 @@ public class OpenNLPEnricher {
         return (T) this;
     }
 
-    private boolean isUpdateRequired(ESJsonPath jsonPath, String updateKey, String prediction) {
+    private static boolean isUpdateRequired(ESJsonPath jsonPath, String updateKey, String prediction) {
         String existing = jsonPath.get(updateKey);
         return !prediction.equals(existing);
     }

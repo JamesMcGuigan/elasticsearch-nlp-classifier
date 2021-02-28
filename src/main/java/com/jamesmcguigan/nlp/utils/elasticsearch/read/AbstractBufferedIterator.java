@@ -1,5 +1,8 @@
 package com.jamesmcguigan.nlp.utils.elasticsearch.read;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.Deque;
@@ -22,7 +25,8 @@ import java.util.stream.Collectors;
  * @param <T> autocast return type of the Iterator
  * @param <B> internal storage type for the buffer
  */
-public abstract class BufferedIterator<T, B> implements Iterator<T> {
+public abstract class AbstractBufferedIterator<T, B> implements Iterator<T> {
+    private static final Logger logger = LogManager.getLogger();
     protected final Class<? extends T> type;
 
     protected int  requestSize = 1000;     // Number of items to load in buffer, pre-fetching may double this
@@ -31,13 +35,13 @@ public abstract class BufferedIterator<T, B> implements Iterator<T> {
     @Nullable protected Long  totalHits;  // Total number of results from query
     protected Long pos = 0L;              // Position in the stream
 
-    protected final Deque<B>            buffer = new ConcurrentLinkedDeque<>();
-    protected CompletableFuture<Void>   future = CompletableFuture.completedFuture(null);  // Semaphore for async promises
+    protected final Deque<B>          buffer = new ConcurrentLinkedDeque<>();
+    protected CompletableFuture<Void> future = CompletableFuture.completedFuture(null);  // Semaphore for async promises
 
 
     //***** Constructors *****//
 
-    protected BufferedIterator(Class<? extends T> type) {
+    protected AbstractBufferedIterator(Class<? extends T> type) {
         this.type = type;
         this.reset();
     }
@@ -84,7 +88,7 @@ public abstract class BufferedIterator<T, B> implements Iterator<T> {
                 this.prefetchBuffer();
             }
         } catch( IOException e ) {
-            e.printStackTrace();
+            logger.debug(e);
         }
     }
 

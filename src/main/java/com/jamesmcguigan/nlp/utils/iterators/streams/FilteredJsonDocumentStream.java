@@ -32,7 +32,7 @@ public class FilteredJsonDocumentStream extends JsonDocumentStream {
         while( this.iterator.hasNext() ) {
             String json             = this.iterator.next();
             DocumentSample document = this.cast( json );
-            if( document.getCategory() == null || document.getCategory().equals("") ) {
+            if( document.getCategory() == null || "".equals(document.getCategory()) ) {
                 continue;
             }
             if( this.predicate != null ) {

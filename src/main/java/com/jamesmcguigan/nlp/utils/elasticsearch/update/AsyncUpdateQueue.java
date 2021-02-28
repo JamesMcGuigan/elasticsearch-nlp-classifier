@@ -70,7 +70,7 @@ public class AsyncUpdateQueue implements UpdateQueue {
                     // WORKAROUND: Retry and reduce maxRequestsInFlight
                     if( e instanceof ElasticsearchStatusException ) {
                         var exception = (ElasticsearchStatusException) e;
-                        if( exception.status().toString().equals("TOO_MANY_REQUESTS") ) {
+                        if( "TOO_MANY_REQUESTS".equals(exception.status().toString()) ) {
                             AsyncUpdateQueue.this.maxRequestsInFlight *= 0.9;  // race condition is desirable here
                             retry   = true;
                             action  = exception.status().toString();
@@ -83,7 +83,7 @@ public class AsyncUpdateQueue implements UpdateQueue {
                         try {
                             AsyncUpdateQueue.this.update(id, updateKeyValues);
                         } catch( IOException ioException ) {
-                            ioException.printStackTrace();
+                            logger.debug(ioException);
                         }
                     }
                 }

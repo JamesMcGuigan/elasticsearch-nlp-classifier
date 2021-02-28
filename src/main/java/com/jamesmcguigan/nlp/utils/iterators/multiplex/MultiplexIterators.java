@@ -22,7 +22,7 @@ import java.util.stream.Stream;
  */
 public class MultiplexIterators<T> {
     // Shared lock between all children prevent race conditions in .stream().parallel() - tested as thread-safe
-    ReentrantLock lock = new ReentrantLock();
+    protected ReentrantLock lock = new ReentrantLock();
 
     protected final Iterator<T> parentIterator;
     protected final Map<String, MultiplexIterator<T>> children;

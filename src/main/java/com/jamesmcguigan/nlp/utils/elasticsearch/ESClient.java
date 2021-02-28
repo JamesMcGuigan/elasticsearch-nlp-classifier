@@ -5,6 +5,7 @@ import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.impl.client.BasicCredentialsProvider;
+import org.apache.http.impl.nio.client.HttpAsyncClientBuilder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.elasticsearch.client.Node;
@@ -14,10 +15,9 @@ import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.client.sniff.Sniffer;
 
 import java.io.IOException;
-import java.lang.invoke.MethodHandles;
 import java.util.Properties;
 
-public class ESClient extends RestHighLevelClient {
+public final class ESClient extends RestHighLevelClient {
     private static final Logger logger = LogManager.getLogger();
     private static final boolean useSniffer = false;  // Sniffer breaks HTTPS connectivity with Bonsai
     private Sniffer sniffer;
@@ -49,7 +49,7 @@ public class ESClient extends RestHighLevelClient {
         String propertiesFile = "elasticsearch.properties";
         Properties properties = new Properties();
         properties.load(
-            MethodHandles.lookup().lookupClass().getClassLoader()
+            Thread.currentThread().getContextClassLoader()
                 .getResourceAsStream(propertiesFile)
         );
         return properties;
@@ -77,7 +77,7 @@ public class ESClient extends RestHighLevelClient {
                 properties.getProperty("es.scheme")
             )
         )
-            .setHttpClientConfigCallback(httpClientBuilder -> {
+            .setHttpClientConfigCallback((HttpAsyncClientBuilder httpClientBuilder) -> {
                 httpClientBuilder.disableAuthCaching();
                 return httpClientBuilder.setDefaultCredentialsProvider(credentialsProvider);
             })
@@ -113,7 +113,7 @@ public class ESClient extends RestHighLevelClient {
                 }
                 ESClient.this.close();
             } catch( IOException e ) {
-                e.printStackTrace();
+                logger.error(e);
             }
         }, "Shutdown-thread"));
     }

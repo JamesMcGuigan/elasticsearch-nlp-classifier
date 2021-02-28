@@ -23,7 +23,7 @@ import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.junit.Ignore;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -151,7 +151,7 @@ class ElasticsearchTest {
 
 
     //@Test
-    @Ignore("Bonsai - BROKEN: URI [_mtermvectors], status line [HTTP/1.1 400 Bad Request")
+    @Disabled("Bonsai - BROKEN: URI [_mtermvectors], status line [HTTP/1.1 400 Bad Request")
     void brokenMultiTermVector1() throws IOException {
         // This is the version taken directly from the ElasticSearch docs
         // DOCS: https://www.elastic.co/guide/en/elasticsearch/client/java-rest/current/java-rest-high-document-multi-term-vectors.html
@@ -179,7 +179,7 @@ class ElasticsearchTest {
 
 
     //@Test
-    @Ignore("Bonsai - BROKEN: URI [_mtermvectors], status line [HTTP/1.1 400 Bad Request")
+    @Disabled("Bonsai - BROKEN: URI [_mtermvectors], status line [HTTP/1.1 400 Bad Request")
     void brokenMultiTermVector2() {
         // This is the version taken directly from a github example
         // Bonsai - BROKEN: URI [_mtermvectors], status line [HTTP/1.1 400 Bad Request

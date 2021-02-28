@@ -8,23 +8,22 @@ import vendor.twittertokenizer.Twokenizer;
 import java.util.Arrays;
 import java.util.regex.Pattern;
 
+import static java.util.regex.Pattern.UNICODE_CHARACTER_CLASS;
 import static opennlp.tools.stemmer.snowball.SnowballStemmer.ALGORITHM.ENGLISH;
 
 public class NLPTokenizer extends AbstractTokenizer {
+    private static final Pattern regexTwitterHandle = Pattern.compile("^@");
+    private static final Pattern regexHashtag       = Pattern.compile("^#");
+    private static final Pattern regexUrl           = Pattern.compile("^\\w+://", UNICODE_CHARACTER_CLASS);
+    private final Stemmer stemmer = new SnowballStemmer(ENGLISH);  // making static causes multi-processing StringIndexOutOfBoundsException
 
     //***** Default Settings *****//
-    private boolean useStopwords = false;
-    private boolean useLowercase = false;
-    private boolean useTwitter = false;
+    private boolean useStopwords    = false;
+    private boolean useLowercase    = false;
+    private boolean useTwitter      = false;
     private boolean useCleanTwitter = false;
-    private boolean useStemming = false;
+    private boolean useStemming     = false;
 
-    //***** Properties *****//
-    private final Pattern regexTwitterHandle = Pattern.compile("^@");
-    private final Pattern regexHashtag       = Pattern.compile("^#");
-    private final Pattern regexUrl           = Pattern.compile("^\\w+://");
-
-    private final Stemmer stemmer = new SnowballStemmer(ENGLISH);
 
 
     //***** Constructor *****//
@@ -86,9 +85,9 @@ public class NLPTokenizer extends AbstractTokenizer {
 
     public String[] cleanTwitter(String[] tokens) {
         tokens = Arrays.stream(tokens)
-            .filter(string -> !this.regexTwitterHandle.matcher(string).find())
-            .filter(string -> !this.regexUrl.matcher(string).find())
-            .map(string -> this.regexHashtag.matcher(string).replaceAll(""))
+            .filter(string -> !regexTwitterHandle.matcher(string).find())
+            .filter(string -> !regexUrl.matcher(string).find())
+            .map(   string -> regexHashtag.matcher(string).replaceAll(""))
             .toArray(String[]::new)
         ;
         return tokens;

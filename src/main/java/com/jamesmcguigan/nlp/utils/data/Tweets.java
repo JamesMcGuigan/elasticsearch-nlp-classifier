@@ -30,7 +30,7 @@ public class Tweets {
             CSVFormat csv = CSVFormat.RFC4180.withHeader();
             try( CSVParser parser = csv.parse(reader) ) {
                 Iterator<CSVRecord> it = parser.iterator();
-                it.forEachRemaining(row -> {
+                it.forEachRemaining((CSVRecord row) -> {
                     int id          = Integer.parseInt(row.get("id"));
                     String keyword  = row.get("keyword");
                     String location = row.get("location");
@@ -43,7 +43,7 @@ public class Tweets {
                 });
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error(e);
         }
         return tweets;
     }
@@ -67,8 +67,7 @@ public class Tweets {
         }
     }
 
-    public static void main( String[] args )
-    {
+    public static void main( String[] args ) {
         List<Tweet> tweets = Tweets.fromCSV(Paths.get("input/test.csv"));
         for ( Tweet tweet : tweets) {
             Tweets.logger.trace(tweet);

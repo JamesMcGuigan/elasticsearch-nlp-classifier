@@ -38,10 +38,10 @@ public class TermVectorQuery {
 
 
     public TermVectorQuery(String index, List<String> fields) throws IOException {
-        this.index  = index;
-        this.fields = fields;
+        if( fields == null || fields.isEmpty() ) { throw new AssertionError("_mtermvectors returns empty results if no fields are specified"); }
 
-        if( this.fields == null ) { throw new AssertionError("_mtermvectors returns empty results if no fields are specified"); }
+        this.index  = index;
+        this.fields = new ArrayList<>(fields);
     }
     public <T extends TermVectorQuery> T setTermStatistics(boolean termStatistics) { this.termStatistics = termStatistics; return (T) this; }
     public <T extends TermVectorQuery> T setOffsets(boolean offsets)     { this.offsets = offsets;     return (T) this; }
@@ -64,7 +64,7 @@ public class TermVectorQuery {
         String requestJson = U.objectBuilder()
             .add("docs", U.reduce(ids, (arrayBuilder, id) -> arrayBuilder.add(U.objectBuilder()
                     .add("_id",       id)
-                    .add("fields",    (this.fields != null) ? this.fields : U.arrayBuilder())
+                    .add("fields",    this.fields)
                     .add("offsets",   this.offsets)
                     .add("payloads",  this.payloads)
                     .add("positions", this.positions)

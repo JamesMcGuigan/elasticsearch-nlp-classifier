@@ -58,6 +58,9 @@ public class DatasetConfig {
             if( config.index != null ) { throw new InvalidConfigurationException(this.name + " | type:csv must not have 'index' field"); }
             if( config.files == null ) { throw new InvalidConfigurationException(this.name + " | type:csv requires 'files' field"); }
         }
+        this.validateOutputMapping();
+    }
+    void validateOutputMapping() {
         if( config.output_mapping != null ) {
             Set<String> validFieldNames = Sets.union(
                 Set.of(this.config.id),

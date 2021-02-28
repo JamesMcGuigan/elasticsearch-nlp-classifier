@@ -13,7 +13,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 
-public class YamlParser {
+public final class YamlParser {
     private static final ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
     static { mapper.findAndRegisterModules(); }  // Add YAML plugin
 

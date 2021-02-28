@@ -10,6 +10,7 @@ import org.elasticsearch.search.SearchHit;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -27,7 +28,7 @@ import static java.util.Collections.singletonList;
  *
  * @param <T> AutoCast = {@link TermVectorsResponse} | {@link TermVectorDocTokens} | {@link TermVectorTokens} | {@code String[]}
  */
-public class TermVectorIterator<T> extends BufferedIterator<T, TermVectorsResponse> {
+public class TermVectorIterator<T> extends AbstractBufferedIterator<T, TermVectorsResponse> {
     private final String index;
     private final List<String> fields;
 
@@ -48,15 +49,16 @@ public class TermVectorIterator<T> extends BufferedIterator<T, TermVectorsRespon
         @Nullable QueryBuilder query
     ) throws IOException {
         super(type);
+        if( fields == null || fields.isEmpty() ) { throw new AssertionError("_mtermvectors returns empty results if no fields are specified"); }
+
         this.index  = index;
-        this.fields = fields;
+        this.fields = new ArrayList<>(fields);
         this.scanAndScroll = new ScanAndScrollIterator<>(SearchHit.class, index, singletonList("id"), query);
         this.scanAndScroll.setRequestSize(this.requestSize);
         this.setRequestSize(this.defaultRequestSize);
         this.setTTL(this.defaultTtl);
         this.reset();
 
-        if( fields == null ) { throw new AssertionError("_mtermvectors returns empty results if no fields are specified"); }
     }
     @Override
     public void reset() {

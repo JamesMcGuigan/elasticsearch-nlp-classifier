@@ -5,6 +5,7 @@ import com.jamesmcguigan.nlp.v2.extractor.Extractor;
 import javax.annotation.Nullable;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Path;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -52,5 +53,5 @@ public class ControllerConfig {
     public String getExtractorName() { return config.extractor; }
     public Extractor getExtractor()  { return extractor; }
     public Map<String, Object> getConfiguration() { return config.configuration; }
-    public List<DatasetConfig> getDatasets()      { return datasets; }
+    public List<DatasetConfig> getDatasets()      { return Collections.unmodifiableList(datasets); }
 }

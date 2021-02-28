@@ -29,7 +29,7 @@ public class TermVectorTokens {
         ;
     }
     String       getId()     { return this.id;     }
-    List<String> getFields() { return this.fields; }
+    List<String> getFields() { return Collections.unmodifiableList(this.fields); }
 
     /**
      * @return List of all tokens, for all fields,
@@ -53,7 +53,7 @@ public class TermVectorTokens {
             .filter(termVector -> termVector.getFieldName().equals(fieldName))
             .map(TermVectorsResponse.TermVector::getTerms)
             .flatMap(Collection::stream)
-            .map(term -> {
+            .map((TermVectorsResponse.TermVector.Term term) -> {
                 // Create getTermFreq() copies of each getTerm()
                 List<String> termTokens = Collections.nCopies(
                     term.getTermFreq(),

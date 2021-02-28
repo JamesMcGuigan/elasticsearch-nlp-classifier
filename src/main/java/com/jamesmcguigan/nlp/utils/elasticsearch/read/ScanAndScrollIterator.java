@@ -29,7 +29,7 @@ import java.util.List;
  *
  * @param <T> AutoCast = {@link SearchHit} | {@link String} | {@link JsonObject} | {@code JavaBean}
  */
-public class ScanAndScrollIterator<T> extends BufferedIterator<T, SearchHit> {
+public class ScanAndScrollIterator<T> extends AbstractBufferedIterator<T, SearchHit> {
     private final String index;
     @Nullable private final QueryBuilder query;
     @Nullable private final String[] fields;

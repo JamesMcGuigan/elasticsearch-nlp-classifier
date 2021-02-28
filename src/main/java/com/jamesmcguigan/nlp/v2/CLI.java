@@ -36,12 +36,13 @@ public class CLI implements Callable<Integer> {
     @CommandLine.Option(names={"-q", "--quiet"}, description="Quiet Logging")
     private boolean quiet = false;
 
-
+    protected CLI() {}
     public static void main(String[] args) {
         int exitCode = new CommandLine(new CLI()).execute(args);
         System.exit(exitCode);
     }
 
+    @SuppressWarnings({"java:S2221"})
     @Override
     public Integer call() {
         if( this.verbose ) { this.setVerbose(); }
@@ -55,7 +56,6 @@ public class CLI implements Callable<Integer> {
             return 0;    // unix exitcode 0 = success
         } catch( Exception e ) {
             logger.error(e);
-            e.printStackTrace();
             return 1;    // unix exitcode 1 = Catchall for general errors
         }
     }

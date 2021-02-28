@@ -12,6 +12,8 @@ import com.jamesmcguigan.nlp.utils.iterators.streams.JsonDocumentStream;
 import com.jamesmcguigan.nlp.v1.classifier.OpenNLPClassifier;
 import opennlp.tools.tokenize.Tokenizer;
 import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.elasticsearch.index.query.QueryBuilder;
 
 import javax.annotation.Nullable;
@@ -30,6 +32,7 @@ import static org.elasticsearch.index.query.QueryBuilders.existsQuery;
  */
 @SuppressWarnings("unchecked")
 public class OpenNLPMultiEnricher {
+    private static final Logger logger = LogManager.getLogger();
     protected Tokenizer tokenizer = ESJsonPath.getDefaultTokenizer();
 
     protected final String       index;
@@ -47,8 +50,8 @@ public class OpenNLPMultiEnricher {
         this.fields  = fields;
         this.targets = targets;
         this.classifiers = targets.stream().collect(Collectors.toMap(
-            target -> target,
-            target -> new OpenNLPClassifier()
+            (String target) -> target,
+            (String target) -> new OpenNLPClassifier()
         ));
     }
     public OpenNLPMultiEnricher(String index, List<String> fields, List<String> targets, String prefix) {
@@ -61,7 +64,7 @@ public class OpenNLPMultiEnricher {
 
     //***** Getters / Setters *****//
 
-    public String getUpdateKey(String target) { return this.prefix.isEmpty() ? target : this.prefix+'.'+target; }
+    public String getUpdateKey(String target) { return this.prefix.isEmpty() ? target : (this.prefix+'.'+target); }
 
     public Tokenizer getTokenizer() { return this.tokenizer; }
     public <T extends OpenNLPMultiEnricher> T setTokenizer(Tokenizer tokenizer) { this.tokenizer = tokenizer; return (T) this; }
@@ -103,7 +106,7 @@ public class OpenNLPMultiEnricher {
         try {
             classifier.train(stream);
         } catch( IOException e ) {
-            e.printStackTrace();
+            logger.error(e);
         }
     }
 
@@ -122,7 +125,7 @@ public class OpenNLPMultiEnricher {
                 .parallel()
                 .map(this::predictUpdatePairFromJson)
                 .filter(Objects::nonNull)  // remove empty updateMaps
-                .forEachOrdered(pair -> {
+                .forEachOrdered((ImmutablePair<String, Map<String, Object>> pair) -> {
                     // Send the combined result from all targets back to ElasticSearch
                     // Do this synchronously to prevent ConnectionClosedException
                     String id                     = pair.getLeft();
@@ -146,7 +149,7 @@ public class OpenNLPMultiEnricher {
             String prediction = classifier.predict(tokens);
             String updateKey  = this.getUpdateKey(target);
 
-            if( this.isUpdateRequired(jsonPath, updateKey, prediction) ) {
+            if( isUpdateRequired(jsonPath, updateKey, prediction) ) {
                 // NOTE: hardcoded use of "top.level.keys"
                 //       Would require a flag to correctly put() into nested objects
                 updateMap.put(updateKey, prediction);
@@ -157,7 +160,7 @@ public class OpenNLPMultiEnricher {
             : null;
     }
 
-    private boolean isUpdateRequired(ESJsonPath jsonPath, String updateKey, String prediction) {
+    private static boolean isUpdateRequired(ESJsonPath jsonPath, String updateKey, String prediction) {
         String existing = jsonPath.get(updateKey);
         return !prediction.equals(existing);
     }

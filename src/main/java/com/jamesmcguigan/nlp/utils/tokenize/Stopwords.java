@@ -10,15 +10,13 @@ import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-public class Stopwords {
+public final class Stopwords {
     private static final Pattern regexComment     = Pattern.compile("^#.+$");
     private static final Pattern regexPunctuation = Pattern.compile("^([!\"#$%&'()*+,./:;<=>?@\\[\\]^_`{|}~-])\\1*$");
 
-    private Stopwords() {}
-
-    protected static final Set<String> stopwords = new BufferedReader(new InputStreamReader(
+    private static final Set<String> stopwords = new BufferedReader(new InputStreamReader(
             Objects.requireNonNull(
-                Stopwords.class.getClassLoader().getResourceAsStream("stopwords.txt")
+                Thread.currentThread().getContextClassLoader().getResourceAsStream("stopwords.txt")
             )
         ))
         .lines()
@@ -26,6 +24,8 @@ public class Stopwords {
         .filter(token -> !Stopwords.regexComment.matcher(token).matches())
         .collect(Collectors.toUnmodifiableSet())
     ;
+
+    private Stopwords() {}
 
     public static ImmutableSet<String> getStopwords() { return ImmutableSet.copyOf(stopwords); }
     public static String[] removeStopwords(String[] tokens) {
