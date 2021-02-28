@@ -2,7 +2,6 @@ package com.jamesmcguigan.nlp.v2.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-import com.jamesmcguigan.nlp.v2.config.yaml.ExtractorConfigYaml;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

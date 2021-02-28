@@ -1,6 +1,6 @@
 pipeline-config-test:
   extractor: com.jamesmcguigan.nlp.v2.extractor.Pipeline
-  condition: None
+  condition: ""
   context:   test
   configuration:
     predict:

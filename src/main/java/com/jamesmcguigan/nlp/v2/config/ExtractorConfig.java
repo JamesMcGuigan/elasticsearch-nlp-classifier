@@ -1,6 +1,5 @@
 package com.jamesmcguigan.nlp.v2.config;
 
-import com.jamesmcguigan.nlp.v2.config.yaml.ExtractorConfigYaml;
 import com.jamesmcguigan.nlp.v2.extractor.Extractor;
 
 import javax.annotation.Nullable;
@@ -8,6 +7,16 @@ import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Path;
 import java.util.Map;
 
+
+@SuppressWarnings("java:S1104")
+class ExtractorConfigYaml {
+    public String condition;
+    public String extractor;
+    public String context;
+    public Map<String, Object> configuration;
+}
+
+@SuppressWarnings("FieldCanBeLocal")
 public class ExtractorConfig {
     private final Path   path;
     private final String name;
