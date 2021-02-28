@@ -20,6 +20,7 @@ import java.util.List;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.apache.logging.log4j.Level.INFO;
 
+@SuppressWarnings({"java:S1192"})
 public class Tweets {
     private static final Logger logger = LogManager.getLogger();
 
