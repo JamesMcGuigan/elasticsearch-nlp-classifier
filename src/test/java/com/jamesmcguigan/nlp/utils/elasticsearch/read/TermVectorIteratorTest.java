@@ -27,7 +27,7 @@ class TermVectorIteratorTest {
     private TermVectorIterator<TermVectorsResponse> iterator;
 
     @BeforeEach
-    void setUp() throws IOException {
+    void setUp() {
         ESClient.getInstance();  // refresh connection if closed
         iterator = new TermVectorIterator<>(TermVectorsResponse.class, index, fields, query);
     }
@@ -112,7 +112,7 @@ class TermVectorIteratorTest {
         String[].class,
         String.class
     })
-    void cast(Class<?> type) throws IOException {
+    void cast(Class<?> type) {
         var typedIterator = new TermVectorIterator<>(type, index, fields, query);
         typedIterator.setRequestSize(1);  // speed up unit test
         var output = typedIterator.next();

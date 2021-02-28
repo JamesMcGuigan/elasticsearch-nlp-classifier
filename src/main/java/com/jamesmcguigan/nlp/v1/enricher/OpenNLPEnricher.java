@@ -83,8 +83,8 @@ public class OpenNLPEnricher {
 
     //***** Enrich *****//
 
-    public <T extends OpenNLPEnricher> T enrich() throws IOException { return enrich(null); }
-    public <T extends OpenNLPEnricher> T enrich(@Nullable QueryBuilder query) throws IOException {
+    public <T extends OpenNLPEnricher> T enrich() { return enrich(null); }
+    public <T extends OpenNLPEnricher> T enrich(@Nullable QueryBuilder query) {
         try(
             var updateQueue = new BulkUpdateQueue(this.index)
         ) {

@@ -37,7 +37,7 @@ public class TermVectorQuery {
     private final ESClient client  = ESClient.getInstance();
 
 
-    public TermVectorQuery(String index, List<String> fields) throws IOException {
+    public TermVectorQuery(String index, List<String> fields) {
         if( fields == null || fields.isEmpty() ) { throw new AssertionError("_mtermvectors returns empty results if no fields are specified"); }
 
         this.index  = index;

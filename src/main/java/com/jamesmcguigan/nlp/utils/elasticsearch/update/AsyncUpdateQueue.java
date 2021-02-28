@@ -9,7 +9,6 @@ import org.elasticsearch.action.update.UpdateRequest;
 import org.elasticsearch.action.update.UpdateResponse;
 import org.elasticsearch.client.RequestOptions;
 
-import java.io.IOException;
 import java.util.Map;
 
 import static org.apache.logging.log4j.Level.TRACE;
@@ -43,7 +42,7 @@ public class AsyncUpdateQueue implements UpdateQueue {
 
 
     @Override
-    public void update(String id, Map<String, Object> updateKeyValues) throws IOException {
+    public void update(String id, Map<String, Object> updateKeyValues) {
         this.waitForQueue();
 
         this.requestsInFlight += 1;
@@ -80,11 +79,7 @@ public class AsyncUpdateQueue implements UpdateQueue {
 
                     logger.printf(TRACE, "%s %s(%s) | %s", action, index, id, message);
                     if( retry ) {
-                        try {
-                            AsyncUpdateQueue.this.update(id, updateKeyValues);
-                        } catch( IOException ioException ) {
-                            logger.debug(ioException);
-                        }
+                        AsyncUpdateQueue.this.update(id, updateKeyValues);
                     }
                 }
             }

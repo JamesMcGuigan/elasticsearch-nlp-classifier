@@ -16,7 +16,6 @@ import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.common.unit.ByteSizeValue;
 import org.elasticsearch.common.xcontent.XContentType;
 
-import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -41,13 +40,13 @@ public class BulkUpdateQueue implements UpdateQueue {
 
     //***** Constructor *****//
 
-    public BulkUpdateQueue(String index) throws IOException {
+    public BulkUpdateQueue(String index) {
         this.index         = index;
         this.client        = ESClient.getInstance();
         this.listener      = this.getListener();
         this.bulkProcessor = this.getBuilder(this.listener).build();
     }
-    public BulkUpdateQueue(String index, int batchSize, int maxRequestsInFlight, int maxRetries, int flushSeconds) throws IOException {
+    public BulkUpdateQueue(String index, int batchSize, int maxRequestsInFlight, int maxRetries, int flushSeconds) {
         this.index               = index;
         this.batchSize           = batchSize;
         this.maxRequestsInFlight = maxRequestsInFlight;

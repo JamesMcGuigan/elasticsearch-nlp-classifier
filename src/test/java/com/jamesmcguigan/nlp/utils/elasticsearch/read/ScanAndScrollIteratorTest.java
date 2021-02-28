@@ -8,7 +8,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
-import java.io.IOException;
 import java.util.*;
 
 import static com.google.common.truth.Truth.assertThat;
@@ -21,7 +20,7 @@ class ScanAndScrollIteratorTest {
     final TermQueryBuilder query = new TermQueryBuilder("text", term);
 
     @Test
-    void testIterator() throws IOException {
+    void testIterator() {
         var request = new ScanAndScrollIterator<>(SearchHit.class, index);
         var size = request.getTotalHits();
         assertTrue( size > 1000 );
@@ -38,7 +37,7 @@ class ScanAndScrollIteratorTest {
 
     @ParameterizedTest
     @ValueSource(strings = {"id", "text", "text,location,keyword", "text,location"})
-    void testIteratorFields(String field) throws IOException {
+    void testIteratorFields(String field) {
         var fields = Arrays.asList(field.split(","));
         var request = new ScanAndScrollIterator<>(SearchHit.class, index, fields);
         request.setRequestSize(3);
@@ -49,7 +48,7 @@ class ScanAndScrollIteratorTest {
     }
 
     @Test
-    void testIteratorQuery() throws IOException {
+    void testIteratorQuery() {
         var request = new ScanAndScrollIterator<>(SearchHit.class, index, query);
         var size = request.getTotalHits();
         assertTrue( size > 0 );
@@ -70,7 +69,7 @@ class ScanAndScrollIteratorTest {
     }
 
     @Test
-    void testIteratorTypedTweet() throws IOException {
+    void testIteratorTypedTweet() {
         var request = new ScanAndScrollIterator<>(Tweet.class, index, query);
         var size = request.getTotalHits();
         assertTrue( size > 0 );
@@ -85,7 +84,7 @@ class ScanAndScrollIteratorTest {
     }
 
     @Test
-    void testIteratorTypedString() throws IOException {
+    void testIteratorTypedString() {
         var request = new ScanAndScrollIterator<>(String.class, index, query);
         var size = request.getTotalHits();
         assertTrue( size > 0 );
@@ -101,7 +100,7 @@ class ScanAndScrollIteratorTest {
     }
 
     @Test
-    void testIteratorMap() throws IOException {
+    void testIteratorMap() {
         var request = new ScanAndScrollIterator<>(TreeMap.class, index, query);
         var size = request.getTotalHits();
         assertTrue( size > 0 );
@@ -121,7 +120,7 @@ class ScanAndScrollIteratorTest {
 
 
     @Test
-    void testIteratorJSONObject() throws IOException {
+    void testIteratorJSONObject() {
         var request = new ScanAndScrollIterator<>(JSONObject.class, index, query);
         var size = request.getTotalHits();
         assertTrue( size > 0 );
@@ -140,7 +139,7 @@ class ScanAndScrollIteratorTest {
 
 
     @Test
-    void testIteratorReset() throws IOException {
+    void testIteratorReset() {
         var request = new ScanAndScrollIterator<>(SearchHit.class, index, query);
         for( int i : new int[]{ 0, 1 } ) {
             request.reset();  // This lets us reread the ScanAndScroll request from the beginning
@@ -164,7 +163,7 @@ class ScanAndScrollIteratorTest {
 
 
     @Test
-    void testPopBuffer() throws IOException {
+    void testPopBuffer() {
         int bufferSize = 100;
         var request    = new ScanAndScrollIterator<>(String.class, index, query);
         request.setRequestSize(bufferSize);

@@ -6,7 +6,6 @@ import opennlp.tools.tokenize.Tokenizer;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
 import java.util.Arrays;
 
 import static org.elasticsearch.index.query.QueryBuilders.*;
@@ -15,21 +14,21 @@ import static org.junit.jupiter.api.Assertions.*;
 class ESDocumentStreamTest {
 
     @Test
-    void getTotalHits() throws IOException {
+    void getTotalHits() {
         ESDocumentStream stream = new ESDocumentStream("twitter", "text", "target", null);
         assertNotNull( stream.getTotalHits() );
         assertTrue(stream.getTotalHits() > 1000 );
     }
 
     @Test
-    void size() throws IOException {
+    void size() {
         ESDocumentStream stream = new ESDocumentStream("twitter", "text", "target", null);
         assertNotNull( stream.size() );
         assertTrue(stream.size() > 1000 );
     }
 
     @Test
-    void reset() throws IOException {
+    void reset() {
         ESDocumentStream stream = new ESDocumentStream("twitter", "text", "target", null);
         Long size = stream.size();
         DocumentSample document = stream.read();
@@ -42,7 +41,7 @@ class ESDocumentStreamTest {
     }
 
     @Test
-    void read() throws IOException {
+    void read() {
         String target = "1";
         String term   = "disaster";
 

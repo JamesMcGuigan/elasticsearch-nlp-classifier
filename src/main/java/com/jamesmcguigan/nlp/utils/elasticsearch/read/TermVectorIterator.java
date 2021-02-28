@@ -41,13 +41,13 @@ public class TermVectorIterator<T> extends AbstractBufferedIterator<T, TermVecto
 
     //***** Constructors *****//
 
-    public TermVectorIterator(Class<? extends T> type, String index, List<String> fields) throws IOException { this(type, index, fields, null); }
+    public TermVectorIterator(Class<? extends T> type, String index, List<String> fields) { this(type, index, fields, null); }
     public TermVectorIterator(
         Class<? extends T> type,
         String index,
         List<String> fields,
         @Nullable QueryBuilder query
-    ) throws IOException {
+    ) {
         super(type);
         if( fields == null || fields.isEmpty() ) { throw new AssertionError("_mtermvectors returns empty results if no fields are specified"); }
 

@@ -73,7 +73,7 @@ public class OpenNLPMultiEnricher {
 
     //***** Iterators *****//
 
-    public Iterator<String> getIterator(@Nullable QueryBuilder query) throws IOException {
+    public Iterator<String> getIterator(@Nullable QueryBuilder query) {
         return new ScanAndScrollIterator<>(String.class, this.index, query);
     }
 
@@ -87,8 +87,8 @@ public class OpenNLPMultiEnricher {
 
     //***** Train *****//
 
-    public <T extends OpenNLPMultiEnricher> T train() throws IOException { return train(null); }
-    public <T extends OpenNLPMultiEnricher> T train(@Nullable QueryBuilder query) throws IOException {
+    public <T extends OpenNLPMultiEnricher> T train() { return train(null); }
+    public <T extends OpenNLPMultiEnricher> T train(@Nullable QueryBuilder query) {
         var targetQuery = this.getTargetQuery(query);
         var scanAndScroll = this.getIterator(targetQuery);
         var multiplexer   = new MultiplexIterators<>(scanAndScroll, this.targets);
@@ -114,8 +114,8 @@ public class OpenNLPMultiEnricher {
 
     //***** Enrich *****//
 
-    public <T extends OpenNLPMultiEnricher> T enrich() throws IOException { return enrich(null); }
-    public <T extends OpenNLPMultiEnricher> T enrich(@Nullable QueryBuilder query) throws IOException {
+    public <T extends OpenNLPMultiEnricher> T enrich() { return enrich(null); }
+    public <T extends OpenNLPMultiEnricher> T enrich(@Nullable QueryBuilder query) {
         try(
             BulkUpdateQueue updateQueue = new BulkUpdateQueue(this.index)
         ) {

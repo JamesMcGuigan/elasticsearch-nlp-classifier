@@ -45,7 +45,7 @@ class ElasticsearchTest {
     List<String> ids = Arrays.asList("1", "2", "3", "4");
     String[] fields  = Arrays.asList("text", "location").toArray(new String[0]);
 
-    public ElasticsearchTest() throws IOException {}
+    public ElasticsearchTest() {}
 
 
     @Test

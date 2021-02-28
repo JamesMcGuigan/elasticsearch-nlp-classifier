@@ -43,15 +43,15 @@ public class ScanAndScrollIterator<T> extends AbstractBufferedIterator<T, Search
 
     //***** Constructors *****//
 
-    public ScanAndScrollIterator(Class<? extends T> type, String index)                                throws IOException { this(type, index, null, null); }
-    public ScanAndScrollIterator(Class<? extends T> type, String index, @Nullable QueryBuilder query ) throws IOException { this(type, index, null, query); }
-    public ScanAndScrollIterator(Class<? extends T> type, String index, @Nullable List<String> fields) throws IOException { this(type, index, fields, null); }
+    public ScanAndScrollIterator(Class<? extends T> type, String index)                                { this(type, index, null, null); }
+    public ScanAndScrollIterator(Class<? extends T> type, String index, @Nullable QueryBuilder query ) { this(type, index, null, query); }
+    public ScanAndScrollIterator(Class<? extends T> type, String index, @Nullable List<String> fields) { this(type, index, fields, null); }
     public ScanAndScrollIterator(
         Class<? extends T> type,
         String index,
         @Nullable List<String> fields,
         @Nullable QueryBuilder query
-    ) throws IOException {
+    ) {
         super(type);
         this.index  = index;
         this.query  = query;

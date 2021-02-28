@@ -1,5 +1,6 @@
 package com.jamesmcguigan.nlp.utils.elasticsearch;
 
+import com.jamesmcguigan.nlp.v2.exceptions.ElasticsearchConnectionException;
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
@@ -27,12 +28,16 @@ public final class ESClient extends RestHighLevelClient {
     //***** Thread-safe Singleton *****//
 
     private static ESClient instance;
-    public static synchronized ESClient getInstance() throws IOException {
+    public static synchronized ESClient getInstance() {
         // BUGFIX: reopen connection if `.close()` has been called to early
-        if( instance == null || !instance.getLowLevelClient().isRunning() ) {
-            instance = new ESClient();
+        try {
+            if( instance == null || !instance.getLowLevelClient().isRunning() ) {
+                instance = new ESClient();
+            }
+            return instance;
+        } catch( IOException exception ) {
+            throw new ElasticsearchConnectionException("Unable to connect to ElasticSearch", exception);
         }
-        return instance;
     }
 
 

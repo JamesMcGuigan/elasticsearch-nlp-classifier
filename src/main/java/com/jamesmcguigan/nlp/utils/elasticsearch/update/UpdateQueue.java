@@ -1,14 +1,13 @@
 package com.jamesmcguigan.nlp.utils.elasticsearch.update;
 
 import java.io.Closeable;
-import java.io.IOException;
 import java.util.Map;
 
 public interface UpdateQueue extends Closeable {
 
-    default void update(String id, String updateKey, String value) throws IOException {
+    default void update(String id, String updateKey, String value) {
         this.update(id, Map.of(updateKey,value));
     }
 
-    void update(String id, Map<String, Object> updateKeyValues) throws IOException;
+    void update(String id, Map<String, Object> updateKeyValues);
 }
