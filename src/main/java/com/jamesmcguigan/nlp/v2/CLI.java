@@ -1,6 +1,6 @@
 package com.jamesmcguigan.nlp.v2;
 
-import com.jamesmcguigan.nlp.v2.config.ExtractorConfig;
+import com.jamesmcguigan.nlp.v2.config.ControllerConfig;
 import com.jamesmcguigan.nlp.v2.config.YamlParser;
 import com.jamesmcguigan.nlp.v2.controller.Controller;
 import org.apache.logging.log4j.Level;
@@ -9,7 +9,6 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.config.Configurator;
 import picocli.CommandLine;
 
-import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -64,9 +63,9 @@ public class CLI implements Callable<Integer> {
     public void setQuiet()   { Configurator.setAllLevels(LogManager.getRootLogger().getName(), Level.ERROR); }
     public void setVerbose() { Configurator.setAllLevels(LogManager.getRootLogger().getName(), Level.DEBUG); }
 
-    private void parseConfig() throws IOException {
-        List<ExtractorConfig> configs = YamlParser.getExtractorConfigs(this.path);
-        for( ExtractorConfig config : configs ) {
+    private void parseConfig() {
+        List<ControllerConfig> configs = YamlParser.getExtractorConfigs(this.path);
+        for( ControllerConfig config : configs ) {
             Controller controller = new Controller(config);
             controller.run();
         }

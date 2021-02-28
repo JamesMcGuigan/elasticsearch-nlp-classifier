@@ -1,9 +1,9 @@
 package com.jamesmcguigan.nlp.v2.extractor;
 
-import com.jamesmcguigan.nlp.v2.config.ExtractorConfig;
+import com.jamesmcguigan.nlp.v2.config.ControllerConfig;
 
 public class Pipeline extends BaseExtractor {
-    public Pipeline(ExtractorConfig parentConfig) {
+    public Pipeline(ControllerConfig parentConfig) {
         super(parentConfig);
     }
 }

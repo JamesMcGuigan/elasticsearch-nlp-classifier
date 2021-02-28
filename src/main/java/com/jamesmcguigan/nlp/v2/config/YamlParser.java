@@ -30,7 +30,7 @@ public class YamlParser {
             .collect(Collectors.toList())
         ;
     }
-    public static List<ExtractorConfig> getExtractorConfigs(Path path) {
+    public static List<ControllerConfig> getExtractorConfigs(Path path) {
         try {
             String yaml = Files.readString(path);
             return getExtractorConfigs(yaml);
@@ -39,13 +39,13 @@ public class YamlParser {
         }
     }
     @SuppressWarnings("unchecked")
-    public static List<ExtractorConfig> getExtractorConfigs(String yaml) {
+    public static List<ControllerConfig> getExtractorConfigs(String yaml) {
         try {
             Map<String, Object> yamlMap  = mapper.readValue(yaml.getBytes(), Map.class);
-            List<ExtractorConfig> output = new ArrayList<>();
+            List<ControllerConfig> output = new ArrayList<>();
             for( Map.Entry<String, Object> entry : yamlMap.entrySet() ) {
-                ExtractorConfigYaml yamlConfig = mapper.convertValue(entry.getValue(), ExtractorConfigYaml.class);
-                ExtractorConfig     config     = new ExtractorConfig(yamlConfig, entry.getKey());
+                ControllerConfigYaml yamlConfig = mapper.convertValue(entry.getValue(), ControllerConfigYaml.class);
+                ControllerConfig config     = new ControllerConfig(yamlConfig, entry.getKey());
                 output.add(config);
             }
             return output;

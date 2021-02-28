@@ -1,12 +1,12 @@
 package com.jamesmcguigan.nlp.v2.controller;
 
-import com.jamesmcguigan.nlp.v2.config.ExtractorConfig;
+import com.jamesmcguigan.nlp.v2.config.ControllerConfig;
 
 public class Controller {
-    private final ExtractorConfig parentConfig;
+    private final ControllerConfig config;
 
-    public Controller(ExtractorConfig parentConfig) {
-        this.parentConfig = parentConfig;
+    public Controller(ControllerConfig config) {
+        this.config = config;
     }
 
     @SuppressWarnings("EmptyMethod")

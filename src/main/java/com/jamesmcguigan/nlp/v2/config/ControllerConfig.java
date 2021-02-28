@@ -10,7 +10,7 @@ import java.util.Map;
 
 
 @SuppressWarnings("java:S1104")
-class ExtractorConfigYaml {
+class ControllerConfigYaml {
     public String condition;
     public String extractor;
     public String context;
@@ -20,21 +20,21 @@ class ExtractorConfigYaml {
 
 
 @SuppressWarnings("FieldCanBeLocal")
-public class ExtractorConfig {
+public class ControllerConfig {
     private final String name;
     private final Class<? extends Extractor> extractorClass;
     private final Extractor extractor;
-    private final ExtractorConfigYaml config;
+    private final ControllerConfigYaml config;
     private final List<DatasetConfig> datasets;
 
     @SuppressWarnings("unchecked")
-    public ExtractorConfig(ExtractorConfigYaml config, @Nullable String name) {
+    public ControllerConfig(ControllerConfigYaml config, @Nullable String name) {
         try {
             this.name = name;
             this.config = config;
             this.extractorClass = (Class<? extends Extractor>) Class.forName(config.extractor);
             this.extractor = this.extractorClass
-                .getConstructor(ExtractorConfig.class)
+                .getConstructor(ControllerConfig.class)
                 .newInstance(this)
             ;
             this.datasets = YamlParser.getDatasetConfigs(config.datasets);

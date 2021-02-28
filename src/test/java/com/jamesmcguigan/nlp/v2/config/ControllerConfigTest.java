@@ -13,8 +13,8 @@ import static com.google.common.truth.Truth.assertThat;
 
 
 @SuppressWarnings("FieldCanBeLocal")
-class ExtractorConfigTest {
-    private ExtractorConfig config;
+class ControllerConfigTest {
+    private ControllerConfig config;
     private Path path;
     private String expectedContext;
     private Class<?> expectedClass;
