@@ -114,6 +114,7 @@ class TermVectorIteratorTest {
     })
     void cast(Class<?> type) throws IOException {
         var typedIterator = new TermVectorIterator<>(type, index, fields, query);
+        typedIterator.setRequestSize(1);  // speed up unit test
         var output = typedIterator.next();
         assertThat( output ).isNotNull();
         assertThat( type ).isEqualTo( output.getClass() );

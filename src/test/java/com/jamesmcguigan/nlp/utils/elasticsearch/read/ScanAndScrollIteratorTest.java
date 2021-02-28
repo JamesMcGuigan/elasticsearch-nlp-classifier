@@ -41,6 +41,7 @@ class ScanAndScrollIteratorTest {
     void testIteratorFields(String field) throws IOException {
         var fields = Arrays.asList(field.split(","));
         var request = new ScanAndScrollIterator<>(SearchHit.class, index, fields);
+        request.setRequestSize(3);
         assertTrue( request.hasNext() );
 
         Map<String, Object> hit = request.next().getSourceAsMap();
@@ -141,7 +142,7 @@ class ScanAndScrollIteratorTest {
     @Test
     void testIteratorReset() throws IOException {
         var request = new ScanAndScrollIterator<>(SearchHit.class, index, query);
-        for( int i = 0; i <= 2; i++ ) {
+        for( int i : new int[]{ 0, 1 } ) {
             request.reset();  // This lets us reread the ScanAndScroll request from the beginning
 
             var size = request.size();
