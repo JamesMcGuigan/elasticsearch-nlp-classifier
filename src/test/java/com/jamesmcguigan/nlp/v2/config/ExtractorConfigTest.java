@@ -5,13 +5,14 @@ import com.jamesmcguigan.nlp.v2.extractor.Pipeline;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Map;
 
 import static com.google.common.truth.Truth.assertThat;
 
+
+@SuppressWarnings("FieldCanBeLocal")
 class ExtractorConfigTest {
     private ExtractorConfig config;
     private Path path;
@@ -20,8 +21,8 @@ class ExtractorConfigTest {
     private String expectedExtractorName;
 
     @BeforeEach
-    void setUp() throws IOException {
-        path    = Paths.get("src/test/java/com/jamesmcguigan/nlp/v2/config/ExtractorConfigTest.yaml");
+    void setUp() {
+        path    = Paths.get("src/test/resources/ExtractorConfigTest.yaml");
         config  = YamlParser.getExtractorConfigs(path).get(0);
         expectedContext       = "test";
         expectedExtractorName = "com.jamesmcguigan.nlp.v2.extractor.Pipeline";

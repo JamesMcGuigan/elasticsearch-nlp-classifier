@@ -1,0 +1,10 @@
+pipeline-config-test:
+  extractor: com.jamesmcguigan.nlp.v2.extractor.Pipeline
+  condition: ""
+  context:   test
+  datasets:
+    - src/test/resources/nlp-getting-started-elasticsearch.yaml
+  configuration:
+    predict:
+      - target
+      - keyword
