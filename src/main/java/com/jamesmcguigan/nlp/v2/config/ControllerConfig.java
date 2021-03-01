@@ -1,5 +1,6 @@
 package com.jamesmcguigan.nlp.v2.config;
 
+import com.jamesmcguigan.nlp.v2.exceptions.InvalidConfigurationException;
 import com.jamesmcguigan.nlp.v2.extractor.Extractor;
 
 import javax.annotation.Nullable;

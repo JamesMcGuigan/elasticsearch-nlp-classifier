@@ -1,24 +1,14 @@
 package com.jamesmcguigan.nlp.v2.config;
 
 import com.google.common.collect.Sets;
+import com.jamesmcguigan.nlp.v2.exceptions.InvalidConfigurationException;
 
 import javax.annotation.Nullable;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-enum DatasetType {
-    elasticsearch,
-    csv
-}
-enum DatasetField {
-    binary,
-    integer,
-    numeric,
-    text,
-    categorical,
-    list_categorical
-}
 
 @SuppressWarnings({"java:S1104", "java:S116"})
 class DatasetConfigYaml {
@@ -78,12 +68,20 @@ public class DatasetConfig {
     }
 
     public String                    getName()    { return name; }
-    public DatasetConfigYaml         getConfig()  { return config; }
+    public DatasetType getType()                  { return config.type; }
     public String                    getIndex()   { return config.index; }
     public DatasetConfigYaml.Files   getFiles()   { return config.files; }
-    public String                    getId()      { return config.id; }
+    public String getIdField()                    { return config.id; }
     public Map<String, DatasetField> getFields()  { return config.fields; }
     public Map<String, DatasetField> getLabels()  { return config.labels; }
     public Map<String, String> getOutputMapping() { return config.output_mapping; }
+
+    public List<String> getIdFieldLabels() {
+        ArrayList<String> fields = new ArrayList<>();
+        fields.add(    this.getIdField() );
+        fields.addAll( this.getFields().keySet() );
+        fields.addAll( this.getLabels().keySet() );
+        return fields;
+    }
 }
 

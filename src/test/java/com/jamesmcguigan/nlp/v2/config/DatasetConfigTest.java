@@ -1,5 +1,6 @@
 package com.jamesmcguigan.nlp.v2.config;
 
+import com.jamesmcguigan.nlp.v2.exceptions.InvalidConfigurationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -55,8 +56,8 @@ class DatasetConfigTest {
         DatasetConfig config = configs.get(0);
         assertThat(configs.size()).isEqualTo(1);
         assertThat(config.getName()).isEqualTo("valid-elasticsearch-config");
-        assertThat(config.getConfig().type).isEqualTo(DatasetType.elasticsearch);
-        assertThat(config.getConfig().index).isEqualTo("twitter");
+        assertThat(config.getType()).isEqualTo(DatasetType.elasticsearch);
+        assertThat(config.getIndex()).isEqualTo("twitter");
     }
 
     @Test
@@ -83,11 +84,11 @@ class DatasetConfigTest {
         DatasetConfig config = configs.get(0);
         assertThat(configs.size()).isEqualTo(1);
         assertThat(config.getName()).isEqualTo("valid-csv-config");
-        assertThat(config.getConfig().type).isEqualTo(DatasetType.csv);
-        assertThat(config.getConfig().files).isNotNull();
-        assertThat(config.getConfig().files.train.toString() ).isEqualTo("input/nlp-getting-started/train.csv");
-        assertThat(config.getConfig().files.test.toString()  ).isEqualTo("input/nlp-getting-started/test.csv");
-        assertThat(config.getConfig().files.output.toString()).isEqualTo("output/nlp-getting-started.csv");
+        assertThat(config.getType()).isEqualTo(DatasetType.csv);
+        assertThat(config.getFiles()).isNotNull();
+        assertThat(config.getFiles().train.toString() ).isEqualTo("input/nlp-getting-started/train.csv");
+        assertThat(config.getFiles().test.toString()  ).isEqualTo("input/nlp-getting-started/test.csv");
+        assertThat(config.getFiles().output.toString()).isEqualTo("output/nlp-getting-started.csv");
     }
 
     @Test
@@ -131,7 +132,7 @@ class DatasetConfigTest {
         List<DatasetConfig> configs = YamlParser.getDatasetConfigs(yaml);
         DatasetConfig config = configs.get(0);
         assertThat(configs.size()).isEqualTo(1);
-        assertThat( config.getId() ).isEqualTo("id");
+        assertThat( config.getIdField() ).isEqualTo("id");
         assertThat( config.getFields().get("text").toString() ).isEqualTo("text");
         assertThat( config.getLabels().get("target").toString() ).isEqualTo("binary");
     }

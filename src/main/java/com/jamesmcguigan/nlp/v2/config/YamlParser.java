@@ -2,6 +2,7 @@ package com.jamesmcguigan.nlp.v2.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import com.jamesmcguigan.nlp.v2.exceptions.InvalidConfigurationException;
 
 import java.io.IOException;
 import java.nio.file.Files;
