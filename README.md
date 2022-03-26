@@ -1,7 +1,8 @@
 # ElasticSearch NLP Classifier
 
-This repository attempts to implement NLP classification techniques
-in Java using data sourced from ElasticSearch.
+Java data streaming pipeline for ElasticSearch.
+
+Enables NLP Naive Bayes classification with k-fold cross-validation on existing datasets.
 
 Inspiration is taken from the following python Kaggle Notebooks:
 - https://www.kaggle.com/jamesmcguigan/nlp-naive-bayes
