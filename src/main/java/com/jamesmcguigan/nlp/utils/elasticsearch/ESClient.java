@@ -1,6 +1,6 @@
 package com.jamesmcguigan.nlp.utils.elasticsearch;
 
-import com.jamesmcguigan.nlp.v2.exceptions.ElasticsearchConnectionException;
+import com.jamesmcguigan.nlp.utils.elasticsearch.exceptions.ElasticsearchConnectionException;
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
