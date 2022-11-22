@@ -1,8 +1,9 @@
 package com.jamesmcguigan.nlp.utils.iterators.streams;
 
 import com.jamesmcguigan.nlp.utils.data.ESJsonPath;
+import com.jamesmcguigan.nlp.utils.tokenize.ATokenizer;
+import com.jamesmcguigan.nlp.utils.tokenize.NLPTokenizer;
 import opennlp.tools.doccat.DocumentSample;
-import opennlp.tools.tokenize.Tokenizer;
 import opennlp.tools.util.ObjectStream;
 
 import java.util.Iterator;
@@ -12,7 +13,7 @@ public class JsonDocumentStream implements ObjectStream<DocumentSample> {
     protected final Iterator<String> iterator;
     protected final List<String>     fields;
     protected final String           target;
-    protected Tokenizer tokenizer = ESJsonPath.getDefaultTokenizer();
+    protected ATokenizer tokenizer = NLPTokenizer.getDefaultTokenizer();
 
     public JsonDocumentStream(Iterator<String> iterator, List<String> fields, String target) {
         this.iterator = iterator;
@@ -20,9 +21,9 @@ public class JsonDocumentStream implements ObjectStream<DocumentSample> {
         this.target   = target;
     }
 
-    public Tokenizer getTokenizer() { return this.tokenizer; }
+    public ATokenizer getTokenizer() { return this.tokenizer; }
     @SuppressWarnings("unchecked")
-    public <T extends JsonDocumentStream> T setTokenizer(Tokenizer tokenizer) { this.tokenizer = tokenizer; return (T) this; }
+    public <T extends JsonDocumentStream> T setTokenizer(ATokenizer tokenizer) { this.tokenizer = tokenizer; return (T) this; }
 
 
     /**
@@ -41,9 +42,9 @@ public class JsonDocumentStream implements ObjectStream<DocumentSample> {
 
 
     protected DocumentSample cast(String json) {
-        ESJsonPath jsonPath = new ESJsonPath(json).setTokenizer(this.tokenizer);
+        ESJsonPath jsonPath = new ESJsonPath(json);
         String category     = jsonPath.get(this.target);
-        String[] tokens     = jsonPath.tokenize(this.fields);
+        String[] tokens     = this.tokenizer.tokenize(jsonPath.get(this.fields));
         var documentSample  = new DocumentSample(category, tokens);
         return documentSample;
     }

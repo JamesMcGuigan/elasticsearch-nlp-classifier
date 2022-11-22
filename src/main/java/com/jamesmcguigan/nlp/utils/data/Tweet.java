@@ -1,7 +1,8 @@
 package com.jamesmcguigan.nlp.utils.data;
 
+import com.jamesmcguigan.nlp.utils.tokenize.ATokenizer;
+import com.jamesmcguigan.nlp.utils.tokenize.NLPTokenizer;
 import opennlp.tools.doccat.DocumentSample;
-import opennlp.tools.tokenize.Tokenizer;
 
 import javax.annotation.Nullable;
 import java.util.stream.Stream;
@@ -14,7 +15,7 @@ public class Tweet {
     public final String text;
     public final String target;
 
-    private final Tokenizer tokenizer = ESJsonPath.getDefaultTokenizer();
+    private final ATokenizer tokenizer = NLPTokenizer.getDefaultTokenizer();
 
     public Tweet(int id, String keyword, String location, String text, @Nullable String target) {
         this.id       = id;

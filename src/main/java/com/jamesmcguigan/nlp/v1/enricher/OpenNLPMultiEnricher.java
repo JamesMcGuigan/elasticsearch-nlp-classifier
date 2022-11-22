@@ -9,6 +9,8 @@ import com.jamesmcguigan.nlp.utils.iterators.multiplex.MultiplexIterator;
 import com.jamesmcguigan.nlp.utils.iterators.multiplex.MultiplexIterators;
 import com.jamesmcguigan.nlp.utils.iterators.streams.FilteredJsonDocumentStream;
 import com.jamesmcguigan.nlp.utils.iterators.streams.JsonDocumentStream;
+import com.jamesmcguigan.nlp.utils.tokenize.ATokenizer;
+import com.jamesmcguigan.nlp.utils.tokenize.NLPTokenizer;
 import com.jamesmcguigan.nlp.v1.classifier.OpenNLPClassifier;
 import opennlp.tools.tokenize.Tokenizer;
 import org.apache.commons.lang3.tuple.ImmutablePair;
@@ -33,7 +35,7 @@ import static org.elasticsearch.index.query.QueryBuilders.existsQuery;
 @SuppressWarnings("unchecked")
 public class OpenNLPMultiEnricher {
     private static final Logger logger = LogManager.getLogger();
-    protected Tokenizer tokenizer = ESJsonPath.getDefaultTokenizer();
+    protected ATokenizer tokenizer = NLPTokenizer.getDefaultTokenizer();
 
     protected final String       index;
     protected final List<String> fields;
@@ -67,7 +69,7 @@ public class OpenNLPMultiEnricher {
     public String getUpdateKey(String target) { return this.prefix.isEmpty() ? target : (this.prefix+'.'+target); }
 
     public Tokenizer getTokenizer() { return this.tokenizer; }
-    public <T extends OpenNLPMultiEnricher> T setTokenizer(Tokenizer tokenizer) { this.tokenizer = tokenizer; return (T) this; }
+    public <T extends OpenNLPMultiEnricher> T setTokenizer(ATokenizer tokenizer) { this.tokenizer = tokenizer; return (T) this; }
 
 
 
@@ -140,7 +142,7 @@ public class OpenNLPMultiEnricher {
     private @Nullable ImmutablePair<String, Map<String, Object>> predictUpdatePairFromJson(String json) {
         var jsonPath    = new ESJsonPath(json);
         String id       = jsonPath.get("id");
-        String[] tokens = jsonPath.tokenize(this.fields);
+        String[] tokens = this.tokenizer.tokenize(jsonPath.get(this.fields));
 
         // Loop over each of the target fields
         HashMap<String, Object> updateMap = new HashMap<>();

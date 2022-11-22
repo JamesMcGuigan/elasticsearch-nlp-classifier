@@ -11,7 +11,7 @@ import java.util.regex.Pattern;
 import static java.util.regex.Pattern.UNICODE_CHARACTER_CLASS;
 import static opennlp.tools.stemmer.snowball.SnowballStemmer.ALGORITHM.ENGLISH;
 
-public class NLPTokenizer extends AbstractTokenizer {
+public class NLPTokenizer extends ATokenizer {
     private static final Pattern regexTwitterHandle = Pattern.compile("^@");
     private static final Pattern regexHashtag       = Pattern.compile("^#");
     private static final Pattern regexUrl           = Pattern.compile("^\\w+://", UNICODE_CHARACTER_CLASS);
@@ -27,6 +27,17 @@ public class NLPTokenizer extends AbstractTokenizer {
 
 
     //***** Constructor *****//
+
+    public static NLPTokenizer getDefaultTokenizer() {
+        return new NLPTokenizer()
+            // .setCleanTwitter(true)  // Kaggle score = 0.76248
+            // .setTwitter(false)      // Kaggle score = 0.76831
+            .setTwitter(true)          // Kaggle score = 0.77229
+            .setLowercase(true)
+            .setStopwords(true)
+            .setStemming(true)
+        ;
+    }
 
     public NLPTokenizer setStopwords(boolean useStopwords) {
         this.useStopwords = useStopwords;

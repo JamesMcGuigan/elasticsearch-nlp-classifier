@@ -1,9 +1,7 @@
 package com.jamesmcguigan.nlp.utils.data;
 
 import com.jamesmcguigan.nlp.utils.tokenize.NLPTokenizer;
-import opennlp.tools.tokenize.Tokenizer;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -36,13 +34,6 @@ class ESJsonPathTest {
     void testToString(String input) {
         String output = new ESJsonPath(input).toString();  // renders without whitespace
         assertThat(output).isEqualTo(input);
-    }
-
-    @Test
-    void getSetTokenizer() {
-        Tokenizer input  = new NLPTokenizer();
-        Tokenizer output = new ESJsonPath("{}").setTokenizer(input).getTokenizer();
-        assertEquals(input, output);
     }
 
     private static Stream<Arguments> datasetForGetPossiblePaths() {
@@ -96,7 +87,7 @@ class ESJsonPathTest {
     @MethodSource("datasetForTokenize")
     void tokenize(String json, String path, String[] expected) {
         var jsonPath    = new ESJsonPath(json);
-        String[] actual = jsonPath.tokenize(path);
+        String[] actual = NLPTokenizer.getDefaultTokenizer().tokenize(jsonPath.get(path));
         assertThat(actual).isEqualTo(expected);
     }
 }

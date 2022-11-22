@@ -5,11 +5,42 @@ import opennlp.tools.util.Span;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
-public abstract class AbstractTokenizer implements Tokenizer {
 
-    /** Noop if string has already been tokenized */
-    public String[] tokenize(String[] tokens) { return tokens; }
+/**
+ * This is a wrapper class around opennlp.tools.tokenize.Tokenizer providing some default implementations
+ */
+public abstract class ATokenizer implements Tokenizer {
+
+    /**
+     *  // Tokenizer interface
+     *  String[] tokenize(String text);
+     *  Span[]   tokenizePos(String text);
+     */
+
+    /**
+     * Retokenize an array of tokens, which might result in a noop.
+     *
+     * @param tokens The list of tokens to be retokenized.
+     * @return Possibly the same array of tokens
+     */
+    public String[] tokenize(String[] tokens) { return this.tokenize(List.of(tokens)); }
+
+    /**
+     * Tokenize and join an array of tests
+     *
+     * @param texts The list of texts to be retokenized.
+     * @return An ordered array of tokens
+     */
+    public String[] tokenize(List<String> texts) {
+        String[] tokens = texts.stream()
+            .map(this::tokenize)
+            .flatMap(Stream::of)
+            .toArray(String[]::new)
+        ;
+        return tokens;
+    }
 
     /**
      * Finds the boundaries of atomic parts in a string.

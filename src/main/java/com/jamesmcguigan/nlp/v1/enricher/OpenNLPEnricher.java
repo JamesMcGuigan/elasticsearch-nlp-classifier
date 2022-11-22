@@ -5,8 +5,9 @@ import com.jamesmcguigan.nlp.utils.elasticsearch.ESClient;
 import com.jamesmcguigan.nlp.utils.elasticsearch.read.ScanAndScrollIterator;
 import com.jamesmcguigan.nlp.utils.elasticsearch.update.BulkUpdateQueue;
 import com.jamesmcguigan.nlp.utils.iterators.streams.ESDocumentStream;
+import com.jamesmcguigan.nlp.utils.tokenize.ATokenizer;
+import com.jamesmcguigan.nlp.utils.tokenize.NLPTokenizer;
 import com.jamesmcguigan.nlp.v1.classifier.OpenNLPClassifierES;
-import opennlp.tools.tokenize.Tokenizer;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 
@@ -27,7 +28,7 @@ import static org.elasticsearch.index.query.QueryBuilders.existsQuery;
  */
 @SuppressWarnings("unchecked")
 public class OpenNLPEnricher {
-    private Tokenizer tokenizer = ESJsonPath.getDefaultTokenizer();
+    private ATokenizer tokenizer = NLPTokenizer.getDefaultTokenizer();
 
     private final String       index;
     private final List<String> fields;
@@ -54,8 +55,8 @@ public class OpenNLPEnricher {
     public <T extends OpenNLPEnricher> T load(Path filepath) throws IOException { this.classifier.load(filepath); return (T) this; }
     public <T extends OpenNLPEnricher> T save(Path filepath) throws IOException { this.classifier.save(filepath); return (T) this; }
 
-    public Tokenizer getTokenizer() { return this.tokenizer; }
-    public <T extends OpenNLPEnricher> T setTokenizer(Tokenizer tokenizer) { this.tokenizer = tokenizer; return (T) this; }
+    public ATokenizer getTokenizer() { return this.tokenizer; }
+    public <T extends OpenNLPEnricher> T setTokenizer(ATokenizer tokenizer) { this.tokenizer = tokenizer; return (T) this; }
 
     public String getUpdateKey(String target) { return this.prefix.isEmpty() ? target : (this.prefix+'.'+target); }
 
@@ -91,9 +92,9 @@ public class OpenNLPEnricher {
             var request = new ScanAndScrollIterator<>(String.class, index, query);
             while( request.hasNext() ) {
                 String json         = request.next();
-                ESJsonPath jsonPath = new ESJsonPath(json).setTokenizer(this.tokenizer);
+                ESJsonPath jsonPath = new ESJsonPath(json);
                 String id           = jsonPath.get("id");
-                String[] tokens     = jsonPath.tokenize(this.fields);
+                String[] tokens     = this.tokenizer.tokenize(jsonPath.get(this.fields));
                 String prediction   = this.classifier.predict(tokens);
                 String updateKey    = this.getUpdateKey(this.target);
 

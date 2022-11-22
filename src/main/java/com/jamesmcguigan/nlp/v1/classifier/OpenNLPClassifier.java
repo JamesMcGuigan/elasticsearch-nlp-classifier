@@ -1,11 +1,11 @@
 package com.jamesmcguigan.nlp.v1.classifier;
 
-import com.jamesmcguigan.nlp.utils.data.ESJsonPath;
+import com.jamesmcguigan.nlp.utils.tokenize.ATokenizer;
+import com.jamesmcguigan.nlp.utils.tokenize.NLPTokenizer;
 import opennlp.tools.doccat.DoccatFactory;
 import opennlp.tools.doccat.DoccatModel;
 import opennlp.tools.doccat.DocumentCategorizerME;
 import opennlp.tools.doccat.DocumentSample;
-import opennlp.tools.tokenize.Tokenizer;
 import opennlp.tools.util.ObjectStream;
 import opennlp.tools.util.TrainingParameters;
 
@@ -18,7 +18,7 @@ public class OpenNLPClassifier {
     protected final TrainingParameters params;
     protected DoccatModel model;
     protected DocumentCategorizerME doccat;
-    protected Tokenizer tokenizer = ESJsonPath.getDefaultTokenizer();
+    protected ATokenizer tokenizer = NLPTokenizer.getDefaultTokenizer();
 
 
     //***** Constructor *****//
@@ -53,8 +53,8 @@ public class OpenNLPClassifier {
         return (T) this;
     }
 
-    public Tokenizer getTokenizer() { return this.tokenizer; }
-    public <T extends OpenNLPClassifier> T setTokenizer(Tokenizer tokenizer) { this.tokenizer = tokenizer; return (T) this; }
+    public ATokenizer getTokenizer() { return this.tokenizer; }
+    public <T extends OpenNLPClassifier> T setTokenizer(ATokenizer tokenizer) { this.tokenizer = tokenizer; return (T) this; }
 
 
     //***** Training and Prediction *****//
