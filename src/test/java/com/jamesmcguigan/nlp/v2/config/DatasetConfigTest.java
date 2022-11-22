@@ -31,7 +31,7 @@ class DatasetConfigTest {
             invalid-config:
                 type:  elasticsearch
                 index: twitter
-                id:    ""                        
+                id:    ""
         """;
         assertThrows(InvalidConfigurationException.class, () -> YamlParser.getDatasetConfigs(yaml) );
     }
@@ -74,11 +74,10 @@ class DatasetConfigTest {
         String yaml = """
             valid-csv-config:
                 type:  csv
-                files: 
+                files:
                     train:  input/nlp-getting-started/train.csv
                     test:   input/nlp-getting-started/test.csv
                     output: output/nlp-getting-started.csv
-                        
             """;
         List<DatasetConfig> configs = YamlParser.getDatasetConfigs(yaml);
         DatasetConfig config = configs.get(0);
@@ -86,9 +85,9 @@ class DatasetConfigTest {
         assertThat(config.getName()).isEqualTo("valid-csv-config");
         assertThat(config.getType()).isEqualTo(DatasetType.csv);
         assertThat(config.getFiles()).isNotNull();
-        assertThat(config.getFiles().train.toString() ).isEqualTo("input/nlp-getting-started/train.csv");
-        assertThat(config.getFiles().test.toString()  ).isEqualTo("input/nlp-getting-started/test.csv");
-        assertThat(config.getFiles().output.toString()).isEqualTo("output/nlp-getting-started.csv");
+        assertThat(config.getFiles().train.toString() ).isEqualTo(Path.of("input/nlp-getting-started/train.csv").toString());
+        assertThat(config.getFiles().test.toString()  ).isEqualTo(Path.of("input/nlp-getting-started/test.csv" ).toString());
+        assertThat(config.getFiles().output.toString()).isEqualTo(Path.of("output/nlp-getting-started.csv"     ).toString());
     }
 
     @Test
@@ -96,17 +95,16 @@ class DatasetConfigTest {
         String yaml = """
             invalid-csv-config:
                 type: csv
-                files: 
+                files:
                     train:  input/nlp-getting-started/train.csv
                     test:   input/nlp-getting-started/test.csv
                     output: output/nlp-getting-started.csv
                 fields:
-                    text: string                    
+                    text: string
                 labels:
-                    target: string                    
+                    target: string
                 output_mapping:
                     predict: unknown
-                    
         """;
         assertThrows(InvalidConfigurationException.class, () -> YamlParser.getDatasetConfigs(yaml) );
     }
@@ -115,19 +113,19 @@ class DatasetConfigTest {
         String yaml = """
             valid-csv-config:
                 type: csv
-                files: 
+                files:
                     train:  input/nlp-getting-started/train.csv
                     test:   input/nlp-getting-started/test.csv
                     output: output/nlp-getting-started.csv
-                # id: "id"  # is implicit 
+                # id: "id"  # is implicit
                 fields:
-                    text: text                    
+                    text: text
                 labels:
-                    target: binary                    
+                    target: binary
                 output_mapping:
-                    Id:     id 
+                    Id:     id
                     Text:   text
-                    Target: target                    
+                    Target: target
         """;
         List<DatasetConfig> configs = YamlParser.getDatasetConfigs(yaml);
         DatasetConfig config = configs.get(0);
